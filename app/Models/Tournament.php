@@ -6,17 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Court extends Model
+class Tournament extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'courts';
+    protected $table = 'tournaments';
 
     protected $fillable = [
         'name',
+        'datetime_start',
+        'datetime_end',
+        'matches',
+        'duration_m',
         'type',
-        'availability_start',
-        'availability_end',
+        'allow_singles',
+        'max_diff_rating',
+        'time_between_matches_m',
         'created_by',
     ];
 }
