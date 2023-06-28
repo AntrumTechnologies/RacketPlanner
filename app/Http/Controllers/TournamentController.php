@@ -7,7 +7,9 @@ use App\Models\Tournament;
 use App\Models\TournamentCourt;
 use App\Models\TournamentUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 
 class TournamentController extends Controller
 {
@@ -28,8 +30,8 @@ class TournamentController extends Controller
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:50',
-            'datetime_start' => 'required|date_format:yyyy-mm-dd H:i',
-            'datetime_end' => 'required|date_format:yyyy-mm-dd H:i',
+            'datetime_start' => 'required|date_format:Y-m-d H:i',
+            'datetime_end' => 'required|date_format:Y-m-d H:i',
             'matches' => 'required|min:1',
             'duration_m' => 'required|min:1',
             'type' => 'required', // TODO: define enum class?
@@ -43,16 +45,16 @@ class TournamentController extends Controller
 		}
         
         $newTournament = new Tournament([
-            'name' => capatilize($request->get('name')),
+            'name' => $request->get('name'),
             'datetime_start' => $request->get('datetime_start'),
             'datetime_end' => $request->get('datetime_end'),
             'matches' => $request->get('matches'),
-            'duration' => $request->get('duration'),
+            'duration_m' => $request->get('duration_m'),
             'type' => $request->get('type'),
             'allow_singles' => $request->get('allow_singles'),
             'max_diff_rating' => $request->get('max_diff_rating'),
-            'time_between_matches_m' => $request->get('time_between_matches'),
-            'created_by' => Auth::id(),
+            'time_between_matches_m' => $request->get('time_between_matches_m'),
+            'created_by' => 1,
         ]);
 
         $newTournament->save();
