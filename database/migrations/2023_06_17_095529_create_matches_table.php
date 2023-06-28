@@ -11,16 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('schedules', function (Blueprint $table) {
+        Schema::create('matches', function (Blueprint $table) {
             $table->id();
+            $table->integer('tournament');
             $table->bigInteger('player1');
             $table->bigInteger('player2');
             $table->bigInteger('player3')->nullable();
             $table->bigInteger('player4')->nullable();
             $table->bigInteger('court');
             $table->dateTime('datetime', 0);
-            $table->integer('score1-2')->nullable();
-            $table->integer('score3-4')->nullable();
+            $table->integer('score1_2')->nullable();
+            $table->integer('score3_4')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('schedules');
+        Schema::dropIfExists('matches');
     }
 };

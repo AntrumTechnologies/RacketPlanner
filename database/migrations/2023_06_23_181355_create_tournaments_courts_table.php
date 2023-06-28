@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('courts', function (Blueprint $table) {
+        Schema::create('tournaments_courts', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('type', ['tennis', 'padel'])->nullable();
-            $table->datetime('availability_start')->nullable();
-            $table->datetime('availability_end')->nullable();
-            $table->bigInteger('created_by');
+            $table->bigInteger('tournament');
+            $table->bigInteger('court');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('courts');
+        Schema::dropIfExists('tournaments_courts');
     }
 };
