@@ -8,21 +8,21 @@ use Tests\TestCase;
 
 class TournamentTest extends TestCase
 {
-    public function get_tournaments(): void
+    public function test_get_tournaments(): void
     {
         $response = $this->get('/api/tournament');
 
         $response->assertStatus(200);
     }
 
-    public function get_specific_tournament(): void
+    public function test_get_specific_tournament(): void
     {
         $response = $this->get('/api/tournament/1');
 
         $response->assertStatus(200);
     }
 
-    public function get_matches_for_specific_tournament(): void
+    public function test_get_matches_for_specific_tournament(): void
     {
         $response = $this->get('/api/tournament/1/matches');
 

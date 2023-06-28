@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class MatchTest extends TestCase
 {
-    public function get_specific_match(): void
+    public function test_get_specific_match(): void
     {
         $response = $this->get('/api/match/1');
 

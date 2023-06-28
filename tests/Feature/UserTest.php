@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-    public function get_user_details(): void
+    public function test_get_user_details(): void
     {
         // TODO: fix login of user
 
@@ -17,7 +17,7 @@ class UserTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function get_specific_user_details(): void
+    public function test_get_specific_user_details(): void
     {
         $response = $this->get('/api/user/1');
 

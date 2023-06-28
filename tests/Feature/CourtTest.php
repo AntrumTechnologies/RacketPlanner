@@ -8,14 +8,14 @@ use Tests\TestCase;
 
 class CourtTest extends TestCase
 {
-    public function get_courts(): void
+    public function test_get_courts(): void
     {
         $response = $this->get('/api/court');
 
         $response->assertStatus(200);
     }
 
-    public function get_specific_court(): void
+    public function test_get_specific_court(): void
     {
         $response = $this->get('/api/court/1');
 
