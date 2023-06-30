@@ -15,10 +15,11 @@
             @foreach ($tournamentMatches[$matchTime] as $match)
                 @foreach ($tournamentCourts as $court)
                     @if ($court->name == $match->court)
-                        @if ($match->player3 == null && $match->player4 == null)
-                            <td>{{ $match->player1 }} vs. {{ $match->player2 }} vs. {{ $match->player3 }} vs. {{ $match->player4 }}</td>
+                        @if ($match->player3 != null && $match->player4 != null)
+                            <td><a href="{{ $match->player1_id }}">{{ $match->player1 }}</a> & <a href="{{ $match->player2_id }}">{{ $match->player2 }}</a> vs.<br />
+                            <a href="{{ $match->player3_id }}">{{ $match->player3 }}</a> & <a href="{{ $match->player4_id }}">{{ $match->player4 }}</a></td>
                         @else
-                        <td>{{ $match->player1 }} vs. {{ $match->player2 }}</td>
+                        <td><a href="{{ $match->player1_id }}">{{ $match->player1 }}</a> vs. <a href="{{ $match->player2_id }}">{{ $match->player2 }}</a></td>
                         @endif
                     @endif
                 @endforeach

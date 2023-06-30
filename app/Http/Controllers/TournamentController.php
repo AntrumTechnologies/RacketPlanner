@@ -41,9 +41,13 @@ class TournamentController extends Controller
                 'matches.score1_2',
                 'matches.score3_4',
                 'player1.name as player1',
+                'player1.id as player1_id',
                 'player2.name as player2',
+                'player2.id as player2_id',
                 'player3.name as player3',
-                'player4.name as player4')
+                'player3.id as player3_id',
+                'player4.name as player4',
+                'player4.id as player4_id',)
             ->get();
         $tournamentMatches = $tournamentMatches->groupBy('datetime');
 
@@ -52,6 +56,26 @@ class TournamentController extends Controller
         $tournamentUsers = DB::table('tournaments_users')->where('tournament', $id)->join('users', 'users.id', '=', 'tournaments_users.user')->get();
 
         return view('tournament-details', ['tournament' => $tournament, 'tournamentMatches' => $tournamentMatches, 'tournamentCourts' => $tournamentCourts, 'tournamentUsers' => $tournamentUsers]);
+    }
+
+    public function tournamentCourts($id) {
+        $tournament = Tournament::findOrFail($id);
+
+        $tournamentCourts = DB::table('tournaments_courts')->where('tournament', $id)->join('courts', 'courts.id', '=', 'tournaments_courts.court')->get();
+
+        $courts = Court::all();
+
+        return view('tournament-courts', ['tournament' => $tournament, 'tournamentCourts' => $tournamentCourts, 'courts' => $courts]);
+    }
+
+    public function tournamentUsers($id) {
+        $tournament = Tournament::findOrFail($id);
+
+        $tournamentUsers = DB::table('tournaments_users')->where('tournament', $id)->join('users', 'users.id', '=', 'tournaments_users.user')->get();
+
+        $users = User::all();
+
+        return view('tournament-users', ['tournament' => $tournament, 'tournamentUsers' => $tournamentUsers, 'users' => $users]);
     }
 
     public function store(Request $request) {

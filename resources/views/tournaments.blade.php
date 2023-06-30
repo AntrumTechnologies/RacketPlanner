@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <h2>All tournaments</h2>
 
-            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Add tournament</a>
+            <a class="btn btn-primary" href="#">Add tournament</a>
         </div>
     </div>
 
@@ -19,7 +19,7 @@
                         {{ $tournament->name }}
                     </div>
                     <div class="ms-auto">
-                         <a href="{{ route('edit-tournament', $tournament->id) }}">Edit</a>
+                         <a href="#">Edit</a>
                     </div>
                 </div>
 

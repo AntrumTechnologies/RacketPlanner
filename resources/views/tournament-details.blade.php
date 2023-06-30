@@ -29,7 +29,7 @@
 
                             <div class="list-group">
                                 @foreach ($tournamentUsers as $user)
-                                <a href="#" class="list-group-item d-flex justify-content-between align-items-start">
+                                <a href="{{ $user->id }}" class="list-group-item d-flex justify-content-between align-items-start">
                                     <div class="ms-2 me-auto">
                                         {{ $user->name }} 
                                     </div>
@@ -39,7 +39,7 @@
                             </div>
 
                             <br />
-                            <a class="btn btn-secondary" href="{{ route('tournament-matches', $tournament->id) }}">Manage players</a>
+                            <a class="btn btn-secondary" href="{{ route('tournament-users', $tournament->id) }}">Manage players</a>
                         </div>
                         <div class="col-md-6">
                             <h4>Assigned Courts</h4>
@@ -56,7 +56,7 @@
                             </div>
 
                             <br />
-                            <a class="btn btn-secondary" href="{{ route('tournament-matches', $tournament->id) }}">Manage courts</a>
+                            <a class="btn btn-secondary" href="{{ route('tournament-courts', $tournament->id) }}">Manage courts</a>
                         </div>
                     </div>
 
@@ -65,7 +65,7 @@
                             <h4>Scheduled Matches</h4>
                             @include('layouts.tournament-matches')
 
-                            <a class="btn btn-secondary" href="{{ route('tournament-matches', $tournament->id) }}">Manage matches</a>
+                            <a class="btn btn-secondary" href="#">Schedule new round</a>
                         </div>
                     </div>
                 </div>

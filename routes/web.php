@@ -27,7 +27,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/tournaments', [TournamentController::class, 'index'])->name('tournaments');
 Route::get('/tournaments/{id}', [TournamentController::class, 'show'])->name('tournament-details');
+Route::get('/tournaments/{id}/players', [TournamentController::class, 'tournamentUsers'])->name('tournament-users');
+Route::get('/tournaments/{id}/courts', [TournamentController::class, 'tournamentCourts'])->name('tournament-courts');
 Route::get('/tournaments/{id}/matches', [TournamentController::class, 'showMatches'])->name('tournament-matches');
+
 
 Route::get('/courts', [CourtController::class, 'index'])->name('courts');
 

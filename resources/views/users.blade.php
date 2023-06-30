@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <h2>All users</h2>
 
-            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Add user</a>
+            <a class="btn btn-primary" href="#">Add user</a>
         </div>
     </div>
 
