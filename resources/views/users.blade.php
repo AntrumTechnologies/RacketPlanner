@@ -4,29 +4,28 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>All tournaments</h2>
+            <h2>All users</h2>
 
-            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Add tournament</a>
+            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Add user</a>
         </div>
     </div>
 
-    @foreach ($tournaments as $tournament)
+    @foreach ($users as $user)
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex">
                     <div class="me-auto">
-                        {{ $tournament->name }}
+                        {{ $user->name }}
                     </div>
                     <div class="ms-auto">
-                         <a href="{{ route('edit-tournament', $tournament->id) }}">Edit</a>
+                         <a href="{{ route('edit-tournament', $user->id) }}">Edit</a>
                     </div>
                 </div>
 
                 <div class="card-body">
-                    @include('layouts.tournament-details')
-
-                    <a class="btn btn-secondary" href="{{ route('tournament-details', $tournament->id) }}">View tournament details</a>
+                    <p>ID: {{ $user->id }}</p>
+                    <p>Email: {{ $user->email }}</p>
                 </div>
             </div>
         </div>

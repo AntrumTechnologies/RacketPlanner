@@ -33,6 +33,12 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('tournaments') }}">{{ __('Tournaments') }}</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('courts') }}">{{ __('Courts') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('users') }}">{{ __('Users') }}</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
