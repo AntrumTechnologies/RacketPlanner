@@ -6,19 +6,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    /**
-     * Return details of the user themselves
-     */
     public function index() {
-        $user = Auth::user();
-        if ($user) {
-            return Response::json($user, 200);
-        } else {
-            return Response::json("User could not be found.", 400);
-        }
+        $users = User::all();
+        return view('users', ['users' => $users]);
     }
 
     public function show($id) {

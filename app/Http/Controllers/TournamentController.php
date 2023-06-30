@@ -2,36 +2,63 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Court;
 use App\Models\MatchDetails;
 use App\Models\Tournament;
 use App\Models\TournamentCourt;
 use App\Models\TournamentUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 
 class TournamentController extends Controller
 {
-    public function index() {
+    public static function index() {
         $tournaments = Tournament::all();
-        return Response::json($tournaments, 200);
+
+        return view('tournaments', ['tournaments' => $tournaments]);
     }
 
     public function show($id) {
         $tournament = Tournament::findOrFail($id);
-        if ($tournament) {
-            return Response::json($tournament, 200);
-        } else {
-            return Response::json("The given tournament could not be found.", 400);
-        }
+
+        $tournamentMatches = DB::table('matches')->where('tournament', $id)
+            ->leftJoin('users as player1', 'player1.id', '=', 'matches.player1')
+            ->leftJoin('users as player2', 'player2.id', '=', 'matches.player2')
+            ->leftJoin('users as player3',  function ($f) {
+                $f->on('player3.id', '=', 'matches.player3')->whereNotNull('player3.id');
+            })
+            ->leftJoin('users as player4',  function ($f) {
+                $f->on('player4.id', '=', 'matches.player4')->whereNotNull('player4.id');
+            })
+            ->leftJoin('courts', 'courts.id', '=', 'matches.court')
+            ->select('matches.id',
+                'courts.name as court',
+                'matches.datetime',
+                'matches.score1_2',
+                'matches.score3_4',
+                'player1.name as player1',
+                'player2.name as player2',
+                'player3.name as player3',
+                'player4.name as player4')
+            ->get();
+        $tournamentMatches = $tournamentMatches->groupBy('datetime');
+
+        $tournamentCourts = DB::table('tournaments_courts')->where('tournament', $id)->join('courts', 'courts.id', '=', 'tournaments_courts.court')->get();
+
+        $tournamentUsers = DB::table('tournaments_users')->where('tournament', $id)->join('users', 'users.id', '=', 'tournaments_users.user')->get();
+
+        return view('tournament-details', ['tournament' => $tournament, 'tournamentMatches' => $tournamentMatches, 'tournamentCourts' => $tournamentCourts, 'tournamentUsers' => $tournamentUsers]);
     }
 
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:50',
-            'datetime_start' => 'required|date_format:Y-m-d H:i',
-            'datetime_end' => 'required|date_format:Y-m-d H:i',
+            'datetime_start' => 'required|date_format:Y-m-d H:i:s',
+            'datetime_end' => 'required|date_format:Y-m-d H:i:s',
             'matches' => 'required|min:1',
             'duration_m' => 'required|min:1',
             'type' => 'required', // TODO: define enum class?
@@ -41,7 +68,7 @@ class TournamentController extends Controller
 		]);
 
 		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
+			return false;
 		}
         
         $newTournament = new Tournament([
@@ -58,7 +85,7 @@ class TournamentController extends Controller
         ]);
 
         $newTournament->save();
-        return Response::json("Successfully saved new tournament", 200);
+        return true;
     }
 
     public function update(Request $request) {
@@ -76,7 +103,7 @@ class TournamentController extends Controller
 		]);
 
 		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
+			return false;
 		}
 
         $tournament = Tournament::find($id);
@@ -118,12 +145,21 @@ class TournamentController extends Controller
         }
 
         $tournament->save();
-        return Response::json("Tournament has been updated successfully", 200);
+        return true;
     }
 
     public function showMatches($id) {
-        $matches = MatchDetails::where('tournament', $id);
-        return Response::json($matches, 200);
+        $tournament = Tournament::findOrFail($id);
+
+        $matches = MatchDetails::where('tournament', $id)->get();
+        $matches = $matches->groupBy('datetime');
+
+        $courts = Court::all();
+
+        $users = User::all();
+        $users = $users->groupBy('id');
+
+        return view('tournament-matches', ['tournament' => $tournament, 'matches' => $matches, 'courts' => $courts, 'users' => $users]);
     }
 
     /**
@@ -136,7 +172,7 @@ class TournamentController extends Controller
         ]);
 
 		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
+			return false;
 		}
 
         $tournamentCourt = new TournamentCourt([
@@ -146,7 +182,7 @@ class TournamentController extends Controller
 
         $tournamentCourt->save();
 
-        return Response::json("Tournament and court were matched", 200);
+        return true;
     }
 
     /**
@@ -159,7 +195,7 @@ class TournamentController extends Controller
         ]);
 
 		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
+			return false;
 		}
 
         $tournamentCourt = new TournamentCourt([
@@ -169,7 +205,7 @@ class TournamentController extends Controller
 
         $tournamentCourt->save();
 
-        return Response::json("Tournament and user were matched", 200);
+        return true;
     }
 
     public function delete(Request $request) {
@@ -178,12 +214,12 @@ class TournamentController extends Controller
         ]);
 
 		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
+			return false;
 		}
 
         $tournament = Tournament::find($id);
         $tournament->delete();
 
-        return Response::json("Tournament has been deleted", 200);
+        return true;
     }
 }

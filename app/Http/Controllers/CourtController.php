@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Court;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 
 class CourtController extends Controller
 {
     public function index() {
         $courts = Court::all();
-        return Response::json($courts, 200);
+        return view('courts', ['courts' => $courts]);
     }
 
     public function show($id) {
@@ -27,34 +29,29 @@ class CourtController extends Controller
      */
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
-            'courts' => 'required|array:court,type,availability',
-			'courts.*.name' => 'required|max:30|unique:courts',
-            'courts.*.type' => 'required|max:30',
-			'courts.*.availability_start' => 'required|date_format:yyyy-mm-dd H:i',
-            'courts.*.availability_end' => 'required|date_format:yyyy-mm-dd H:i',
+			'name' => 'required|max:30|unique:courts',
+            'type' => 'required|max:30',
+			'availability_start' => 'required|date_format:Y-m-d H:i',
+            'availability_end' => 'required|date_format:Y-m-d H:i',
 		]);
 
 		if ($validator->fails()) {
 			return Response::json($validator->errors()->first(), 400);	
 		}
 
-        $courts = $request->get('courts');
-        foreach ($courts as $court) {
-            $newCourt = new Court([
-                'name' => capatilize($court['name']),
-                'type' => $court['type'],
-                'availability_start' => $court['availability_start'],
-                'availability_end' => $court['availability_end'],
-                'created_by' => Auth::id(),
-            ]);
+        $newCourt = new Court([
+            'name' => $request->get('name'),
+            'type' => $request->get('type'),
+            'availability_start' => $request->get('availability_start'),
+            'availability_end' => $request->get('availability_end'),
+            'created_by' => 0,
+        ]);
 
-            $newCourt->save();
-        }
-
-        if (sizeof($courts) > 1) {
-            return Response::json("Successfully saved new courts", 200);
-        } else {
+        $newCourt->save();
+        if ($newCourt) {
             return Response::json("Successfully saved new court", 200);
+        } else {
+            return Response::json("Failed to save new court", 400);
         }
     }
 
