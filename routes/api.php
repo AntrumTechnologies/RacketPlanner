@@ -3,10 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\CourtController;
-use App\Http\Controllers\MatchDetailsController;
-use App\Http\Controllers\TournamentController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\CourtController;
+use App\Http\Controllers\Api\MatchDetailsController;
+use App\Http\Controllers\Api\TournamentController;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
