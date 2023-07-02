@@ -5,6 +5,16 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <h2>Tournament Players</h2>
+
+            @if ($errors->any())
+                @foreach ($errors->all() as $error)
+                <div class="alert alert-danger">{{ $error }}</div>
+                @endforeach
+            @endif
+
+            @if (session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
+            @endif
         </div>
     </div>
 
@@ -22,17 +32,26 @@
                         <div class="col-md-12">
                             <h4>Assign Player</h4>
 
-                            <form method="post" action="">
+                            <form method="post" action="{{ route('tournament-assign-user') }}">
+                                @csrf
+                                
+                                <input type="hidden" name="tournament" value="{{ $tournament->id }}" />
+
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Name</label>
-                                    <select class="form-select" id="name" name="name">
-                                        <option value="">Select a user...</option>
+                                    <label for="user" class="form-label">Name</label>
+                                    <select class="form-select" id="user" name="user" @if (count($users) == 0) disabled @endif>
+                                        @if (count($users) == 0)
+                                        <option value="">All users are assigned already</option>
+                                        @else    
+                                            <option value="">Select a user...</option>
+                                        @endif
+
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Assign</button>
+                                <button type="submit" class="btn btn-primary" @if (count($users) == 0) disabled @endif>Assign</button>
                             </form>
                         </div>
                     </div>
@@ -43,12 +62,19 @@
                             
                             <div class="list-group">
                                 @foreach ($tournamentUsers as $user)
-                                <div class="list-group-item d-flex justify-content-between align-items-start" title="{{ $user->email }}">
-                                    <div class="ms-2 me-auto">
-                                        {{ $user->name }} 
+                                <form method="post" action="{{ route('tournament-remove-user') }}">
+                                    @csrf
+                                
+                                    <input type="hidden" name="tournament" value="{{ $tournament->id }}" />
+                                    <input type="hidden" name="user" value="{{ $user->id }}" />
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            {{ $user->name }}
+                                        </div>
+                                    <button type="submit" name="submit" class="btn btn-danger" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Remove</button>
                                     </div>
-                                    <a href="#" class="badge bg-danger rounded-pill">Remove</a>
-                                </div>
+                                </form>
                                 @endforeach
                             </div>
                         </div>

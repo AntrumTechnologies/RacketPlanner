@@ -6,7 +6,11 @@
         <div class="col-md-8">
             <h2>All tournaments</h2>
 
-            <a class="btn btn-primary" href="#">Add tournament</a>
+            @if (session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
+            @endif
+
+            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
         </div>
     </div>
 
@@ -14,19 +18,14 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header d-flex">
-                    <div class="me-auto">
-                        {{ $tournament->name }}
-                    </div>
-                    <div class="ms-auto">
-                         <a href="#">Edit</a>
-                    </div>
+                <div class="card-header">
+                    {{ $tournament->name }}
                 </div>
 
                 <div class="card-body">
                     @include('layouts.tournament-details')
 
-                    <a class="btn btn-secondary" href="{{ route('tournament-details', $tournament->id) }}">View tournament details</a>
+                    <a class="btn btn-secondary" href="{{ route('tournament', $tournament->id) }}">View tournament</a>
                 </div>
             </div>
         </div>

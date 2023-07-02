@@ -6,7 +6,11 @@
         <div class="col-md-8">
             <h2>All courts</h2>
 
-            <a class="btn btn-primary" href="#">Add court</a>
+            @if (session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
+            @endif
+
+            <a class="btn btn-primary" href="{{ route('create-court') }}">Create new court</a>
         </div>
     </div>
 
@@ -19,13 +23,31 @@
                         {{ $court->name }}
                     </div>
                     <div class="ms-auto">
-                         <a href="{{ route('edit-tournament', $court->id) }}">Edit</a>
+                         <a href="{{ route('court-details', $court->id) }}">Edit</a>
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <p>Type: {{ $court->type }}</p>
-                    <p>Available from: {{ $court->availability_start }} to {{ $court->availability_end }}</p>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            Type
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="text-muted">{{ ucfirst($court->type) }}</span>
+                        </div>
+                        <div class="col-sm-2">
+                            From
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="text-muted">{{ $court->availability_start }}</span>
+                        </div>
+                        <div class="col-sm-2">
+                            To
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="text-muted">{{ $court->availability_end }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

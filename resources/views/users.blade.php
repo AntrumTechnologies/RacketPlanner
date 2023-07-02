@@ -6,7 +6,9 @@
         <div class="col-md-8">
             <h2>All users</h2>
 
-            <a class="btn btn-primary" href="#">Add user</a>
+            @if (session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
+            @endif
         </div>
     </div>
 
@@ -19,13 +21,31 @@
                         {{ $user->name }}
                     </div>
                     <div class="ms-auto">
-                         <a href="{{ route('edit-tournament', $user->id) }}">Edit</a>
+                         <a href="{{ route('user-details', $user->id) }}">Edit</a>
                     </div>
                 </div>
 
                 <div class="card-body">
-                    <p>ID: {{ $user->id }}</p>
-                    <p>Email: {{ $user->email }}</p>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            User ID
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="text-muted">{{ $user->id }}</span>
+                        </div>
+                        <div class="col-sm-2">
+                            Email
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="text-muted">{{ $user->email }}</span>
+                        </div>
+                        <div class="col-sm-2">
+                            Rating
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="text-muted">{{ $user->rating }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
