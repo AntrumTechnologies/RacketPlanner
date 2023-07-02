@@ -67,8 +67,8 @@
                         <div class="mb-3">
                             <label for="allow_singles" class="form-label">Singles allowed</label>
                             <select class="form-select" id="allow_singles" name="allow_singles">
-                                <option value="tennis" @if (old('allow_singles') == 0) selected @endif>No</option>
-                                <option value="padel" @if (old('allow_singles') == 1) selected @endif>Yes</option>
+                                <option value="0" @if (old('allow_singles') == 0) selected @endif>No</option>
+                                <option value="1" @if (old('allow_singles') == 1) selected @endif>Yes</option>
                             </select>
                             <div class="form-text" id="basic-addon4">When single matches are allowed, matches will still be scheduled as mixes, but singles could also occur</div>
                         </div>

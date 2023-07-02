@@ -21,6 +21,7 @@ Auth::routes();
 
 Route::group(['middleware' => ['auth']], function() {
     Route::view('/', 'home');
+    Route::view('/home', 'home'); // TODO: make sure register page redirects to / instead of /home
 
     /** 
      * Note: order for same type of requests matter!
