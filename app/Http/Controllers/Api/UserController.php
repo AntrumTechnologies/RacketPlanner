@@ -38,15 +38,24 @@ class UserController extends Controller
             'rating' => 'sometimes|required|min:0',
             'avatar' => 'sometimes|required|mimes:jpeg,png|max:4096',
             'fcm_token' => 'sometimes',
-            'availability_start' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
-            'availability_end' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
+            'availability_start' => 'sometimes|required|date_format:Y-m-d H:i',
+            'availability_end' => 'sometimes|required|date_format:Y-m-d H:i',
         ]);
 
 		if ($validator->fails()) {
 			return Response::json($validator->errors()->first(), 400);
 		}
 
-        $user = User::find($id);
+        $user = User::find($request->get('id'));
+
+        if ($request->has('name')) {
+            $user->name = $request->get('name');
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->get('email');
+            // TODO: send email address verification email after updating
+        }
 
         if ($request->has('password')) {
             if ($request->get('id') != Auth::id()) {
@@ -80,5 +89,8 @@ class UserController extends Controller
         if ($request->has('availability_end')) {
             $user->availability_end = $request->get('availability_end');
         }
+
+        $user->save();
+        return Response::json("Successfully updated user details", 200);
     }
 }

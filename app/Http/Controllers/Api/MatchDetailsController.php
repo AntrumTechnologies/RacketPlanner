@@ -10,11 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class MatchDetailsController extends Controller
 {
-    public function scheduler() 
-    {
-        // TODO
-    }
-
     public function show($id) {
         $match = MatchDetails::findOrFail($id);
         if ($match) {
@@ -46,51 +41,5 @@ class MatchDetailsController extends Controller
 
         $match->save();
         return Response::json("Successfully saved match details", 200);
-    }
-
-    public function store(Request $request)
-    {
-        /* TODO: prevent match from being added when player is already scheduled for the given time */
-        $validator = Validator::make($request->all(), [
-            'tournament' => 'required|exists:tournaments,id',
-            'player1' => 'required|exists:users,id',
-            'player2' => 'required|exists:users,id|different:player1',
-            'player3' => 'sometimes|required|exists:users,id|different:player2',
-            'player4' => 'sometimes|required|exists:users,id|different:player3',
-            'court' => 'required|exists:courts,id',
-            'datetime' => 'required|date_format:Y-m-d H:i',
-		]);
-
-		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
-		}
-        
-        $newMatch = new MatchDetails([
-            'tournament' =>$request->get('tournament'),
-            'player1' => $request->get('player1'),
-            'player2' => $request->get('player2'),
-            'player3' => $request->get('player3'),
-            'player4' => $request->get('player4'),
-            'court' => $request->get('court'),
-            'datetime' => $request->get('datetime'),
-        ]);
-
-        $newMatch->save();
-        return Response::json("Successfully saved new match", 200);
-    }
-
-    public function delete(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|exists:matches',
-        ]);
-
-		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
-		}
-
-        $match = MatchDetails::find($id);
-        $match->delete();
-
-        return Response::json("Match has been deleted", 200);
     }
 }
