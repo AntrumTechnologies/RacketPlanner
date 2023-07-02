@@ -11,11 +11,17 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 
 class TournamentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public static function index() {
         $tournaments = Tournament::all();
 
@@ -55,7 +61,13 @@ class TournamentController extends Controller
 
         $tournamentUsers = DB::table('tournaments_users')->where('tournament', $id)->join('users', 'users.id', '=', 'tournaments_users.user')->get();
 
-        return view('tournament-details', ['tournament' => $tournament, 'tournamentMatches' => $tournamentMatches, 'tournamentCourts' => $tournamentCourts, 'tournamentUsers' => $tournamentUsers]);
+        return view('tournament', ['tournament' => $tournament, 'tournamentMatches' => $tournamentMatches, 'tournamentCourts' => $tournamentCourts, 'tournamentUsers' => $tournamentUsers]);
+    }
+
+    public function showDetails($id) {
+        $tournament = Tournament::findOrFail($id);
+        
+        return view('tournament-details', ['tournament' => $tournament]);
     }
 
     public function tournamentCourts($id) {
@@ -63,7 +75,9 @@ class TournamentController extends Controller
 
         $tournamentCourts = DB::table('tournaments_courts')->where('tournament', $id)->join('courts', 'courts.id', '=', 'tournaments_courts.court')->get();
 
-        $courts = Court::all();
+        // Only return courts that are not yet assigned to the given tournament
+        $courtIds = TournamentCourt::where('tournament', $id)->pluck('court')->all();
+        $courts = Court::whereNotIn('id', $courtIds)->get();
 
         return view('tournament-courts', ['tournament' => $tournament, 'tournamentCourts' => $tournamentCourts, 'courts' => $courts]);
     }
@@ -73,16 +87,18 @@ class TournamentController extends Controller
 
         $tournamentUsers = DB::table('tournaments_users')->where('tournament', $id)->join('users', 'users.id', '=', 'tournaments_users.user')->get();
 
-        $users = User::all();
+        // Only return users that are not yet assigned to the given tournament
+        $userIds = TournamentUser::where('tournament', $id)->pluck('user')->all();
+        $users = User::whereNotIn('id', $userIds)->get();
 
         return view('tournament-users', ['tournament' => $tournament, 'tournamentUsers' => $tournamentUsers, 'users' => $users]);
     }
 
     public function store(Request $request) {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'name' => 'required|max:50',
-            'datetime_start' => 'required|date_format:Y-m-d H:i:s',
-            'datetime_end' => 'required|date_format:Y-m-d H:i:s',
+            'datetime_start' => 'required|date_format:Y-m-d H:i',
+            'datetime_end' => 'required|date_format:Y-m-d H:i',
             'matches' => 'required|min:1',
             'duration_m' => 'required|min:1',
             'type' => 'required', // TODO: define enum class?
@@ -91,10 +107,6 @@ class TournamentController extends Controller
             'time_between_matches_m' => 'required|min:0',
 		]);
 
-		if ($validator->fails()) {
-			return false;
-		}
-        
         $newTournament = new Tournament([
             'name' => $request->get('name'),
             'datetime_start' => $request->get('datetime_start'),
@@ -105,32 +117,28 @@ class TournamentController extends Controller
             'allow_singles' => $request->get('allow_singles'),
             'max_diff_rating' => $request->get('max_diff_rating'),
             'time_between_matches_m' => $request->get('time_between_matches_m'),
-            'created_by' => 1,
+            'created_by' => Auth::id(),
         ]);
 
         $newTournament->save();
-        return true;
+        return Redirect::route('tournaments')->with('status', 'Successfully added the tournament '. $newTournament->name);
     }
 
     public function update(Request $request) {
-        $$validator = Validator::make($request->all(), [
+        $request->validate([
             'id' => 'required|exists:tournaments',
-            'name' => 'sometimes|required|max:50',
-            'datetime_start' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
-            'datetime_end' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
-            'matches' => 'sometimes|required|min:1',
-            'duration_m' => 'sometimes|required|min:1',
-            'type' => 'sometimes|required', // TODO: define enum class?
-            'allow_singles' => 'sometimes|required',
-            'max_diff_rating' => 'sometimes|required|min:0',
-            'time_between_matches_m' => 'sometimes|required|min:0',
+            'name' => 'required|max:50',
+            'datetime_start' => 'required|date_format:Y-m-d H:i',
+            'datetime_end' => 'required|date_format:Y-m-d H:i',
+            'matches' => 'required|min:1',
+            'duration_m' => 'required|min:1',
+            'type' => 'required', // TODO: define enum class?
+            'allow_singles' => 'required',
+            'max_diff_rating' => 'required|min:0',
+            'time_between_matches_m' => 'required|min:0',
 		]);
 
-		if ($validator->fails()) {
-			return false;
-		}
-
-        $tournament = Tournament::find($id);
+        $tournament = Tournament::find($request->get('id'));
         
         if ($request->has('name')) {
             $tournament->name = $request->get('name');
@@ -141,7 +149,7 @@ class TournamentController extends Controller
         }
         
         if ($request->has('datetime_end')) {
-            $tournament->datetime_start = $request->get('availability_end');
+            $tournament->datetime_end = $request->get('datetime_end');
         }
 
         if ($request->has('matches')) {
@@ -169,35 +177,17 @@ class TournamentController extends Controller
         }
 
         $tournament->save();
-        return true;
-    }
-
-    public function showMatches($id) {
-        $tournament = Tournament::findOrFail($id);
-
-        $matches = MatchDetails::where('tournament', $id)->get();
-        $matches = $matches->groupBy('datetime');
-
-        $courts = Court::all();
-
-        $users = User::all();
-        $users = $users->groupBy('id');
-
-        return view('tournament-matches', ['tournament' => $tournament, 'matches' => $matches, 'courts' => $courts, 'users' => $users]);
+        return Redirect::route('tournament', ['id' => $tournament->id])->with('status', 'Successfully updated the tournament details');
     }
 
     /**
      * Add courts to a certain tournament
      */
-    public function matchCourts(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'tournament' => 'required|exists:tournaments',
-            'court' => 'required|exists:courts',
+    public function assignCourt(Request $request) {
+        $request->validate([
+            'tournament' => 'required|exists:tournaments,id',
+            'court' => 'required|exists:courts,id',
         ]);
-
-		if ($validator->fails()) {
-			return false;
-		}
 
         $tournamentCourt = new TournamentCourt([
             'tournament' => $request->get('tournament'),
@@ -206,44 +196,74 @@ class TournamentController extends Controller
 
         $tournamentCourt->save();
 
-        return true;
+        $court = Court::find($request->get('court'));
+        return Redirect::route('tournament-courts', ['id' => $request->get('tournament')])->with('status', 'Successfully assigned '. $court->name .' to tournament');
     }
 
     /**
      * Add users to a certain tournament
      */
-    public function matchUsers(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'tournament' => 'required|exists:tournaments',
-            'user' => 'required|exists:users',
+    public function assignUser(Request $request) {
+        $request->validate([
+            'tournament' => 'required|exists:tournaments,id',
+            'user' => 'required|exists:users,id',
         ]);
 
-		if ($validator->fails()) {
-			return false;
-		}
-
-        $tournamentCourt = new TournamentCourt([
+        $tournamentUser = new TournamentUser([
             'tournament' => $request->get('tournament'),
             'user' => $request->get('user'),
         ]);
 
-        $tournamentCourt->save();
+        $tournamentUser->save();
 
-        return true;
+        $user = User::find($request->get('user'));
+        return Redirect::route('tournament-users', ['id' => $request->get('tournament')])->with('status', 'Successfully assigned '. $user->name .' to tournament');
+    }
+
+    public function removeCourt(Request $request) {
+        $request->validate([
+            'tournament' => 'required|exists:tournaments,id',
+            'court' => 'required|exists:courts,id',
+        ]);
+
+        $tournamentCourt = TournamentCourt::where('tournament', $request->get('tournament'))->where('court', $request->get('court'))->first();
+        if (!$tournamentCourt) {
+            throw ValidationException::withMessages(['court' => 'Court seems not to be assigned to given tournament']);
+        }
+
+        $tournamentCourt->delete();
+
+        $court = Court::find($request->get('court'));
+        return Redirect::route('tournament-courts', ['id' => $request->get('tournament')])->with('status', 'Successfully removed '. $court->name .' from the tournament');
+    }
+
+    public function removeUser(Request $request) {
+        $request->validate([
+            'tournament' => 'required|exists:tournaments,id',
+            'user' => 'required|exists:users,id',
+        ]);
+
+        $tournamentUser = TournamentUser::where('tournament', $request->get('tournament'))->where('user', $request->get('user'))->first();
+        if (!$tournamentUser) {
+            throw ValidationException::withMessages(['user' => 'User seems not to be assigned to given tournament']);
+        }
+
+        $tournamentUser->delete();
+
+        $user = User::find($request->get('user'));
+        return Redirect::route('tournament-users', ['id' => $request->get('tournament')])->with('status', 'Successfully removed '. $user->name .' from the tournament');
     }
 
     public function delete(Request $request) {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'id' => 'required|exists:tournaments',
         ]);
 
-		if ($validator->fails()) {
-			return false;
-		}
-
-        $tournament = Tournament::find($id);
+        $tournament = Tournament::find($request->id);
         $tournament->delete();
 
-        return true;
+        // TODO: delete all corresponding matches as well, and assigned users and courts.
+
+        return Redirect::route('tournaments')->with('status', 'Successfully removed the tournament '. $tournament->name);
     }
 }

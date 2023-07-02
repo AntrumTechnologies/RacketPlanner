@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Court;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 
 class CourtController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index() {
         $courts = Court::all();
         return view('courts', ['courts' => $courts]);
@@ -17,61 +23,45 @@ class CourtController extends Controller
 
     public function show($id) {
         $court = Court::findOrFail($id);
-        if ($court) {
-            return Response::json($court, 200);
-        } else {
-            return Response::json("The given court could not be found.", 400);
-        }
+        return view('court', ['court' => $court]);
     }
 
     /**
      * Hosts the ability to mass create new courts
      */
     public function store(Request $request) {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
 			'name' => 'required|max:30|unique:courts',
             'type' => 'required|max:30',
 			'availability_start' => 'required|date_format:Y-m-d H:i',
             'availability_end' => 'required|date_format:Y-m-d H:i',
 		]);
 
-		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
-		}
-
         $newCourt = new Court([
             'name' => $request->get('name'),
             'type' => $request->get('type'),
             'availability_start' => $request->get('availability_start'),
             'availability_end' => $request->get('availability_end'),
-            'created_by' => 0,
+            'created_by' => Auth::id(),
         ]);
 
         $newCourt->save();
-        if ($newCourt) {
-            return Response::json("Successfully saved new court", 200);
-        } else {
-            return Response::json("Failed to save new court", 400);
-        }
+        return Redirect::route('courts')->with('status', 'Successfully added the court '. $newCourt->name);
     }
 
     /**
      * Hosts the ability to update a court one by one
      */
     public function update(Request $request) {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'id' => 'required|exists:courts',
             'name' => 'sometimes|required|max:30',
             'type' => 'sometimes|required|max:30',
-            'availability_start' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
-            'availability_end' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
+            'availability_start' => 'sometimes|nullable|date_format:Y-m-d H:i',
+            'availability_end' => 'sometimes|nullable|date_format:Y-m-d H:i',
         ]);
 
-		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);	
-		}
-
-        $court = Court::find($id);
+        $court = Court::find($request->get('id'));
         
         if ($request->has('name')) {
             $court->name = $request->get('name');
@@ -86,11 +76,12 @@ class CourtController extends Controller
         }
 
         if ($request->has('availability_end')) {
-            $court->availability_start = $request->get('availability_end');
+            $court->availability_end = $request->get('availability_end');
         }
 
         $court->save();
-        return Response::json("Court has been updated successfully", 200);
+        
+        return Redirect::route('courts')->with('status', 'Successfully updated court details for '. $court->name);
     }
 
     public function delete(Request $request) {

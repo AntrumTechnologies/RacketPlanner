@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\TournamentUser;
+use App\Models\MatchDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function index() {
         $users = User::all();
         return view('users', ['users' => $users]);
@@ -17,35 +24,38 @@ class UserController extends Controller
 
     public function show($id) {
         $user = User::findOrFail($id);
-        if ($user) {
-            return Response::json($user, 200);
-        } else {
-            return Response::json("The given user could not be found.", 400);
-        }
+
+        $tournaments = TournamentUser::where('user', $id)
+            ->join('tournaments', 'tournaments.id', '=', 'tournaments_users.tournament')
+            ->select('tournaments.id', 'tournaments.name')->get();
+
+        $matches = MatchDetails::where('player1', $id)->orWhere('player2', $id)->orWhere('player3', $id)->orWhere('player4', $id)
+            ->join('courts', 'courts.id', '=', 'matches.court')->get();
+
+        return view('user', ['user' => $user, 'tournaments' => $tournaments, 'matches' => $matches]);
     }
 
     public function update(Request $request) {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'id' => 'required|exists:users',
-            'rating' => 'sometimes|required|min:0',
-            'avatar' => 'sometimes|required|mimes:jpeg,png|max:4096',
-            'fcm_token' => 'sometimes',
-            'availability_start' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
-            'availability_end' => 'sometimes|required|date_format:yyyy-mm-dd H:i',
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'sometimes',
+            'rating' => 'min:0',
+            'avatar' => 'mimes:jpeg,png|max:4096',
+            'availability_start' => 'sometimes|nullable|date_format:Y-m-d H:i',
+            'availability_end' => 'sometimes|nullable|date_format:Y-m-d H:i',
         ]);
 
-		if ($validator->fails()) {
-			return Response::json($validator->errors()->first(), 400);
-		}
+        $user = User::find($request->get('id'));
 
-        $user = User::find($id);
+        if ($request->has('name')) {
+            $user->name = $request->get('name');
+        }
 
-        if ($request->has('password')) {
-            if ($request->get('id') != Auth::id()) {
-                return Response::json('Not authorized to update password', 400);	
-            }
-
-            $user->password = Hash::make($request->get('password'));
+        if ($request->has('email')) {
+            $user->email = $request->get('email');
+            // TODO: send email address verification email after updating
         }
 
         if ($request->has('rating')) {
@@ -61,10 +71,6 @@ class UserController extends Controller
             $user->avatar = Storage::putFile('avatars', $request->file('avatar'));
         }
 
-        if ($request->has('fcm_token')) {
-            $user->fcm_token = $request->input('fcm_token');
-        }
-
         if ($request->has('availability_start')) {
             $user->availability_start = $request->get('availability_start');
         }
@@ -72,5 +78,9 @@ class UserController extends Controller
         if ($request->has('availability_end')) {
             $user->availability_end = $request->get('availability_end');
         }
+
+        $user->save();
+
+        return Redirect::route('users')->with('status', 'Successfully updated user details for '. $user->name);
     }
 }
