@@ -18,11 +18,22 @@ class CourtController extends Controller
 
     public function index() {
         $courts = Court::all();
+
+        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
+        foreach ($courts as $court) {
+            $court->availability_start = date('Y-m-d H:i', strtotime($court->availability_start));
+            $court->availability_end = date('Y-m-d H:i', strtotime($court->availability_end));
+        }
+
         return view('courts', ['courts' => $courts]);
     }
 
     public function show($id) {
         $court = Court::findOrFail($id);
+        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
+        $court->availability_start = date('Y-m-d H:i', strtotime($court->availability_start));
+        $court->availability_end = date('Y-m-d H:i', strtotime($court->availability_end));
+
         return view('court', ['court' => $court]);
     }
 

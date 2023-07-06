@@ -24,12 +24,21 @@ class TournamentController extends Controller
 
     public static function index() {
         $tournaments = Tournament::all();
+        
+        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
+        foreach ($tournaments as $tournament) {
+            $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
+            $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
+        }
 
         return view('tournaments', ['tournaments' => $tournaments]);
     }
 
     public function show($id) {
         $tournament = Tournament::findOrFail($id);
+        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
+        $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
+        $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
 
         $tournamentMatches = DB::table('matches')->where('tournament', $id)
             ->leftJoin('users as player1', 'player1.id', '=', 'matches.player1')
