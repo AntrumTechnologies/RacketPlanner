@@ -1,21 +1,21 @@
 <div class="row">
-<div class="col-md-3">
-    Start<br/>
-    End
-</div>
-<div class="col-md-3">
-    <span class="text-muted">{{ $tournament->datetime_start }}<br />
-    {{ $tournament->datetime_end }}</span>
-</div>
+    <div class="col-md-3">
+        Start<br/>
+        End
+    </div>
+    <div class="col-md-3">
+        <span class="text-muted">{{ $tournament->datetime_start }}<br />
+        {{ $tournament->datetime_end }}</span>
+    </div>
 
-<div class="col-md-3">
-    Number of matches<br />
-    Duration per match
-</div>
-<div class="col-md-3">
-    <span class="text-muted">{{ $tournament->matches }}<br />
-    {{ $tournament->duration_m }} min.</span>
-</div>
+    <div class="col-md-3">
+        Number of matches<br />
+        Duration per match
+    </div>
+    <div class="col-md-3">
+        <span class="text-muted">{{ $tournament->matches }}<br />
+        {{ $tournament->duration_m }} min.</span>
+    </div>
 </div>
 <div class="row mt-3 mb-3">
 <div class="col-md-3">

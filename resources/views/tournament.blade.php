@@ -67,7 +67,11 @@
                     <div class="row mt-5">
                         <div class="col-md-12">
                             <h4>Scheduled Matches</h4>
-                            @include('layouts.tournament-matches')
+                            @if (count($tournamentMatches) == 0)
+                                <p>No matches scheduled yet.</p>
+                            @else
+                                @include('layouts.tournament-matches')
+                            @endif
 
                             <a class="btn btn-secondary" href="#">Schedule new round</a>
                         </div>
