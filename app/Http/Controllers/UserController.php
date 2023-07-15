@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -16,10 +17,16 @@ class UserController extends Controller
     {
         $this->middleware('auth');
     }
+
+    public function home() {
+        $matches = array();
+        $tournaments = array();
+        return view('home', ['matches' => $matches, 'tournaments' => $tournaments]);
+    }
     
     public function index() {
         $users = User::all();
-        return view('users', ['users' => $users]);
+        return view('admin.users', ['users' => $users]);
     }
 
     public function show($id) {
@@ -32,7 +39,7 @@ class UserController extends Controller
         $matches = MatchDetails::where('player1', $id)->orWhere('player2', $id)->orWhere('player3', $id)->orWhere('player4', $id)
             ->join('courts', 'courts.id', '=', 'matches.court')->get();
 
-        return view('user', ['user' => $user, 'tournaments' => $tournaments, 'matches' => $matches]);
+        return view('admin.user', ['user' => $user, 'tournaments' => $tournaments, 'matches' => $matches]);
     }
 
     public function update(Request $request) {

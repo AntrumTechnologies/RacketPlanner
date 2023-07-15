@@ -19,14 +19,18 @@
                     <div class="me-auto">
                         {{ $tournament->name }}
                     </div>
+
+                    @can('admin')
                     <div class="ms-auto">
                          <a href="{{ route('tournament-details', $tournament->id) }}">Edit</a>
                     </div>
+                    @endcan
                 </div>
 
                 <div class="card-body">
                     @include('layouts.tournament-details')
 
+                    @can('admin')
                     <div class="row mt-5">
                         <div class="col-md-6">
                             <h4>Assigned Players</h4>
@@ -63,6 +67,7 @@
                             <a class="btn btn-secondary" href="{{ route('tournament-courts', $tournament->id) }}">Manage courts</a>
                         </div>
                     </div>
+                    @endcan
 
                     <div class="row mt-5">
                         <div class="col-md-12">
@@ -73,7 +78,9 @@
                                 @include('layouts.tournament-matches')
                             @endif
 
+                            @can('admin')
                             <a class="btn btn-secondary" href="#">Schedule new round</a>
+                            @endcan
                         </div>
                     </div>
                 </div>

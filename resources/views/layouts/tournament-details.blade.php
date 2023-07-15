@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mb-3">
     <div class="col-md-3">
         Start<br/>
         End
@@ -17,6 +17,7 @@
         {{ $tournament->duration_m }} min.</span>
     </div>
 </div>
+@can('admin')
 <div class="row mt-3 mb-3">
 <div class="col-md-3">
     Type<br />
@@ -36,3 +37,4 @@
     {{ $tournament->time_between_matches_m }} min.</span>
 </div>
 </div>
+@endcan

@@ -4,13 +4,15 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>All tournaments</h2>
+            <h2>Tournaments</h2>
 
             @if (session('status'))
                 <div class="alert alert-success">{{ session('status') }}</div>
             @endif
 
+            @can('admin')
             <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
+            @endcan
         </div>
     </div>
 

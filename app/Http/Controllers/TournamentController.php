@@ -31,7 +31,7 @@ class TournamentController extends Controller
             $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
         }
 
-        return view('tournaments', ['tournaments' => $tournaments]);
+        return view('admin.tournaments', ['tournaments' => $tournaments]);
     }
 
     public function show($id) {
@@ -70,13 +70,13 @@ class TournamentController extends Controller
 
         $tournamentUsers = DB::table('tournaments_users')->where('tournament', $id)->join('users', 'users.id', '=', 'tournaments_users.user')->get();
 
-        return view('tournament', ['tournament' => $tournament, 'tournamentMatches' => $tournamentMatches, 'tournamentCourts' => $tournamentCourts, 'tournamentUsers' => $tournamentUsers]);
+        return view('admin.tournament', ['tournament' => $tournament, 'tournamentMatches' => $tournamentMatches, 'tournamentCourts' => $tournamentCourts, 'tournamentUsers' => $tournamentUsers]);
     }
 
     public function showDetails($id) {
         $tournament = Tournament::findOrFail($id);
         
-        return view('tournament-details', ['tournament' => $tournament]);
+        return view('admin.tournament-details', ['tournament' => $tournament]);
     }
 
     public function tournamentCourts($id) {
@@ -88,7 +88,7 @@ class TournamentController extends Controller
         $courtIds = TournamentCourt::where('tournament', $id)->pluck('court')->all();
         $courts = Court::whereNotIn('id', $courtIds)->get();
 
-        return view('tournament-courts', ['tournament' => $tournament, 'tournamentCourts' => $tournamentCourts, 'courts' => $courts]);
+        return view('admin.tournament-courts', ['tournament' => $tournament, 'tournamentCourts' => $tournamentCourts, 'courts' => $courts]);
     }
 
     public function tournamentUsers($id) {
@@ -100,7 +100,7 @@ class TournamentController extends Controller
         $userIds = TournamentUser::where('tournament', $id)->pluck('user')->all();
         $users = User::whereNotIn('id', $userIds)->get();
 
-        return view('tournament-users', ['tournament' => $tournament, 'tournamentUsers' => $tournamentUsers, 'users' => $users]);
+        return view('admin.tournament-users', ['tournament' => $tournament, 'tournamentUsers' => $tournamentUsers, 'users' => $users]);
     }
 
     public function store(Request $request) {

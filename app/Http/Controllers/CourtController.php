@@ -25,7 +25,7 @@ class CourtController extends Controller
             $court->availability_end = date('Y-m-d H:i', strtotime($court->availability_end));
         }
 
-        return view('courts', ['courts' => $courts]);
+        return view('admin.courts', ['courts' => $courts]);
     }
 
     public function show($id) {
@@ -34,7 +34,7 @@ class CourtController extends Controller
         $court->availability_start = date('Y-m-d H:i', strtotime($court->availability_start));
         $court->availability_end = date('Y-m-d H:i', strtotime($court->availability_end));
 
-        return view('court', ['court' => $court]);
+        return view('admin.court', ['court' => $court]);
     }
 
     /**

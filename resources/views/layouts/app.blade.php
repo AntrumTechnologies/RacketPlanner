@@ -31,6 +31,10 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">{{ __('Home') }}</a>
+                        </li>
+                        @can('admin')
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('tournaments') }}">{{ __('Tournaments') }}</a>
                         </li>
                         <li class="nav-item">
@@ -39,6 +43,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('users') }}">{{ __('Users') }}</a>
                         </li>
+                        @endcan
                     </ul>
 
                     <!-- Right Side Of Navbar -->
