@@ -11,18 +11,24 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h3>Your Matches</h3>
-            @foreach ($matches as $match)
-            <div class="card">
-                <div class="card-header">
-                    {{ $match->court }}
+            @if (count($matches) == 0)
+                <p>No matches scheduled yet.</p>
+            @else
+                @foreach ($matches as $match)
+                <div class="card">
+                    <div class="card-header">
+                        {{ $match->court }}
+                    </div>
+
+                    <div class="card-body">
+
+                    </div>
                 </div>
+                @endforeach
+            @endif
+        </div>
 
-                <div class="card-body">
-
-                </div>
-            </div>
-            @endforeach
-
+        <div class="col-md-8 mt-4">
             <h3>All Tournaments</h3>
             @foreach ($tournaments as $tournament)
             <div class="card">

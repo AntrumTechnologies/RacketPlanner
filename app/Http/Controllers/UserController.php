@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Tournament;
 use App\Models\TournamentUser;
 use App\Models\MatchDetails;
 use Illuminate\Http\Request;
@@ -20,7 +21,15 @@ class UserController extends Controller
 
     public function home() {
         $matches = array();
-        $tournaments = array();
+
+        $tournaments = Tournament::all();
+        
+        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
+        foreach ($tournaments as $tournament) {
+            $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
+            $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
+        }
+
         return view('home', ['matches' => $matches, 'tournaments' => $tournaments]);
     }
     
