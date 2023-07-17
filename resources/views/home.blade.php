@@ -14,17 +14,7 @@
             @if (count($matches) == 0)
                 <p>No matches scheduled yet.</p>
             @else
-                @foreach ($matches as $match)
-                <div class="card">
-                    <div class="card-header">
-                        {{ $match->court }}
-                    </div>
-
-                    <div class="card-body">
-
-                    </div>
-                </div>
-                @endforeach
+                @include('layouts.user-matches')
             @endif
         </div>
 

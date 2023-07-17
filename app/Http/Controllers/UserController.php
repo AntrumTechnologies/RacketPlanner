@@ -8,6 +8,7 @@ use App\Models\TournamentUser;
 use App\Models\MatchDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Spatie\Permission\Models\Permission;
@@ -20,7 +21,31 @@ class UserController extends Controller
     }
 
     public function home() {
-        $matches = array();
+        $matches = DB::table('matches')->where('tournament', 1)
+            ->leftJoin('users as player1', 'player1.id', '=', 'matches.player1')
+            ->leftJoin('users as player2', 'player2.id', '=', 'matches.player2')
+            ->leftJoin('users as player3',  function ($f) {
+                $f->on('player3.id', '=', 'matches.player3')->whereNotNull('player3.id');
+            })
+            ->leftJoin('users as player4',  function ($f) {
+                $f->on('player4.id', '=', 'matches.player4')->whereNotNull('player4.id');
+            })
+            ->leftJoin('courts', 'courts.id', '=', 'matches.court')
+            ->select('matches.id',
+                'courts.name as court',
+                'matches.datetime',
+                'matches.score1_2',
+                'matches.score3_4',
+                'player1.name as player1',
+                'player1.id as player1_id',
+                'player2.name as player2',
+                'player2.id as player2_id',
+                'player3.name as player3',
+                'player3.id as player3_id',
+                'player4.name as player4',
+                'player4.id as player4_id',)
+            ->get();
+        $matches = $matches->groupBy('datetime');
 
         $tournaments = Tournament::all();
         
