@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('match_matrix', function (Blueprint $table) {
+        Schema::create('players', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('tournament');
-            $table->integer('round');
-            $table->bigInteger('court');
-            $table->bigInteger('match');
-            $table->boolean('available');
-            $table->boolean('public');
+            $table->bigInteger("user_id");
+            $table->bigInteger("tournament_id");
+            $table->bigInteger("break_round_id");
+            $table->boolean("clinic_round_id");
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('match_matrix');
+        Schema::dropIfExists('players');
     }
 };
