@@ -4,17 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Court extends Model
+class Schedule extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
-    protected $table = 'courts';
+    protected $table = 'schedules';
 
     protected $fillable = [
-        'name',
         'tournament_id',
-        'created_by',
+        'round_id',
+        'court_id',
+        'match_id',
+        'public',
     ];
 }
