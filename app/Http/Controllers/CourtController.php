@@ -16,43 +16,27 @@ class CourtController extends Controller
         $this->middleware('auth');
     }
 
-    public function index() {
-        $courts = Court::all();
-
-        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
-        foreach ($courts as $court) {
-            $court->availability_start = date('Y-m-d H:i', strtotime($court->availability_start));
-            $court->availability_end = date('Y-m-d H:i', strtotime($court->availability_end));
-        }
+    public function index($tournament_id) {
+        $courts = Court::where('tournament_id', $tournament_id);
 
         return view('admin.courts', ['courts' => $courts]);
     }
 
     public function show($id) {
         $court = Court::findOrFail($id);
-        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
-        $court->availability_start = date('Y-m-d H:i', strtotime($court->availability_start));
-        $court->availability_end = date('Y-m-d H:i', strtotime($court->availability_end));
 
         return view('admin.court', ['court' => $court]);
     }
 
-    /**
-     * Hosts the ability to mass create new courts
-     */
     public function store(Request $request) {
         $request->validate([
-			'name' => 'required|max:30|unique:courts',
-            'type' => 'required|max:30',
-			'availability_start' => 'required|date_format:Y-m-d H:i',
-            'availability_end' => 'required|date_format:Y-m-d H:i',
+			'name' => 'required|max:30',
+            'tournament_id' => 'required|exists:tournaments,id',
 		]);
 
         $newCourt = new Court([
             'name' => $request->get('name'),
-            'type' => $request->get('type'),
-            'availability_start' => $request->get('availability_start'),
-            'availability_end' => $request->get('availability_end'),
+            'tournament_id' => $request->get('tournament_id'),
             'created_by' => Auth::id(),
         ]);
 
@@ -60,16 +44,11 @@ class CourtController extends Controller
         return Redirect::route('courts')->with('status', 'Successfully added the court '. $newCourt->name);
     }
 
-    /**
-     * Hosts the ability to update a court one by one
-     */
     public function update(Request $request) {
         $request->validate([
             'id' => 'required|exists:courts',
             'name' => 'sometimes|required|max:30',
-            'type' => 'sometimes|required|max:30',
-            'availability_start' => 'sometimes|nullable|date_format:Y-m-d H:i',
-            'availability_end' => 'sometimes|nullable|date_format:Y-m-d H:i',
+            'tournament_id' => 'sometimes|required|exists:tournaments,id',
         ]);
 
         $court = Court::find($request->get('id'));
@@ -77,17 +56,9 @@ class CourtController extends Controller
         if ($request->has('name')) {
             $court->name = $request->get('name');
         }
-        
-        if ($request->has('type')) {
-            $court->type = $request->get('type');
-        }
-        
-        if ($request->has('availability_start')) {
-            $court->availability_start = $request->get('availability_start');
-        }
 
-        if ($request->has('availability_end')) {
-            $court->availability_end = $request->get('availability_end');
+        if ($request->has('tournament_id')) {
+            $court->tournament_id = $request->get('tournament_id');
         }
 
         $court->save();
@@ -107,6 +78,6 @@ class CourtController extends Controller
         $court = Court::find($id);
         $court->delete();
 
-        return Response::json("Court has been deleted", 200);
+        return Redirect::route('courts')->with('status', 'Successfully deleted court '. $court->name);
     }
 }
