@@ -25,11 +25,11 @@
                     @endif
 
                     @if ($court->name == $tournamentMatches[$matchTime][$i]->court)
-                        @if ($tournamentMatches[$matchTime][$i]->player3 != null && $tournamentMatches[$matchTime][$i]->player4 != null)
-                            <td><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player1_id) }}">{{ $tournamentMatches[$matchTime][$i]->player1 }}</a><br /><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player2_id) }}">{{ $tournamentMatches[$matchTime][$i]->player2 }}</a> vs.<br />
-                            <a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player3_id) }}">{{ $tournamentMatches[$matchTime][$i]->player3 }}</a><br /><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player4_id) }}">{{ $tournamentMatches[$matchTime][$i]->player4 }}</a></td>
+                        @if ($tournamentMatches[$matchTime][$i]->player1b != null && $tournamentMatches[$matchTime][$i]->player2b != null)
+                            <td><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player1a_id) }}">{{ $tournamentMatches[$matchTime][$i]->player1a }}</a><br /><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player1b_id) }}">{{ $tournamentMatches[$matchTime][$i]->player1b }}</a> vs.<br />
+                            <a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player2a_id) }}">{{ $tournamentMatches[$matchTime][$i]->player2a }}</a><br /><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player2b_id) }}">{{ $tournamentMatches[$matchTime][$i]->player2b }}</a></td>
                         @else
-                            <td><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player1_id) }}">{{ $tournamentMatches[$matchTime][$i]->player1 }}</a> vs.<br /><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player2_id) }}">{{ $tournamentMatches[$matchTime][$i]->player2 }}</a></td>
+                            <td><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player1a_id) }}">{{ $tournamentMatches[$matchTime][$i]->player1a }}</a> vs.<br /><a href="{{ route('user-details', $tournamentMatches[$matchTime][$i]->player2a_id) }}">{{ $tournamentMatches[$matchTime][$i]->player2a }}</a></td>
                         @endif
 
                         @php

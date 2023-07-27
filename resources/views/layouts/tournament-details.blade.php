@@ -29,12 +29,10 @@
 </div>
 
 <div class="col-md-3">
-    Max. diff. in rating<br />
     Time between matches
 </div>
 <div class="col-md-3">
-    <span class="text-muted">{{ $tournament->max_diff_rating }}<br />
-    {{ $tournament->time_between_matches_m }} min.</span>
+    <span class="text-muted">{{ $tournament->time_between_matches_m }} min.</span>
 </div>
 </div>
 @endcan

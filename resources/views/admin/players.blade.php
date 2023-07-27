@@ -32,7 +32,7 @@
                         <div class="col-md-12">
                             <h4>Assign Player</h4>
 
-                            <form method="post" action="{{ route('tournament-assign-user') }}">
+                            <form method="post" action="{{ route('tournament.assign_player') }}">
                                 @csrf
                                 
                                 <input type="hidden" name="tournament" value="{{ $tournament->id }}" />
@@ -61,16 +61,15 @@
                             <h4>Assigned Players</h4>
                             
                             <div class="list-group">
-                                @foreach ($tournamentUsers as $user)
-                                <form method="post" action="{{ route('tournament-remove-user') }}">
+                                @foreach ($tournament_players as $player)
+                                <form method="post" action="{{ route('tournament.remove_player') }}">
                                     @csrf
                                 
-                                    <input type="hidden" name="tournament" value="{{ $tournament->id }}" />
-                                    <input type="hidden" name="user" value="{{ $user->id }}" />
+                                    <input type="hidden" name="user" value="{{ $player->id }}" />
 
                                     <div class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            {{ $user->name }}
+                                            {{ $player->name }}
                                         </div>
                                     <button type="submit" name="submit" class="btn btn-danger" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Remove</button>
                                     </div>
