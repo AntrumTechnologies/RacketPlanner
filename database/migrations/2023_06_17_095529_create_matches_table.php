@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('matches', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('tournament_id');
-            $table->bigInteger('court_id');
-            $table->bigInteger('player1a');
-            $table->bigInteger('player1b')->nullable();
-            $table->bigInteger('player2a');
-            $table->bigInteger('player2b')->nullable();
-            $table->datetime('datetime', 0);
+            $table->bigInteger('player1a_id');
+            $table->bigInteger('player1b_id')->nullable();
+            $table->bigInteger('player2a_id');
+            $table->bigInteger('player2b_id')->nullable();
+            $table->double('rating')->nullable();
+            $table->boolean('disabled')->default(false); // For internal usage of scheduler
+            $table->double('priority')->default(0);
+            $table->dateTime('datetime', 0);
             $table->integer('score1')->nullable();
             $table->integer('score2')->nullable();
             $table->timestamps();

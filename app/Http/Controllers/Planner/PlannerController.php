@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Planner\MatchDetailsController;
 use App\Models\Player;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 
 class PlannerController extends Controller
 {
-    private $tournament_id;
     private $min_match_count;
 
-    public function __construct($tournament_id)
+    public function __construct(
+        protected MatchDetailsController $match,
+        protected ScheduleController $schedule,
+    )
     {
         $this->middleware('auth');
-        $this->tournament_id = $tournament_id;
     }
 
     /**

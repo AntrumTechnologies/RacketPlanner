@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('duration_m')->nullable(); // Duration in minutes
             $table->enum('type', ['single', 'double', 'mix'])->nullable();
             $table->boolean('allow_singles')->nullable();
-            $table->integer('max_diff_rating')->nullable();
             $table->integer('time_between_matches_m')->nullable(); // In minutes
             $table->bigInteger('created_by');
             $table->timestamps();

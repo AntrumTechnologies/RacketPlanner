@@ -15,8 +15,6 @@ return new class extends Migration
             $table->double('rating')->nullable();
             $table->string('avatar')->nullable();
             $table->string('fcm_token')->nullable();
-            $table->dateTime('availability_start')->nullable();
-            $table->dateTime('availability_end')->nullable();
         });
     }
 

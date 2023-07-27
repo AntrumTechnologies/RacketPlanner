@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\MatchDetails;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Validator;
 
-class CourtController extends Controller
+class MatchDetailsController extends Controller
 {
     public function __construct()
     {
@@ -17,6 +15,12 @@ class CourtController extends Controller
     }
 
     public function index() {
-        // ...
+        $matches = MatchDetails::all();
+        return $matches;
+    }
+
+    public function show($id) {
+        $match = MatchDetails::findOrFail($id);
+        return $match;
     }
 }
