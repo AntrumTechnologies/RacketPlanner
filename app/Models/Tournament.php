@@ -20,7 +20,6 @@ class Tournament extends Model
         'duration_m',
         'type',
         'allow_singles',
-        'max_diff_rating',
         'time_between_matches_m',
         'created_by',
     ];

@@ -24,8 +24,6 @@ class User extends Authenticatable
         'password',
         'rating',
         'avatar',
-        'availability_start',
-        'availability_end',
     ];
 
     /**

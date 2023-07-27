@@ -15,6 +15,7 @@ class Schedule extends Model
         'tournament_id',
         'round_id',
         'court_id',
+        'status',
         'match_id',
         'public',
     ];

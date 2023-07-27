@@ -14,5 +14,7 @@ class Round extends Model
     protected $fillable = [
         'name',
         'tournament_id',
+        'starttime',
+        'endtime',
     ];
 }

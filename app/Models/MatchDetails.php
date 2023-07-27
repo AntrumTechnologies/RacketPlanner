@@ -13,14 +13,15 @@ class MatchDetails extends Model
     protected $table = 'matches';
 
     protected $fillable = [
-        'tournament',
-        'player1',
-        'player2',
-        'player3',
-        'player4',
-        'court',
+        'tournament_id',
+        'player1a',
+        'player1b',
+        'player2a',
+        'player2b',
+        'disabled',
+        'priority',
         'datetime',
-        'score1_2',
-        'score3_4',
+        'score1',
+        'score2',
     ];
 }

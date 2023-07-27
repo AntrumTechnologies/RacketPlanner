@@ -16,5 +16,6 @@ class Player extends Model
         'tournament_id',
         'break_round_id',
         'clinic_round_id',
+        'points',
     ];
 }
