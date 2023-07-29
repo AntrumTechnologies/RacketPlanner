@@ -2,10 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PermissionController;
 use App\Http\Controllers\CourtController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoundController;
 use App\Http\Controllers\TournamentController;
+use App\Http\Controllers\MatchDetailsController;
+use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Planner\PlannerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,37 +30,48 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 
 Route::group(['middleware' => ['auth']], function() {
-    Route::get('/', [UserController::class, 'home'])->name('home');
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'index']);
+
+    Route::get('/create_admin_permission', [PermissionController::class, 'create_admin_permission']);
+    Route::get('/elevate', [PermissionController::class, 'assign_admin_permission']);
+    Route::get('/revoke', [PermissionController::class, 'revoke_admin_permission']);
 
     /** 
      * Note: order for same type of requests matter!
      * First fixed routes (/tournament/create), then similar routes with variable (/tournament/{id}), finally any parent routes
      */
-    Route::view('/admin/tournament/create', 'tournament-create')->name('create-tournament');
-    Route::get('/admin/tournament/{id}/details', [TournamentController::class, 'showDetails'])->name('tournament-details');
-    Route::get('/admin/tournament/{id}/players', [TournamentController::class, 'tournamentUsers'])->name('tournament-users');
-    Route::get('/admin/tournament/{id}/courts', [TournamentController::class, 'tournamentCourts'])->name('tournament-courts');
-    Route::get('/admin/tournament/{id}', [TournamentController::class, 'show'])->name('tournament');
+    Route::get('/tournament/{tournament_id}', [TournamentController::class, 'show'])->name('tournament');
     Route::get('/admin/tournaments', [TournamentController::class, 'index'])->name('tournaments');
-    
-    Route::post('/admin/tournament/update', [TournamentController::class, 'update'])->name('update-tournament-details');
+
+    Route::get('/match/{match_id}', [MatchDetailsController::class, 'show'])->name('match');
+    Route::post('/match', [MatchDetailsController::class, 'update'])->name('save-score');
+
+    Route::view('/admin/tournament/create', 'admin.tournament-create')->name('create-tournament');
+    Route::get('/admin/tournament/{tournament_id}', [TournamentController::class, 'edit'])->name('edit-tournament');
+    Route::post('/admin/tournament/update', [TournamentController::class, 'update'])->name('update-tournament');
     Route::post('/admin/tournament/delete', [TournamentController::class, 'delete'])->name('delete-tournament');
-    Route::post('/admin/tournament/create', [TournamentController::class, 'store'])->name('store-tournament');
+    Route::post('/admin/tournament/store', [TournamentController::class, 'store'])->name('store-tournament');
 
-    Route::post('/admin/tournament/court', [TournamentController::class, 'assignCourt'])->name('tournament-assign-court');
-    Route::post('/admin/tournament/user', [TournamentController::class, 'assignUser'])->name('tournament-assign-user');
-    Route::post('/admin/tournament/court/remove', [TournamentController::class, 'removeCourt'])->name('tournament-remove-court');
-    Route::post('/admin/tournament/user/remove', [TournamentController::class, 'removeUser'])->name('tournament-remove-user');
+    Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'index'])->name('players');
+    Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
+    Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
 
-    Route::view('/admin/court/create', 'admin.court-create')->name('create-court');
-    Route::get('/admin/court/{id}', [CourtController::class, 'show'])->name('court-details');
-    Route::get('/admin/courts', [CourtController::class, 'index'])->name('courts');
+    Route::view('/admin/tournament/{tournament_id}/court', 'admin.court-create')->name('create-court');
+    Route::get('/admin/court/{court_id}', [CourtController::class, 'show'])->name('court');
+    Route::post('/admin/court/update', [CourtController::class, 'update'])->name('update-court');
+    Route::post('/admin/court/store', [CourtController::class, 'store'])->name('store-court');
+    Route::post('/admin/court/delete', [CourtController::class, 'delete'])->name('delete-court');
 
-    Route::post('/admin/court/update', [CourtController::class, 'update'])->name('update-court-details');
-    Route::post('/admin/court/create', [CourtController::class, 'store'])->name('store-court');
+    Route::view('/admin/tournament/{tournament_id}/round', 'admin.round-create')->name('create-round');
+    Route::get('/admin/round/{round_id}', [RoundController::class, 'show'])->name('round');
+    Route::post('/admin/round/update', [RoundController::class, 'update'])->name('update-round');
+    Route::post('/admin/round/store', [RoundController::class, 'store'])->name('store-round');
+    Route::post('/admin/round/delete', [RoundController::class, 'delete'])->name('delete-round');
 
+    Route::get('/user/{id}', [UserController::class, 'show'])->name('user');
     Route::get('/admin/users', [UserController::class, 'index'])->name('users');
-    Route::get('/admin/user/{id}', [UserController::class, 'show'])->name('user-details');
+    Route::post('/admin/user', [UserController::class, 'update'])->name('update-user');
 
-    Route::post('/admin/user', [UserController::class, 'update'])->name('update-user-details');
+    Route::get('/test', [PlannerController::class, 'generate_matches']);
 });

@@ -16,14 +16,8 @@ class CourtController extends Controller
         $this->middleware('auth');
     }
 
-    public function index($tournament_id) {
-        $courts = Court::where('tournament_id', $tournament_id);
-
-        return view('admin.courts', ['courts' => $courts]);
-    }
-
-    public function show($id) {
-        $court = Court::findOrFail($id);
+    public function show($court_id) {
+        $court = Court::findOrFail($court_id);
 
         return view('admin.court', ['court' => $court]);
     }
@@ -41,7 +35,7 @@ class CourtController extends Controller
         ]);
 
         $newCourt->save();
-        return Redirect::route('courts')->with('status', 'Successfully added the court '. $newCourt->name);
+        return Redirect::route('tournament', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully added the court '. $newCourt->name);
     }
 
     public function update(Request $request) {
@@ -63,21 +57,24 @@ class CourtController extends Controller
 
         $court->save();
         
-        return Redirect::route('courts')->with('status', 'Successfully updated court details for '. $court->name);
+        return Redirect::route('tournament', ['tournament_id' => $court->tournament_id])
+            ->with('status', 'Successfully updated court details for '. $court->name);
     }
 
     public function delete(Request $request) {
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:courts',
+            'tournament_id' => 'required|exists:tournaments,id',
         ]);
 
 		if ($validator->fails()) {
 			return Response::json($validator->errors()->first(), 400);	
 		}
 
-        $court = Court::find($id);
+        $court = Court::find($request->get('id'));
         $court->delete();
 
-        return Redirect::route('courts')->with('status', 'Successfully deleted court '. $court->name);
+        return Redirect::route('tournament', ['tournament_id' => $court->tournament_id])
+            ->with('status', 'Successfully deleted court '. $court->name);
     }
 }

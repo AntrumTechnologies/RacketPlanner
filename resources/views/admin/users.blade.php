@@ -4,7 +4,9 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>All users</h2>
+            <h2>Users</h2>
+
+            <a class="btn btn-primary disabled" href="#">Create new user</a>
 
             @if (session('status'))
                 <div class="alert alert-success">{{ session('status') }}</div>
@@ -21,7 +23,7 @@
                         {{ $user->name }}
                     </div>
                     <div class="ms-auto">
-                         <a href="{{ route('user-details', $user->id) }}">Edit</a>
+                         <a href="{{ route('user', $user->id) }}">Edit</a>
                     </div>
                 </div>
 

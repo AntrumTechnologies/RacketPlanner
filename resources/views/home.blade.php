@@ -11,7 +11,7 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h3>Your Matches</h3>
-            @if (count($matches) == 0)
+            @if (count($user_matches_per_tournament) == 0)
                 <p>No matches scheduled yet.</p>
             @else
                 @include('layouts.user-matches')
@@ -20,7 +20,7 @@
 
         <div class="col-md-8 mt-4">
             <h3>All Tournaments</h3>
-            @foreach ($tournaments as $tournament)
+            @foreach ($all_tournaments as $tournament)
             <div class="card">
                 <div class="card-header">
                     {{ $tournament->name }}
@@ -29,7 +29,7 @@
                 <div class="card-body">
                     @include('layouts.tournament-details')
 
-                    <a class="btn btn-secondary" href="{{ route('tournament', $tournament->id) }}">View tournament details</a>
+                    <a class="btn btn-primary" href="{{ route('tournament', $tournament->id) }}">View tournament</a>
                 </div>
             </div>
             @endforeach

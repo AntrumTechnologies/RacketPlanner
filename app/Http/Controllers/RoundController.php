@@ -15,14 +15,8 @@ class RoundController extends Controller
         $this->middleware('auth');
     }
 
-    public function index() {
-        $rounds = Round::all();
-        
-        return view('admin.rounds', ['rounds' => $rounds]);
-    }
-
-    public function show($id, $tournament_id) {
-        $round = Round::where('id', $id)->where('tournament_id', $tournament_id)->first(); // Will be only one results anyway due to ID
+    public function show($round_id) {
+        $round = Round::findOrFail($round_id); // Will be only one results anyway due to ID
         
         return view('admin.round', ['round' => $round]);
     }
@@ -45,14 +39,51 @@ class RoundController extends Controller
         $new_round->save();
 
         $rounds = Round::all();
-        return Redirect::route('admin.rounds', ['rounds' => $rounds]);
+        return Redirect::route('tournament', ['tournament_id' => $request->get('tournament_id'), 'rounds' => $rounds]);
     }
 
-    public function delete($id) {
-        // TODO(PATBRO): add constraints that user is not part of any matches for example
-        $round = Round::findOrFail($id);
+    public function update(Request $request) {
+        $request->validate([
+            'id' => 'required|exists:rounds',
+            'name' => 'sometimes|required|max:30',
+            'starttime' => 'sometimes|required',
+            'endtime' => 'sometimes|required',
+        ]);
+
+        $round = Round::find($request->get('id'));
+        
+        if ($request->has('name')) {
+            $round->name = $request->get('name');
+        }
+
+        if ($request->has('starttime')) {
+            $round->starttime = $request->get('starttime');
+        }
+
+        if ($request->has('endtime')) {
+            $round->endtime = $request->get('endtime');
+        }
+
+        $round->save();
+        
+        return Redirect::route('tournament', ['tournament_id' => $round->tournament_id])
+            ->with('status', 'Successfully updated round details for '. $round->name);
+    }
+
+    public function delete(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:rounds',
+            'tournament_id' => 'required|exists:tournaments,id',
+        ]);
+
+		if ($validator->fails()) {
+			return Response::json($validator->errors()->first(), 400);	
+		}
+
+        $round = Round::find($request->get('id'));
         $round->delete();
 
-        return Redirect::route('rounds')->with('status', 'Successfully deleted round '. $round->name);
+        return Redirect::route('tournament', ['tournament_id' => $round->tournament_id])
+            ->with('status', 'Successfully deleted round '. $round->name);
     }
 }

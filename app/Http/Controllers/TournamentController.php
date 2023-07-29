@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Court;
 use App\Models\MatchDetails;
 use App\Models\Tournament;
-use App\Models\TournamentCourt;
-use App\Models\TournamentUser;
+use App\Models\Player;
+use App\Models\Schedule;
+use App\Models\Round;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,58 +26,71 @@ class TournamentController extends Controller
     public static function index() {
         $tournaments = Tournament::all();
         
-        // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
         foreach ($tournaments as $tournament) {
+            // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
             $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
             $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
+            
+            $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
         }
 
-        return view('admin.tournaments', ['tournaments' => $tournaments]);
+        return view('tournaments', ['tournaments' => $tournaments]);
     }
 
-    public function show($id) {
-        $tournament = Tournament::findOrFail($id);
+    public function show($tournament_id) {
+        $tournament = Tournament::findOrFail($tournament_id);
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
         $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
         $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
 
-        $tournamentMatches = DB::table('matches')->where('tournament', $id)
-            ->leftJoin('users as player1a', 'player1a.id', '=', 'matches.player1a')
-            ->leftJoin('users as player2a', 'player2a.id', '=', 'matches.player2a')
-            ->leftJoin('users as player1b',  function ($f) {
-                $f->on('player1b.id', '=', 'matches.player1b')->whereNotNull('player1b.id');
-            })
-            ->leftJoin('users as player2b',  function ($f) {
-                $f->on('player2b.id', '=', 'matches.player2b')->whereNotNull('player2b.id');
-            })
-            ->leftJoin('courts', 'courts.id', '=', 'matches.court')
-            ->select('matches.id',
-                'courts.name as court',
-                'matches.datetime',
-                'matches.score1_2',
-                'matches.score3_4',
-                'player1a.name as player1a',
-                'player1a.id as player1a_id',
-                'player2a.name as player2a',
-                'player2a.id as player2a_id',
-                'player1b.name as player1b',
-                'player1b.id as player1b_id',
-                'player2b.name as player2b',
-                'player2b.id as player2b_id',)
-            ->get();
-        $tournamentMatches = $tournamentMatches->groupBy('datetime');
+        $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
 
-        $tournamentCourts = DB::table('courts')->where('tournament_id', $id)->get();
+        $players = Player::where('tournament_id', $tournament_id)->join('users', 'users.id', '=', 'players.user_id')->get();
 
-        $tournamentUsers = DB::table('players')->where('tournament_id', $id)->join('users', 'users.id', '=', 'players.user_id')->get();
+        $schedule = DB::select("SELECT 
+                rounds.starttime as 'time',
+                courts.name as 'court',
+                user1a.name as `player1a`,
+                user1a.id as `player1a_id`,
+                user1b.name as `player1b`,
+                user1b.id as `player1b_id`,
+                user2a.name as `player2a`,
+                user2a.id as `player2a_id`,
+                user2b.name as `player2b`,
+                user2b.id as `player2b_id`,
+                matches.id,
+                matches.score1,
+                matches.score2
+            FROM `schedules`
+                INNER JOIN `rounds` ON schedules.round_id = rounds.id
+                INNER JOIN `courts` ON schedules.court_id = courts.id
+                INNER JOIN `matches` ON schedules.match_id = matches.id
+                INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
+                INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
+                INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
+                INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
+                INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
+                INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
+                INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
+                INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
+            WHERE schedules.tournament_id = ". $tournament_id ." ORDER BY time ASC");
 
-        return view('admin.tournament', ['tournament' => $tournament, 'tournamentMatches' => $tournamentMatches, 'tournamentCourts' => $tournamentCourts, 'tournamentUsers' => $tournamentUsers]);
+        $courts = Court::where('tournament_id', $tournament_id)->get();
+        $rounds = Round::where('tournament_id', $tournament_id)->get();;
+
+        return view('tournament', [
+            'tournament' => $tournament, 
+            'schedule' => $schedule, 
+            'players' => $players, 
+            'courts' => $courts, 
+            'rounds' => $rounds,
+        ]);
     }
 
-    public function showDetails($id) {
-        $tournament = Tournament::findOrFail($id);
-        
-        return view('admin.tournament-details', ['tournament' => $tournament]);
+    public function edit($tournament_id) {
+        $tournament = Tournament::findOrFail($tournament_id);
+
+        return view('admin.tournament-edit', ['tournament' => $tournament]);
     }
 
     public function store(Request $request) {
@@ -84,22 +98,16 @@ class TournamentController extends Controller
             'name' => 'required|max:50',
             'datetime_start' => 'required|date_format:Y-m-d H:i',
             'datetime_end' => 'required|date_format:Y-m-d H:i',
-            'matches' => 'required|min:1',
-            'duration_m' => 'required|min:1',
             'type' => 'required', // TODO: define enum class?
             'allow_singles' => 'required',
-            'time_between_matches_m' => 'required|min:0',
 		]);
 
         $newTournament = new Tournament([
             'name' => $request->get('name'),
             'datetime_start' => $request->get('datetime_start'),
             'datetime_end' => $request->get('datetime_end'),
-            'matches' => $request->get('matches'),
-            'duration_m' => $request->get('duration_m'),
             'type' => $request->get('type'),
             'allow_singles' => $request->get('allow_singles'),
-            'time_between_matches_m' => $request->get('time_between_matches_m'),
             'created_by' => Auth::id(),
         ]);
 
@@ -113,11 +121,8 @@ class TournamentController extends Controller
             'name' => 'required|max:50',
             'datetime_start' => 'required|date_format:Y-m-d H:i',
             'datetime_end' => 'required|date_format:Y-m-d H:i',
-            'matches' => 'required|min:1',
-            'duration_m' => 'required|min:1',
             'type' => 'required', // TODO: define enum class?
             'allow_singles' => 'required',
-            'time_between_matches_m' => 'required|min:0',
 		]);
 
         $tournament = Tournament::find($request->get('id'));
@@ -134,24 +139,12 @@ class TournamentController extends Controller
             $tournament->datetime_end = $request->get('datetime_end');
         }
 
-        if ($request->has('matches')) {
-            $tournament->matches = $request->get('matches');
-        }
-
-        if ($request->has('duration_m')) {
-            $tournament->duration_m = $request->get('duration_m');
-        }
-
         if ($request->has('type')) {
             $tournament->type = $request->get('type');
         }
 
         if ($request->has('allow_singles')) {
             $tournament->allow_singles = $request->get('allow_singles');
-        }
-
-        if ($request->has('time_between_matches_m')) {
-            $tournament->time_between_matches_m = $request->get('time_between_matches_m');
         }
 
         $tournament->save();

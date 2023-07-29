@@ -45,17 +45,6 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="matches" class="form-label">Number of matches</label>
-                            <input class="form-control @error('matches') is-invalid @enderror" id="matches" name="matches" type="number" value="@if(old('matches')){{ old('matches') }}@endif">
-                        </div>
-
-                        <label for="duration_m" class="form-label">Duration per match</label>
-                        <div class="input-group mb-3">
-                            <input class="form-control @error('duration_m') is-invalid @enderror" id="duration_m" name="duration_m" type="text" value="@if(old('duration_m')){{ old('duration_m') }}@endif">
-                            <span class="input-group-text">minutes</span>
-                        </div>
-
-                        <div class="mb-3">
                             <label for="type" class="form-label">Type</label>
                             <select class="form-select" id="type" name="type">
                                 <option value="single" @if (old('type') == "single") selected @endif>Single</option>
@@ -73,18 +62,7 @@
                             <div class="form-text" id="basic-addon4">When single matches are allowed, matches will still be scheduled as mixes, but singles could also occur</div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="max_diff_rating" class="form-label">Maximum difference in rating</label>
-                            <input class="form-control @error('max_diff_rating') is-invalid @enderror" id="max_diff_rating" name="max_diff_rating" type="number" value="@if(old('max_diff_rating')){{old('max_diff_rating')}}@endif">
-                        </div>
-
-                        <label for="time_between_matches_m" class="form-label">Time between matches</label>
-                        <div class="input-group mb-3">
-                            <input class="form-control @error('time_between_matches_m') is-invalid @enderror" id="time_between_matches_m" name="time_between_matches_m" type="number" value="@if(old('time_between_matches_m')){{old('time_between_matches_m')}}@endif">
-                            <span class="input-group-text">minutes</span>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" name="submit">Add</button>
+                        <button type="submit" class="btn btn-primary" name="submit">Create</button>
                     </form>
                 </div>
             </div>

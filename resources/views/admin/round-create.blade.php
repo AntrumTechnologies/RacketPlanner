@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>Create new round</h2>
+            <h2>Add new round</h2>
 
             @if ($errors->any())
                 @foreach ($errors->all() as $error)
@@ -36,6 +36,16 @@
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Name</label>
                                     <input class="form-control @error('name') is-invalid @enderror" id="name" name="name" type="text" value="@if(old('name')){{ old('name') }}@endif">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="starttime" class="form-label">Start time</label>
+                                    <input class="form-control @error('starttime') is-invalid @enderror" id="starttime" name="starttime" type="text" value="@if(old('starttime')){{ old('starttime') }}@endif">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="endtime" class="form-label">End time</label>
+                                    <input class="form-control @error('endtime') is-invalid @enderror" id="endtime" name="endtime" type="text" value="@if(old('endtime')){{ old('endtime') }}@endif">
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Add</button>

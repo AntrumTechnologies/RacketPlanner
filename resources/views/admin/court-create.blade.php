@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>Create new court</h2>
+            <h2>Add new court</h2>
 
             @if ($errors->any())
                 @foreach ($errors->all() as $error)

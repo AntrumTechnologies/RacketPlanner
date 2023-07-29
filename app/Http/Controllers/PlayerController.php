@@ -19,18 +19,14 @@ class PlayerController extends Controller
 
     public function index($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
-        $tournament_players = Player::where('tournament_id', $tournament_id)->leftJoin('users', 'users.id', '=', 'players.user_id')->get();
+        $tournament_players = Player::where('tournament_id', $tournament_id)
+            ->select('players.*', 'users.name', 'users.email')
+            ->leftJoin('users', 'users.id', '=', 'players.user_id')->get();
         // Only return users that are not yet assigned to the given tournament
         $user_ids = Player::where('tournament_id', $tournament_id)->pluck('user_id')->all();
         $users = User::whereNotIn('id', $user_ids)->get();
 
         return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users]);
-    }
-
-    public function show($id) {
-        $player = Player::findOrFail($id);
-    
-        return view('admin.player', ['player' => $player]);
     }
 
     public function store(Request $request) {
@@ -44,19 +40,22 @@ class PlayerController extends Controller
             'tournament_id' => $request->get('tournament_id'),
         ]);
 
-        $user = User::find($id);
-
         $new_player->save();
 
-        $tournament_players = Player::where('tournament_id', $tournament_id)->leftJoin('users', 'users.id', '=', 'players.user_id')->get();
-        return Redirect::route('admin.players', ['tournament_players' => $tournament_players])->with('status', 'Successfully assigned '. $user->name .' to tournament');
+        $user = User::find($request->get('user_id'));
+        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully assigned '. $user->name .' to tournament');
     }
 
-    public function delete($id) {
+    public function delete(Request $request) {
         // TODO(PATBRO): add constraints that user is not part of any matches for example
-        $player = Player::findOrFail($id);
+        $request->validate([
+            'id' => 'required|exists:players',
+            'name' => 'required',
+        ]);
+
+        $player = Player::find($request->get('id'));
         $player->delete();
 
-        return Redirect::route('players')->with('status', 'Successfully deleted player '. $player->user_id);
+        return Redirect::route('players', ['tournament_id' => $player->tournament_id])->with('status', 'Successfully deleted player '. $request->get('name'));
     }
 }

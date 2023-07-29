@@ -9,15 +9,14 @@
     </div>
 
     <div class="col-md-3">
-        Number of matches<br />
-        Duration per match
+        Number of rounds<br />
     </div>
     <div class="col-md-3">
-        <span class="text-muted">{{ $tournament->matches }}<br />
-        {{ $tournament->duration_m }} min.</span>
+        <span class="text-muted">{{ $tournament->rounds }}</span>
     </div>
 </div>
 @can('admin')
+<!--
 <div class="row mt-3 mb-3">
 <div class="col-md-3">
     Type<br />
@@ -27,12 +26,5 @@
     <span class="text-muted">{{ ucfirst($tournament->type) }}<br />
     @if ($tournament->allow_singles == 1) Yes @else No @endif</span>
 </div>
-
-<div class="col-md-3">
-    Time between matches
-</div>
-<div class="col-md-3">
-    <span class="text-muted">{{ $tournament->time_between_matches_m }} min.</span>
-</div>
-</div>
+-->
 @endcan

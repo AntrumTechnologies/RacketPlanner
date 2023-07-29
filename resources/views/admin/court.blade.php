@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>Court Details</h2>
+            <h2>Edit Court</h2>
 
             @if ($errors->any())
                 @foreach ($errors->all() as $error)
@@ -32,7 +32,7 @@
                         <div class="col-md-12">
                             <h4>Update Court Details</h4>
 
-                            <form method="post" action="{{ route('update-court-details') }}">
+                            <form method="post" action="{{ route('update-court') }}">
                                 @csrf
                                 
                                 <input type="hidden" name="id" value="{{ $court->id }}" />
@@ -43,6 +43,21 @@
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Update</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row mt-5">
+                        <div class="col-md-12">
+                            <h4>Delete Court</h4>
+
+                            <form method="post" action="{{ route('delete-court') }}">
+                                @csrf
+                                
+                                <input type="hidden" name="id" value="{{ $court->id }}" />
+                                <input type="hidden" name="tournament_id" value="{{ $court->tournament_id }}" />
+
+                                <button type="submit" class="btn btn-danger">Delete</button>
                             </form>
                         </div>
                     </div>

@@ -6,28 +6,18 @@ use App\Models\User;
 use App\Models\Tournament;
 use App\Models\TournamentUser;
 use App\Models\MatchDetails;
+use App\Models\Player;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
-use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-    }
-
-    public function home() {
-        $matches = [];
-        $tournaments = [];
-        //$user = Auth::User();
-        //$permission = Permission::create(['name' => 'admin']);
-        //$user->givePermissionTo('admin');
-
-        return view('home', ['matches' => $matches, 'tournaments' => $tournaments]);
     }
     
     public function index() {
@@ -38,14 +28,42 @@ class UserController extends Controller
     public function show($id) {
         $user = User::findOrFail($id);
 
-        $tournaments = TournamentUser::where('user', $id)
-            ->join('tournaments', 'tournaments.id', '=', 'tournaments_users.tournament')
-            ->select('tournaments.id', 'tournaments.name')->get();
+        $tournaments = Player::where('user_id', $id)->join('tournaments', 'tournaments.id', '=', 'players.tournament_id')->get();
 
-        $matches = MatchDetails::where('player1', $id)->orWhere('player2', $id)->orWhere('player3', $id)->orWhere('player4', $id)
-            ->join('courts', 'courts.id', '=', 'matches.court')->get();
+        // TODO(PATBRO): add functionality to calculate total number of points per tournament for a user
 
-        return view('admin.user', ['user' => $user, 'tournaments' => $tournaments, 'matches' => $matches]);
+        $matches = DB::select("SELECT 
+                    rounds.starttime as 'time',
+                    courts.name as 'court',
+                    user1a.name as `player1a`,
+                    user1a.id as `player1a_id`,
+                    user1b.name as `player1b`,
+                    user1b.id as `player1b_id`,
+                    user2a.name as `player2a`,
+                    user2a.id as `player2a_id`,
+                    user2b.name as `player2b`,
+                    user2b.id as `player2b_id`,
+                    matches.id,
+                    matches.score1,
+                    matches.score2
+                FROM `schedules`
+                    INNER JOIN `rounds` ON schedules.round_id = rounds.id
+                    INNER JOIN `courts` ON schedules.court_id = courts.id
+                    INNER JOIN `matches` ON schedules.match_id = matches.id
+                    INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
+                    INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
+                    INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
+                    INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
+                    INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
+                    INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
+                    INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
+                    INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
+                WHERE (player1a.user_id = ". Auth::id() ." 
+                    OR player1b.user_id = ". Auth::id() ." 
+                    OR player2a.user_id = ". Auth::id() ." 
+                    OR player1b.user_id = ". Auth::id() .")");
+
+        return view('user', ['user' => $user, 'tournaments' => $tournaments, 'matches' => $matches]);
     }
 
     public function update(Request $request) {
@@ -56,8 +74,6 @@ class UserController extends Controller
             'password' => 'sometimes',
             'rating' => 'min:0',
             'avatar' => 'mimes:jpeg,png|max:4096',
-            'availability_start' => 'sometimes|nullable|date_format:Y-m-d H:i',
-            'availability_end' => 'sometimes|nullable|date_format:Y-m-d H:i',
         ]);
 
         $user = User::find($request->get('id'));
@@ -82,14 +98,6 @@ class UserController extends Controller
             }
 
             $user->avatar = Storage::putFile('avatars', $request->file('avatar'));
-        }
-
-        if ($request->has('availability_start')) {
-            $user->availability_start = $request->get('availability_start');
-        }
-
-        if ($request->has('availability_end')) {
-            $user->availability_end = $request->get('availability_end');
         }
 
         $user->save();

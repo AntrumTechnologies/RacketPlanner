@@ -32,14 +32,14 @@
                         <div class="col-md-12">
                             <h4>Assign Player</h4>
 
-                            <form method="post" action="{{ route('tournament.assign_player') }}">
+                            <form method="post" action="{{ route('assign-player') }}">
                                 @csrf
                                 
-                                <input type="hidden" name="tournament" value="{{ $tournament->id }}" />
+                                <input type="hidden" name="tournament_id" value="{{ $tournament->id }}" />
 
                                 <div class="mb-3">
-                                    <label for="user" class="form-label">Name</label>
-                                    <select class="form-select" id="user" name="user" @if (count($users) == 0) disabled @endif>
+                                    <label for="user_id" class="form-label">Name</label>
+                                    <select class="form-select" id="user_id" name="user_id" @if (count($users) == 0) disabled @endif>
                                         @if (count($users) == 0)
                                         <option value="">All users are assigned already</option>
                                         @else    
@@ -60,18 +60,23 @@
                         <div class="col-md-12">
                             <h4>Assigned Players</h4>
                             
+                            @if (count($tournament_players) == 0)
+                                <p>There are no players assigned yet.</p>
+                            @endif
+
                             <div class="list-group">
                                 @foreach ($tournament_players as $player)
-                                <form method="post" action="{{ route('tournament.remove_player') }}">
+                                <form method="post" action="{{ route('remove-player') }}">
                                     @csrf
                                 
-                                    <input type="hidden" name="user" value="{{ $player->id }}" />
+                                    <input type="hidden" name="id" value="{{ $player->id }}" />
+                                    <input type="hidden" name="name" value="{{ $player->name }}" />
 
                                     <div class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            {{ $player->name }}
+                                            {{ $player->name }} ({{ $player->email }})
                                         </div>
-                                    <button type="submit" name="submit" class="btn btn-danger" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Remove</button>
+                                        <button type="submit" name="submit" class="btn btn-danger" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Remove</button>
                                     </div>
                                 </form>
                                 @endforeach
