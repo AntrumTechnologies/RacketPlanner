@@ -52,7 +52,7 @@ class HomeController extends Controller
                     (player1a.id = ". $player->id ." 
                         OR player1b.id = ". $player->id ." 
                         OR player2a.id = ". $player->id ." 
-                        OR player1b.id = ". $player->id .")");
+                        OR player2b.id = ". $player->id .")");
 
             $user_matches_per_tournament[] = $matches;
         }
