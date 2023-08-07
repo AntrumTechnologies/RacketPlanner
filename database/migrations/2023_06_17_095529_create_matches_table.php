@@ -19,6 +19,7 @@ return new class extends Migration
             $table->bigInteger('player2a_id');
             $table->bigInteger('player2b_id')->nullable();
             $table->double('rating')->nullable();
+            $table->double('rating_diff')->nullable();
             $table->boolean('disabled')->default(false); // For internal usage of scheduler
             $table->double('priority')->default(0);
             $table->dateTime('datetime', 0);

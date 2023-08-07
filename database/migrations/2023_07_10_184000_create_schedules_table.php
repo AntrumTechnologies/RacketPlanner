@@ -16,7 +16,7 @@ return new class extends Migration
             $table->bigInteger('tournament_id');
             $table->bigInteger('round_id');
             $table->bigInteger('court_id');
-            $table->enum('status', ['available', 'disabled', 'clinic'])->default('available');
+            $table->enum('state', ['available', 'disabled', 'clinic'])->default('available');
             $table->bigInteger('match_id')->nullable();
             $table->boolean('public')->default(false);
             $table->timestamps();
