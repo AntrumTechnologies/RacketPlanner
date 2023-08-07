@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <h2>Users</h2>
 
-            <a class="btn btn-primary disabled" href="#">Create new user</a>
+            <a class="btn btn-primary" href="{{ route('create-user') }}">Create new user</a>
 
             @if (session('status'))
                 <div class="alert alert-success">{{ session('status') }}</div>

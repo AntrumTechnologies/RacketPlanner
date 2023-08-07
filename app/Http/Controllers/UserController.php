@@ -104,4 +104,21 @@ class UserController extends Controller
 
         return Redirect::route('users')->with('status', 'Successfully updated user details for '. $user->name);
     }
+
+    public function store(Request $request) {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|unique:users,email',
+            'rating' => 'min:0',
+        ]);
+
+        $newUser = new User([
+            "name" => $request->get('name'),
+            "email" => $request->get('email'),
+            "rating" => $request->get('rating'),
+        ]);
+
+        $newUser->save();
+        return Redirect::route('users')->with('status', 'Successfully added user '. $newUser->name);
+    }
 }

@@ -18,27 +18,67 @@
             @can('admin')
                 <p>
                 @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
-                    <a class="btn btn-primary disabled">Schedule new round</a>
+                    <div class="btn-group">
+                        <a class="btn btn-info disabled">Generate schedule</a>
+                        <a class="btn btn-info disabled">Generate matches</a>
+                        <a class="btn btn-primary disabled">Schedule next round</a>
+                        <a class="btn btn-secondary disabled">Schedule all</a>
+                    </div>
                 @else
-                    <a class="btn btn-primary" href="#">Schedule new round</a>
+                    @if (count($schedule) == 0)
+                    <div class="btn-group">
+                        <a class="btn btn-info" href="{{ route('generate-schedule', $tournament->id) }}">Generate schedule</a>
+                        <a class="btn btn-info" href="{{ route('generate-matches', $tournament->id) }}">Generate matches</a>
+                        <a class="btn btn-primary disabled">Schedule next round</a>
+                        <a class="btn btn-secondary disabled">Schedule all</a>
+                    </div>
+                    @else
+                    <div class="btn-group">
+                        <a class="btn btn-info disabled">Generate schedule</a>
+                        <a class="btn btn-info disabled">Generate matches</a>
+                        <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
+                        <a class="btn btn-secondary disabled">Schedule all</a>
+                    </div>
+                    @endif
                 @endif
                 </p>
             @endcan
 
-            @if (count($schedule) == 0)
-                <p>No matches scheduled yet.</p>
-            @else
-                @foreach ($schedule as $match)
-                    <div class="card mb-4">
-                        <div class="card-header d-flex">
-                            <div class="me-auto" style="font-size: 1.2em">
-                                {{ $match->time }} @ {{ $match->court }}
+            @foreach ($schedule as $match)
+                <div class="card mb-4">
+                    <div class="card-header d-flex">
+                        <div class="me-auto" style="font-size: 1.2em">
+                            {{ $match->time }} @ {{ $match->court }}
+                        </div>
+
+                        @if ($match->id == null)
+                            <div class="ms-auto">
+                                <div class="btn-group">
+                                    @if ($match->state == 'available')
+                                        <a class="btn btn-sm btn-success active">Available</a>
+                                        <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger">Disable</a>
+                                        <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-info">Clinic</a>
+                                    @elseif ($match->state == 'disabled')
+                                        <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-success">Available</a>
+                                        <a class="btn btn-sm btn-danger active">Disable</a>
+                                        <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-info">Clinic</a>
+                                    @elseif ($match->state == 'clinic')
+                                        <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-success">Available</a>
+                                        <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger">Disable</a>
+                                        <a class="btn btn-sm btn-info active">Clinic</a>
+                                    @endif
+                                </div>
+
+                                <a href="#" class="btn btn-sm btn-secondary">Schedule slot</a>
                             </div>
+                        @else
                             <div class="ms-auto">
                                 <a href="{{ route('match', $match->id) }}" class="small text-muted">Permalink</a>
                             </div>
-                        </div>
+                        @endcan
+                    </div>
 
+                    @if ($match->id != null)
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-9">
@@ -80,9 +120,9 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach   
-            @endif
+                    @endif
+                </div>
+            @endforeach   
             
             <div class="row mt-5">
                 <div class="col-md-12">
