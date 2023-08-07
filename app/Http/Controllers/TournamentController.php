@@ -47,40 +47,54 @@ class TournamentController extends Controller
 
         $players = Player::where('tournament_id', $tournament_id)->join('users', 'users.id', '=', 'players.user_id')->get();
 
-        $schedule = DB::select("SELECT 
-                rounds.starttime as 'time',
-                courts.name as 'court',
-                user1a.name as `player1a`,
-                user1a.id as `player1a_id`,
-                user1b.name as `player1b`,
-                user1b.id as `player1b_id`,
-                user2a.name as `player2a`,
-                user2a.id as `player2a_id`,
-                user2b.name as `player2b`,
-                user2b.id as `player2b_id`,
-                matches.id,
-                matches.score1,
-                matches.score2
-            FROM `schedules`
-                INNER JOIN `rounds` ON schedules.round_id = rounds.id
-                INNER JOIN `courts` ON schedules.court_id = courts.id
-                INNER JOIN `matches` ON schedules.match_id = matches.id
-                INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
-                INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
-                INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
-                INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
-                INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
-                INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
-                INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
-                INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
-            WHERE schedules.tournament_id = ". $tournament_id ." ORDER BY time ASC");
+        $schedule = Schedule::where('schedules.tournament_id', $tournament_id)
+            ->join('rounds', 'rounds.id', '=', 'schedules.round_id')
+            ->join('courts', 'courts.id', '=', 'schedules.court_id')
+            ->leftJoin('matches', 'matches.id', '=', 'schedules.match_id')
+            ->leftJoin('players as player1a', 'matches.player1a_id', '=', 'player1a.id')
+            ->leftJoin('players as player1b', 'matches.player1b_id', '=', 'player1b.id')
+            ->leftJoin('players as player2a', 'matches.player2a_id', '=', 'player2a.id')
+            ->leftJoin('players as player2b', 'matches.player2b_id', '=', 'player2b.id')
+            ->leftJoin('users as user1a', 'player1a.user_id', '=', 'user1a.id')
+            ->leftJoin('users as user1b', 'player1b.user_id', '=', 'user1b.id')
+            ->leftJoin('users as user2a', 'player2a.user_id', '=', 'user2a.id')
+            ->leftJoin('users as user2b', 'player2b.user_id', '=', 'user2b.id')
+            ->select(
+                'schedules.id as schedule_id',
+                'schedules.state as state',
+                'rounds.id as round_id',
+                'rounds.name as round',
+                'rounds.starttime as time',
+                'courts.name as court',
+                'matches.id',
+                'matches.score1',
+                'matches.score2',
+                'user1a.name as player1a',
+                'user1a.id as player1a_id',
+                'user1b.name as player1b',
+                'user1b.id as player1b_id',
+                'user2a.name as player2a',
+                'user2a.id as player2a_id',
+                'user2b.name as player2b',
+                'user2b.id as player2b_id')
+            ->orderBy('time', 'asc')
+            ->get();
+
+        $next_round_id = null;
+        foreach ($schedule as $match) {
+            if ($match->id == null) {
+                $next_round_id = $match->round_id;
+                break;
+            }
+        }
 
         $courts = Court::where('tournament_id', $tournament_id)->get();
-        $rounds = Round::where('tournament_id', $tournament_id)->get();;
+        $rounds = Round::where('tournament_id', $tournament_id)->get();
 
         return view('tournament', [
             'tournament' => $tournament, 
             'schedule' => $schedule, 
+            'next_round_id' => $next_round_id,
             'players' => $players, 
             'courts' => $courts, 
             'rounds' => $rounds,
