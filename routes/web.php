@@ -11,7 +11,7 @@ use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\MatchDetailsController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Planner\PlannerController;
+use App\Http\Controllers\PlannerWrapperController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +53,16 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/admin/tournament/delete', [TournamentController::class, 'delete'])->name('delete-tournament');
     Route::post('/admin/tournament/store', [TournamentController::class, 'store'])->name('store-tournament');
 
+    Route::get('/admin/plan/{tournamentId}/generate_schedule', [PlannerWrapperController::class, 'GenerateSchedule'])->name('generate-schedule');
+    Route::get('/admin/plan/{tournamentId}/generate_matches', [PlannerWrapperController::class, 'GenerateMatches'])->name('generate-matches');
+    Route::get('/admin/plan/{tournamentId}/slot/{slotId}', [PlannerWrapperController::class, 'PlanSlot'])->name('plan-slot');
+    Route::get('/admin/plan/{tournamentId}/round/{roundId}', [PlannerWrapperController::class, 'PlanRound'])->name('plan-round');
+    Route::get('/admin/plan/{tournamentId}/schedule', [PlannerWrapperController::class, 'PlanSchedule'])->name('plan-schedule');
+
+    Route::get('/admin/plan/{tournamentId}/available/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToAvailable'])->name('slot-available');
+    Route::get('/admin/plan/{tournamentId}/clinic/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToClinic'])->name('slot-clinic');
+    Route::get('/admin/plan/{tournamentId}/disable/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToDisabled'])->name('slot-disable');
+
     Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'index'])->name('players');
     Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
     Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
@@ -72,6 +82,6 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user');
     Route::get('/admin/users', [UserController::class, 'index'])->name('users');
     Route::post('/admin/user', [UserController::class, 'update'])->name('update-user');
-
-    Route::get('/test', [PlannerController::class, 'generate_matches']);
+    Route::view('/admin/user/create', 'admin.user-create')->name('create-user');
+    Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
 });
