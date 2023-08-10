@@ -52,12 +52,6 @@
                                     <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                 </li>
                             @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -85,6 +79,10 @@
         <main class="py-4">
             @yield('content')
         </main>
+
+        <footer class="mt-4 mb-4 text-center">
+            <small class="text-muted">Made with <span style="color: #e25555;">&hearts;</span> by PATBRO &amp; JB<br />Powered by Antrum</small>
+        </footer>
     </div>
 </body>
 </html>
