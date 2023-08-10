@@ -21,7 +21,9 @@ class PlayerController extends Controller
         $tournament = Tournament::findOrFail($tournament_id);
         $tournament_players = Player::where('tournament_id', $tournament_id)
             ->select('players.*', 'users.name', 'users.email')
-            ->leftJoin('users', 'users.id', '=', 'players.user_id')->get();
+            ->leftJoin('users', 'users.id', '=', 'players.user_id')
+            ->orderBy('users.name')
+            ->get();
         // Only return users that are not yet assigned to the given tournament
         $user_ids = Player::where('tournament_id', $tournament_id)->pluck('user_id')->all();
         $users = User::whereNotIn('id', $user_ids)->get();
@@ -33,11 +35,13 @@ class PlayerController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'tournament_id' => 'required|exists:tournaments,id',
+            'clinic' => 'required',
         ]);
 
         $new_player = new Player([
             'user_id' => $request->get('user_id'),
             'tournament_id' => $request->get('tournament_id'),
+            'clinic' => $request->get('clinic'),
         ]);
 
         $new_player->save();
