@@ -21,5 +21,11 @@ class DatabaseSeeder extends Seeder
 
         $this->call(PlayersTableSeeder::class);
         $this->command->info('Players table seeded');
+
+        $this->call(CourtsTableSeeder::class);
+        $this->command->info('Courts table seeded');
+
+        $this->call(RoundsTableSeeder::class);
+        $this->command->info('Rounds table seeded');
     }
 }
