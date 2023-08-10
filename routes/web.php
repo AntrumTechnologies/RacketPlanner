@@ -11,6 +11,7 @@ use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\MatchDetailsController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\PlannerWrapperController;
 
 /*
@@ -53,6 +54,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/admin/tournament/delete', [TournamentController::class, 'delete'])->name('delete-tournament');
     Route::post('/admin/tournament/store', [TournamentController::class, 'store'])->name('store-tournament');
 
+    Route::get('/admin/leaderboard/{tournament_id}', [ScoreController::class, 'show'])->name('leaderboard');
+
     Route::get('/admin/plan/{tournamentId}/generate_schedule', [PlannerWrapperController::class, 'GenerateSchedule'])->name('generate-schedule');
     Route::get('/admin/plan/{tournamentId}/generate_matches', [PlannerWrapperController::class, 'GenerateMatches'])->name('generate-matches');
     Route::get('/admin/plan/{tournamentId}/slot/{slotId}', [PlannerWrapperController::class, 'PlanSlot'])->name('plan-slot');
@@ -62,6 +65,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/admin/plan/{tournamentId}/available/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToAvailable'])->name('slot-available');
     Route::get('/admin/plan/{tournamentId}/clinic/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToClinic'])->name('slot-clinic');
     Route::get('/admin/plan/{tournamentId}/disable/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToDisabled'])->name('slot-disable');
+
+    Route::get('/admin/plan/{tournamentId}/publish/{slotId}', [PlannerWrapperController::class, 'PublishSlot'])->name('publish-slot');
+    Route::get('/admin/plan/{tournamentId}/unpublish/{slotId}', [PlannerWrapperController::class, 'UnpublishSlot'])->name('unpublish-slot');
 
     Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'index'])->name('players');
     Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
