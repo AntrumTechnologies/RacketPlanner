@@ -38,7 +38,8 @@ class MatchDetailsController extends Controller
                 matches.id,
                 matches.score1,
                 matches.score2,
-                tournaments.name as `name`
+                tournaments.name as `tournament_name`,
+                tournaments.id as `tournament_id`
             FROM `schedules`
                 INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
                 INNER JOIN `rounds` ON schedules.round_id = rounds.id
@@ -53,6 +54,8 @@ class MatchDetailsController extends Controller
                 INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
                 INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
             WHERE schedules.match_id = ". $id);
+
+        $match[0]->time = date('H:i', strtotime($match[0]->time));
         
         return view('match', ['match' => $match[0]]);   
     }
@@ -71,29 +74,55 @@ class MatchDetailsController extends Controller
         $player2a = Player::find($match->player2a_id);
         $player2b = Player::find($match->player2b_id);
 
-        // TODO(PATBRO): allow for admins
-        if ($player1a->user_id != Auth::id() && $player1b->user_id != Auth::id() && 
-            $player2a->user_id != Auth::id() && $player2b->user_id != Auth::id()) {
-            return Response::json("You are not allowed to save the score for this match", 400);
-        }
-        
-        if ($match->score1 != null || $match->score2 != null) {
-            return Response::json("Score has been set already for this match", 400);
+        if (!Auth::user()->can('admin')) {
+            if ($player1a->user_id != Auth::id() && $player1b->user_id != Auth::id() && 
+                $player2a->user_id != Auth::id() && $player2b->user_id != Auth::id()) {
+                return Response::json("You are not allowed to save the score for this match", 400);
+            }
+            
+            if ($match->score1 != null || $match->score2 != null) {
+                return Response::json("Score has been set already for this match", 400);
+            }
         }
 
         if ($request->get('score1') == "" || $request->get('score1') < 0) {
             $match->score1 = 0;
+        } elseif ($match->score1 != null) {
+            // Update score
+            $player1a->points += ($request->get('score1') - $match->score1);
+            $player1b->points += ($request->get('score1') - $match->score1);
+
+            $match->score1 = $request->get('score1');
         } else {
+            // Add score
+            $player1a->points += $request->get('score1');
+            $player1b->points += $request->get('score1');
+
             $match->score1 = $request->get('score1');
         }
 
         if ($request->get('score2') == "" || $request->get('score2') < 0) {
             $match->score2 = 0;
+        } elseif ($match->score2 != null) {
+            // Update score
+            $player2a->points += ($request->get('score2') - $match->score2);
+            $player2b->points += ($request->get('score2') - $match->score2);
+
+            $match->score2 = $request->get('score2');
         } else {
+            // Add score
+            $player2a->points += $request->get('score2');
+            $player2b->points += $request->get('score2');
+
             $match->score2 = $request->get('score2');
         }
 
         $match->save();
+        $player1a->save();
+        $player1b->save();
+        $player2a->save();
+        $player2b->save();
+
         return back()->withInput();
     }
 }
