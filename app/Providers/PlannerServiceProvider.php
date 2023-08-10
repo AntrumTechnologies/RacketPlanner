@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Libraries\Planner;
+use App\Libraries\Planner\Planner;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
