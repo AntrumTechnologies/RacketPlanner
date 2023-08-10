@@ -12,17 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('matches', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('tournament_id');
-            $table->bigInteger('player1a_id');
-            $table->bigInteger('player1b_id')->nullable();
-            $table->bigInteger('player2a_id');
-            $table->bigInteger('player2b_id')->nullable();
+            $table->id()->unique();
+            $table->bigInteger('tournament_id')->unsigned();
+            $table->bigInteger('player1a_id')->unsigned()->index();
+            $table->bigInteger('player1b_id')->unsigned()->nullable()->index();
+            $table->bigInteger('player2a_id')->unsigned()->index();
+            $table->bigInteger('player2b_id')->unsigned()->nullable()->index();
             $table->double('rating')->nullable();
             $table->double('rating_diff')->nullable();
             $table->boolean('disabled')->default(false); // For internal usage of scheduler
             $table->double('priority')->default(0);
-            $table->dateTime('datetime', 0);
             $table->integer('score1')->nullable();
             $table->integer('score2')->nullable();
             $table->timestamps();

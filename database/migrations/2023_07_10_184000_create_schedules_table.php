@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedules', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('tournament_id');
-            $table->bigInteger('round_id');
-            $table->bigInteger('court_id');
+            $table->id()->unique();
+            $table->bigInteger('tournament_id')->unsigned();
+            $table->bigInteger('round_id')->unsigned()->index();
+            $table->bigInteger('court_id')->unsigned()->index();
             $table->enum('state', ['available', 'disabled', 'clinic'])->default('available');
             $table->bigInteger('match_id')->nullable();
             $table->boolean('public')->default(false);

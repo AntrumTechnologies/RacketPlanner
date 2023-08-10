@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tournaments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->index();
             $table->dateTime('datetime_start')->nullable();
             $table->dateTime('datetime_end')->nullable();
             $table->integer('matches')->nullable(); // Number of matches

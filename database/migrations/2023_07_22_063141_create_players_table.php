@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('players', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
-            $table->bigInteger('tournament_id');
-            $table->bigInteger('break_round_id')->nullable();
-            $table->boolean('clinic_round_id')->nullable();
+            $table->bigInteger('user_id')->unsigned()->index();
+            $table->bigInteger('tournament_id')->unsigned();
+            $table->bigInteger('break_round_id')->unsigned()->nullable();
+            $table->boolean('clinic')->nullable();
             $table->double('points')->default(0);
             $table->timestamps();
         });

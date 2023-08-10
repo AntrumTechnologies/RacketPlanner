@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rounds', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->bigInteger('tournament_id');
+            $table->bigInteger('tournament_id')->unsigned()->index();
             $table->dateTime('starttime')->nullable();
             $table->dateTime('endtime')->nullable();
             $table->timestamps();
