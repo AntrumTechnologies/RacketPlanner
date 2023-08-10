@@ -14,10 +14,10 @@ class MatchDetails extends Model
 
     protected $fillable = [
         'tournament_id',
-        'player1a',
-        'player1b',
-        'player2a',
-        'player2b',
+        'player1a_id',
+        'player1b_id',
+        'player2a_id',
+        'player2b_id',
         'disabled',
         'priority',
         'datetime',

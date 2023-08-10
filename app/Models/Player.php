@@ -15,7 +15,7 @@ class Player extends Model
         'user_id',
         'tournament_id',
         'break_round_id',
-        'clinic_round_id',
+        'clinic',
         'points',
     ];
 }
