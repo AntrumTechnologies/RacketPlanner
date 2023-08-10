@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Player;
 use App\Models\Tournament;
 use App\Models\Round;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,39 @@ class HomeController extends Controller
 
     public function index() {
         $user_tournaments = Player::where('user_id', Auth::id())->get();
+
+        $score = 0;
+        $points = Player::where('user_id', Auth::id())->select('points')->get();
+        foreach ($points as $tournament) {
+            $score += $tournament->points;
+        }
+
+        $user_clinics = array();
+        if (Player::where('user_id', Auth::id())->where('clinic', 1)->count() > 0) {
+            foreach ($user_tournaments as $player) {
+                $clinic = Schedule::where('schedules.tournament_id', $player->tournament_id)
+                    ->where('schedules.state', 'clinic')
+                    ->where('schedules.public', 1)
+                    ->join('rounds', 'rounds.id', '=', 'schedules.round_id')
+                    ->join('courts', 'courts.id', '=', 'schedules.court_id')
+                    ->select(
+                        'courts.name as court',
+                        'rounds.starttime as time')
+                    ->first();
+                
+                $clinic->time = date('H:i', strtotime($clinic->time));
+
+                $clinic->players = Player::where('tournament_id', $player->tournament_id)
+                    ->where('players.clinic', 1)
+                    ->join('users', 'users.id', '=', 'players.user_id')
+                    ->select(
+                        'users.name as user_name',
+                        'users.id as user_id')
+                    ->get();
+
+                $user_clinics[] = $clinic;
+            }   
+        }
 
         $user_matches_per_tournament = array();
         foreach ($user_tournaments as $player) {
@@ -49,10 +83,15 @@ class HomeController extends Controller
                     INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
                     INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
                 WHERE schedules.tournament_id = ". $player->tournament_id ." AND 
+                    schedules.public = 1 AND
                     (player1a.id = ". $player->id ." 
                         OR player1b.id = ". $player->id ." 
                         OR player2a.id = ". $player->id ." 
                         OR player2b.id = ". $player->id .")");
+
+            foreach($matches as $match) {
+                $match->time = date('H:i', strtotime($match->time));
+            }
 
             $user_matches_per_tournament[] = $matches;
         }
@@ -67,6 +106,11 @@ class HomeController extends Controller
             $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
         }
 
-        return view('home', ['user_matches_per_tournament' => $user_matches_per_tournament, 'all_tournaments' => $all_tournaments]);
+        return view('home', [
+            'score' => $score,
+            'user_clinics' => $user_clinics,
+            'user_matches_per_tournament' => $user_matches_per_tournament, 
+            'all_tournaments' => $all_tournaments,
+        ]);
     }
 }
