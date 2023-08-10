@@ -12,6 +12,10 @@
         <div class="col-md-8">
             <h4>Scheduled Matches</h4>
 
+            @if (count($matches) == 0)
+            <p>No matches have been scheduled for this user yet.</p>
+            @endif
+
             @foreach ($matches as $match)
                 <div class="card mb-4">
                     <div class="card-header d-flex">
@@ -68,7 +72,7 @@
             @endforeach
         </div>
     
-        <div class="col-md-8">
+        <div class="col-md-8 mt-4">
             <h4>User Details</h4>
 
             @if ($errors->any())
@@ -115,6 +119,11 @@
                 <div class="mb-3">
                     <label for="rating" class="form-label">Rating</label>
                     <input class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating" type="number" value="@if(old('rating')){{ old('rating') }}@else{{ $user->rating }}@endif">
+                </div>
+
+                <div class="mb-3">
+                    <label for="avatar" class="form-label">Avatar</label>
+                    <input class="form-control" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
                 </div>
 
                 <button type="submit" class="btn btn-primary" name="submit">Update</button>
