@@ -21,7 +21,7 @@ class UserController extends Controller
     }
     
     public function index() {
-        $users = User::all();
+        $users = User::orderBy('name')->get();
         return view('admin.users', ['users' => $users]);
     }
 
@@ -58,10 +58,14 @@ class UserController extends Controller
                     INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
                     INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
                     INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
-                WHERE (player1a.user_id = ". Auth::id() ." 
-                    OR player1b.user_id = ". Auth::id() ." 
-                    OR player2a.user_id = ". Auth::id() ." 
-                    OR player1b.user_id = ". Auth::id() .")");
+                WHERE (player1a.user_id = ". $id ." 
+                    OR player1b.user_id = ". $id ." 
+                    OR player2a.user_id = ". $id ." 
+                    OR player2b.user_id = ". $id .")");
+
+        foreach ($matches as $match) {
+            $match->time = date('H:i', strtotime($match->time));
+        }   
 
         return view('user', ['user' => $user, 'tournaments' => $tournaments, 'matches' => $matches]);
     }
