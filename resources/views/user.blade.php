@@ -126,7 +126,17 @@
                 <div class="mb-3">
                     <label for="avatar" class="form-label">Avatar</label>
                     <input class="form-control" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg, image/jpg">
-                </div>
+		</div>
+
+		<div class="mb-3">
+			<label for="yOffset" class="form-label">Avatar crop Y offset</label>
+			<div class="row">
+				<div class="col-1 text-center">0 px</div>
+				<div class="col-10"><input type="range" class="form-range" id="yOffset" name="yOffset" min="0" max="60" step="5" value="20" oninput="document.getElementById('output').value = this.value"></div>
+				<div class="col-1 text-center">60 px</div>
+			</div>
+			<output id="output">20</output> px
+		</div>
 
                 <button type="submit" class="btn btn-primary" name="submit">Update</button>
             </form>
