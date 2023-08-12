@@ -31,6 +31,34 @@ class PlayerController extends Controller
         return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users]);
     }
 
+    public function markPresent(Request $request) {
+        $request->validate([
+            'id' => 'required|exists:players',
+        ]);
+
+        $player = Player::findOrFail($id);
+
+        $player->present = true;
+        $player->save();
+
+        $user = User::findOrFail($player->user_id);
+        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Marked '. $user->name .' present');
+    }
+
+    public function markAbsent(Request $request) {
+        $request->validate([
+            'id' => 'required|exists:players',
+        ]);
+
+        $player = Player::findOrFail($id);
+
+        $player->present = false;
+        $player->save();
+
+        $user = User::findOrFail($player->user_id);
+        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Marked '. $user->name .' absent');
+    }
+
     public function store(Request $request) {
         $request->validate([
             'user_id' => 'required|exists:users,id',

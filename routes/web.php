@@ -72,6 +72,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'index'])->name('players');
     Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
     Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
+    Route::post('/admin/player/present', [PlayerController::class, 'markPresent'])->name('mark-player-present');
+    Route::post('/admin/player/absent', [PlayerController::class, 'markAbsent'])->name('mark-player-absent');
 
     Route::view('/admin/tournament/{tournament_id}/court', 'admin.court-create')->name('create-court');
     Route::get('/admin/court/{court_id}', [CourtController::class, 'show'])->name('court');

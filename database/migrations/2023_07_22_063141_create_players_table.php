@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigInteger('tournament_id')->unsigned();
             $table->bigInteger('break_round_id')->unsigned()->nullable();
             $table->boolean('clinic')->nullable();
+            $table->boolean('present')->default(false)->nullable();
             $table->double('points')->default(0);
             $table->timestamps();
         });
