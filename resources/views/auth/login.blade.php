@@ -1,9 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => 'Login'])
 
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
+            @if (app('request')->input('error') == "invalid")
+            <div class="alert alert-danger" role="alert">
+                The link you clicked expired. Enter your email address below in order to receive a new link to login.
+            </div>
+            @endif
+
             <div class="card">
                 <div class="card-header">{{ __('Login') }}</div>
 
