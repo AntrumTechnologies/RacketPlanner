@@ -36,13 +36,13 @@ class PlayerController extends Controller
             'id' => 'required|exists:players',
         ]);
 
-        $player = Player::findOrFail($id);
+        $player = Player::findOrFail($request->get('id'));
 
         $player->present = true;
         $player->save();
 
         $user = User::findOrFail($player->user_id);
-        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Marked '. $user->name .' present');
+        return Redirect::route('players', ['tournament_id' => $player->tournament_id])->with('status', 'Marked '. $user->name .' present');
     }
 
     public function markAbsent(Request $request) {
@@ -50,13 +50,13 @@ class PlayerController extends Controller
             'id' => 'required|exists:players',
         ]);
 
-        $player = Player::findOrFail($id);
+        $player = Player::findOrFail($request->get('id'));
 
         $player->present = false;
         $player->save();
 
         $user = User::findOrFail($player->user_id);
-        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Marked '. $user->name .' absent');
+        return Redirect::route('players', ['tournament_id' => $player->tournament_id])->with('status', 'Marked '. $user->name .' absent');
     }
 
     public function store(Request $request) {
