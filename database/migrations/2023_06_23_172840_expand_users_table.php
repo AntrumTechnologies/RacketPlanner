@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {    
             $table->double('rating')->nullable();
-            $table->string('avatar')->nullable();
+            $table->string('avatar')->nullable()->default('avatars/placeholder.png');
             $table->string('fcm_token')->nullable();
         });
     }
@@ -26,8 +26,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {    
             $table->dropColumn('rating');
             $table->dropColumn('avatar');
-            $table->dropColumn('availability_start');
-            $table->dropColumn('availability_end');
+            $table->dropColumn('fcm_token');
         });
     }
 };
