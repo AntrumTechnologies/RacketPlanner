@@ -16,12 +16,12 @@
 @foreach ($user_matches_per_tournament as $matches)
     @foreach ($matches as $match)
         <div class="card mb-4">
-            <div class="card-header d-flex">
-                <div class="me-auto" style="font-size: 1.2em">
+            <div class="card-header d-flex" style="font-size: 1.2em">
+                <div class="me-auto">
                     {{ $match->time }} @ {{ $match->court }}
                 </div>
                 <div class="ms-auto">
-                    <a href="{{ route('match', $match->id) }}" class="small text-muted"><i class="bi bi-link-45deg"></i></a>
+                    <a href="{{ route('match', $match->id) }}"><i class="bi bi-link-45deg" style="font-size: 1rem;"></i></a>
                 </div>
             </div>
 

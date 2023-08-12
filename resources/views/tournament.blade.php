@@ -103,7 +103,7 @@
                             @endcan
                         @else
                             <div class="ms-auto">
-                                <a href="{{ route('match', $match->id) }}" class="small text-muted"><i class="bi bi-link-45deg"></i></a>
+                                <a href="{{ route('match', $match->id) }}"><i class="bi bi-link-45deg" style="font-size: 1rem;"></i></a>
 
                                 @can('admin')
                                     @if ($match->public == 0)
