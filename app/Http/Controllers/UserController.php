@@ -67,7 +67,8 @@ class UserController extends Controller
                 WHERE (player1a.user_id = ". $id ." 
                     OR player1b.user_id = ". $id ." 
                     OR player2a.user_id = ". $id ." 
-                    OR player2b.user_id = ". $id .")");
+		    OR player2b.user_id = ". $id .")
+		ORDER BY time ASC");
 
         foreach ($matches as $match) {
             $match->time = date('H:i', strtotime($match->time));
@@ -83,7 +84,8 @@ class UserController extends Controller
             'email' => 'required',
             'password' => 'sometimes',
             'rating' => 'sometimes|min:0',
-            'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
+	    'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
+	    'yOffset' => 'required|min:0|max:60',
         ]);
 
         $user = User::find($request->get('id'));
@@ -108,8 +110,8 @@ class UserController extends Controller
             }
 
             $file = $request->file('avatar');
-            $path = $file->hashName('avatars');
-            $avatar = Image::make($file)->crop(190, 190, 0, 15)->encode('jpg', 100);
+	    $path = $file->hashName('avatars');
+            $avatar = Image::make($file)->crop(190, 190, 0, $request->get('yOffset'))->encode('jpg', 100);
             Storage::disk('public')->put($path, (string) $avatar->encode());
 
             $user->avatar = $path;
@@ -117,6 +119,7 @@ class UserController extends Controller
         
         $user->save();
 
+        return Redirect::route('users')->with('status', 'Successfully updated user '. $user->name);
         return Redirect::route('user', [$user->id])->with('status', 'Successfully updated user details');
     }
 
