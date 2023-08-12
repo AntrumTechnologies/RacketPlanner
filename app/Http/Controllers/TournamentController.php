@@ -86,7 +86,8 @@ class TournamentController extends Controller
                     'user2b.name as player2b',
                     'user2b.id as player2b_id',
                     'user2b.avatar as player2b_avatar')
-                ->orderBy('time', 'asc')
+		->orderBy('time', 'asc')
+		->orderBy('courts.id', 'asc')
                 ->get();
         } else {
             $schedule = Schedule::where('schedules.tournament_id', $tournament_id)
