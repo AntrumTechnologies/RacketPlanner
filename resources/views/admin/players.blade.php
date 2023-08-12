@@ -94,9 +94,9 @@
                             <input type="hidden" name="id" value="{{ $player->id }}" />
 
                             @if ($player->present == 0)
-                            <button type="submit" name="submit" class="btn btn-success" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark present</button>
+                            <button type="submit" name="submit" class="btn btn-success ms-2" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark present</button>
                             @else
-                            <button type="submit" name="submit" class="btn btn-warning" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark absent</button>
+                            <button type="submit" name="submit" class="btn btn-warning ms-2" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark absent</button>
                             @endif
                         </form>
 
@@ -106,7 +106,7 @@
                             <input type="hidden" name="id" value="{{ $player->id }}" />
                             <input type="hidden" name="name" value="{{ $player->name }}" />
 
-                            <button type="submit" name="submit" class="btn btn-danger" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Remove</button>
+                            <button type="submit" name="submit" class="btn btn-danger ms-2" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Remove</button>
                         </form>
                     </li>
                 @endforeach
