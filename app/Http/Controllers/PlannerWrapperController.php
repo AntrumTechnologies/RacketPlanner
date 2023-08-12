@@ -62,8 +62,11 @@ class PlannerWrapperController extends Controller
 
     // TODO(PATBRO): wait for edit from JB, then change to only (automatically) run when courts or rounds are added/deleted
     public function GenerateSchedule($tournamentId) {
-        $rounds = Round::where('tournament_id', $tournamentId)->get();
-        $courts = Court::where('tournament_id', $tournamentId)->get();
+	$schedule = Schedule::where('tournament_id', $tournamentId);
+	$schedule->delete();
+	
+	$rounds = Round::where('tournament_id', $tournamentId)->orderBy('id')->get();
+	$courts = Court::where('tournament_id', $tournamentId)->orderBy('id')->get();
 
         foreach ($rounds as $round) {
             foreach ($courts as $court) {
