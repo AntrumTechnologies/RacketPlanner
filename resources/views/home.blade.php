@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>Home</h2>
+            <h2>Hi {{ $first_name }}!</h2>
         </div>
     </div>
 
@@ -21,7 +21,7 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h3>Your Matches</h3>
-            @if (count($user_matches_per_tournament) == 0)
+            @if (count($user_matches_per_tournament[0]) == 0)
                 <p>No matches have been scheduled for you yet.</p>
             @else
                 @include('layouts.user-matches')

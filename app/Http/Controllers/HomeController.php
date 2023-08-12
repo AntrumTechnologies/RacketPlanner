@@ -19,6 +19,7 @@ class HomeController extends Controller
     }
 
     public function index() {
+        $user = Auth::user();
         $user_tournaments = Player::where('user_id', Auth::id())->get();
 
         $score = 0;
@@ -107,6 +108,7 @@ class HomeController extends Controller
         }
 
         return view('home', [
+            'first_name' => strtok($user->name, " "),
             'score' => $score,
             'user_clinics' => $user_clinics,
             'user_matches_per_tournament' => $user_matches_per_tournament, 
