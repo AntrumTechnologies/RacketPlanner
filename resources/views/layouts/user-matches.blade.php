@@ -21,7 +21,7 @@
                     {{ $match->time }} @ {{ $match->court }}
                 </div>
                 <div class="ms-auto">
-                    <a href="{{ route('match', $match->id) }}" class="small text-muted">Permalink</a>
+                    <a href="{{ route('match', $match->id) }}" class="small text-muted"><i class="bi bi-link-45deg"></i></a>
                 </div>
             </div>
 
@@ -57,7 +57,7 @@
                     <div class="row">
                         <div class="col-9 mt-2">
                             <a href="{{ route('user', $match->player2a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2a }}</a><br />
-                            <a href="{{ route('user', $match->player2b) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2b }}</a>
+                            <a href="{{ route('user', $match->player2b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2b }}</a>
                         </div>
                         <div class="col-3 mt-2 justify-content-center align-self-center">
                             @if ($match->score2 == "")
