@@ -12,14 +12,14 @@
         </div>
     </div>
 
+    @can('admin')
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h4>Leaderboard</h4>
-            @can('admin')
             <a class="btn btn-primary" href="{{ route('leaderboard', $tournament->id) }}">Show leaderboard</a>
-            @endcan
         </div>
     </div>
+    @endcan
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
