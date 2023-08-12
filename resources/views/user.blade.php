@@ -3,8 +3,9 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2>{{ $user->name }} <img src="/{{ $user->avatar }}" class="avatar" style="margin-left: 10px" /></h2>
+	<div class="col-md-8">
+		<h2>{{ $user->name }}</h2>
+            	<img src="/{{ $user->avatar }}" class="avatar" />
         </div>
     </div>
 
@@ -91,16 +92,11 @@
                 <div class="alert alert-success">{{ session('status') }}</div>
             @endif
 
-            <div class="row mb-3">
-                <div class="col-3">
-                    Email<br />
-                    Rating
-                </div>
-                <div class="col-9">
-                    <span class="text-muted">{{ $user->email }}<br />
-                    {{ $user->rating }}</span>
-                </div>
-            </div>
+	    <p>Email<br />
+	    <span class="text-muted">{{ $user->email }}</span></p>
+
+            <p>Rating<br />
+            <span class="text-muted">{{ $user->rating }}</span></p>
         </div>
 
         @can('admin')
