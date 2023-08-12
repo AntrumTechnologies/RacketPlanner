@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Image;
 
 class UserController extends Controller
 {
@@ -38,12 +39,16 @@ class UserController extends Controller
                     courts.name as 'court',
                     user1a.name as `player1a`,
                     user1a.id as `player1a_id`,
+                    user1a.avatar as `player1a_avatar`,
                     user1b.name as `player1b`,
                     user1b.id as `player1b_id`,
+                    user1b.avatar as `player1b_avatar`,
                     user2a.name as `player2a`,
                     user2a.id as `player2a_id`,
+                    user2a.avatar as `player2a_avatar`,
                     user2b.name as `player2b`,
                     user2b.id as `player2b_id`,
+                    user2b.avatar as `player2b_avatar`,
                     matches.id,
                     matches.score1,
                     matches.score2
@@ -102,12 +107,17 @@ class UserController extends Controller
                 Storage::delete($user->avatar);
             }
 
-            $user->avatar = Storage::disk('public')->putFile('avatars', $request->file('avatar'));
+            $file = $request->file('avatar');
+            $path = $file->hashName('avatars');
+            $avatar = Image::make($file)->crop(190, 190, 0, 15)->encode('jpg', 100);
+            Storage::disk('public')->put($path, (string) $avatar->encode());
+
+            $user->avatar = $path;
         }
         
         $user->save();
 
-        return Redirect::route('users')->with('status', 'Successfully updated user details for '. $user->name);
+        return Redirect::route('user', [$user->id])->with('status', 'Successfully updated user details');
     }
 
     public function store(Request $request) {
