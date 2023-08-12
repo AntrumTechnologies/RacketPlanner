@@ -69,6 +69,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/admin/plan/{tournamentId}/clinic/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToClinic'])->name('slot-clinic');
         Route::get('/admin/plan/{tournamentId}/disable/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToDisabled'])->name('slot-disable');
 
+        Route::get('/admin/plan/{tournamentId}/empty/{slotId}', [PlannerWrapperController::class, 'EmptySlot'])->name('empty-slot');
         Route::get('/admin/plan/{tournamentId}/publish/{slotId}', [PlannerWrapperController::class, 'PublishSlot'])->name('publish-slot');
         Route::get('/admin/plan/{tournamentId}/unpublish/{slotId}', [PlannerWrapperController::class, 'UnpublishSlot'])->name('unpublish-slot');
 

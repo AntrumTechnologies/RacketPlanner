@@ -92,7 +92,7 @@
                                     @endif
                                 </div>
 
-                                <a href="#" class="btn btn-sm btn-secondary ms-2">Schedule slot</a>
+                                <a href="{{ route('plan-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Schedule slot</a>
 
                                 @if ($match->public == 0)
                                     <a href="{{ route('publish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-primary ms-2">Publish</a>
@@ -107,6 +107,7 @@
 
                                 @can('admin')
                                     @if ($match->public == 0)
+                                        <a href="{{ route('empty-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning ms-2">Empty slot</a>
                                         <a href="{{ route('publish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-primary ms-2">Publish</a>
                                     @else
                                         <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger ms-2">Unpublish</a>

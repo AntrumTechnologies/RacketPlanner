@@ -23,21 +23,27 @@ class PlannerWrapperController extends Controller
     {
         Schedule::where('id', $slotId)->where('tournament_id', $tournamentId)->update(['state' => 'available', 'match_id' => null]);
 
-        return Redirect::route('tournament', ['tournament_id' => $tournamentId])->with('status', 'Set slot to available');
+        return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#slot'. $slotId)->with('status', 'Set slot to available');
     }
 
     public function SetSlotStateToClinic($tournamentId, $slotId)
     {
         Schedule::where('id', $slotId)->where('tournament_id', $tournamentId)->update(['state' => 'clinic', 'match_id' => null]);
 
-        return Redirect::route('tournament', ['tournament_id' => $tournamentId])->with('status', 'Set slot to clinic');
+        return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#slot'. $slotId)->with('status', 'Set slot to clinic');
     }
 
     public function SetSlotStateToDisabled($tournamentId, $slotId)
     {
         Schedule::where('id', $slotId)->where('tournament_id', $tournamentId)->update(['state' => 'disabled', 'match_id' => null]);
 
-        return Redirect::route('tournament', ['tournament_id' => $tournamentId])->with('status', 'Set slot to disabled');
+        return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#slot'. $slotId)->with('status', 'Set slot to disabled');
+    }
+
+    public function EmptySlot($tournamentId, $slotId) {
+        Schedule::where('id', $slotId)->update(['match_id' => NULL]);
+
+        return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#slot'. $slotId)->with('status', 'Emptied slot');
     }
 
     public function PublishSlot($tournamentId, $slotId)
@@ -86,13 +92,15 @@ class PlannerWrapperController extends Controller
     public function PlanSlot($tournamentId, $slotId) {
         $this->planner->PlanSlot($slotId);
 
-        return Redirect::route('tournament', ['tournament_id' => $tournamentId])->with('status', 'Scheduled slot');
+        return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#slot'. $slotId)->with('status', 'Scheduled slot');
     }
     
     public function PlanRound($tournamentId, $roundId) {
         $this->planner->PlanRound($roundId);
 
-        return Redirect::route('tournament', ['tournament_id' => $tournamentId])->with('status', 'Scheduled round');
+        $round = Round::findOrFail($roundId);
+
+        return Redirect::route('tournament', ['tournament_id' => $tournamentId])->with('status', 'Scheduled round: '. $round->name);
     }
     
     public function PlanSchedule($tournamentId) {
