@@ -19,7 +19,8 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex">
-                    <div class="me-auto">
+		    <div class="me-auto">
+			<img src="/{{ $user->avatar }}" class="avatar-sm" />
                         {{ $user->name }}
                     </div>
                     <div class="ms-auto">
