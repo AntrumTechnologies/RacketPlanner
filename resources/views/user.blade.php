@@ -101,7 +101,7 @@
         <div class="col-md-8 mt-4">
             <h4>Update User Details</h4>
 
-            <form method="post" action="{{ route('update-user') }}">
+            <form method="post" action="{{ route('update-user') }}" enctype="multipart/form-data">
                 @csrf
                 
                 <input type="hidden" name="id" value="{{ $user->id }}" />
@@ -123,7 +123,7 @@
 
                 <div class="mb-3">
                     <label for="avatar" class="form-label">Avatar</label>
-                    <input class="form-control" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
+                    <input class="form-control" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg, image/jpg">
                 </div>
 
                 <button type="submit" class="btn btn-primary" name="submit">Update</button>

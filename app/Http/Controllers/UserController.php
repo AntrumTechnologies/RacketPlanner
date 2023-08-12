@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -76,8 +77,8 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required',
             'password' => 'sometimes',
-            'rating' => 'min:0',
-            'avatar' => 'mimes:jpeg,png|max:4096',
+            'rating' => 'sometimes|min:0',
+            'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
         ]);
 
         $user = User::find($request->get('id'));
@@ -101,9 +102,9 @@ class UserController extends Controller
                 Storage::delete($user->avatar);
             }
 
-            $user->avatar = Storage::putFile('avatars', $request->file('avatar'));
+            $user->avatar = Storage::disk('public')->putFile('avatars', $request->file('avatar'));
         }
-
+        
         $user->save();
 
         return Redirect::route('users')->with('status', 'Successfully updated user details for '. $user->name);
