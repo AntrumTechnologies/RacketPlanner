@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => 'Create tournament'])
 
 @section('content')
 <div class="container">

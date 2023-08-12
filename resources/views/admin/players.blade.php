@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => 'Players '. $tournament->name])
 
 @section('content')
 <div class="container">
@@ -79,10 +79,26 @@
                         <div class="ms-2 me-auto">
                             {{ $player->name }}
                         </div>
-
+                        
                         @if ($player->clinic == 1)
-                            <span class="badge rounded-pill text-bg-primary">Clinic</span>
+                            <span class="badge rounded-pill text-bg-primary mt-1">Clinic</span>
                         @endif
+
+                        @if ($player->present == 0)
+                        <form method="post" action="{{ route('mark-player-present') }}">
+                        @else
+                        <form method="post" action="{{ route('mark-player-absent') }}">
+                        @endif
+                            @csrf
+                            
+                            <input type="hidden" name="id" value="{{ $player->id }}" />
+
+                            @if ($player->present == 0)
+                            <button type="submit" name="submit" class="btn btn-success" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark present</button>
+                            @else
+                            <button type="submit" name="submit" class="btn btn-warning" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Mark absent</button>
+                            @endif
+                        </form>
 
                         <form method="post" action="{{ route('remove-player') }}">
                             @csrf

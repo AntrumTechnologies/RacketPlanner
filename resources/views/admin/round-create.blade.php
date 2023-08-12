@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => 'Create round'])
 
 @section('content')
 <div class="container">

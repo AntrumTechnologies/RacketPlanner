@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['title' => $round->name])
 
 @section('content')
 <div class="container">
