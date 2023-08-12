@@ -28,23 +28,23 @@
                 <p>
                 @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
                     <div class="btn-group">
-                        <a class="btn btn-info disabled">Generate schedule</a>
-                        <a class="btn btn-info disabled">Generate matches</a>
+                        <a class="btn btn-secondary disabled">Generate schedule</a>
+                        <a class="btn btn-secondary disabled">Generate matches</a>
                         <a class="btn btn-primary disabled">Schedule next round</a>
                         <a class="btn btn-secondary disabled">Schedule all</a>
                     </div>
                 @else
                     @if (count($schedule) == 0)
                     <div class="btn-group">
-                        <a class="btn btn-info" href="{{ route('generate-schedule', $tournament->id) }}">Generate schedule</a>
-                        <a class="btn btn-info" href="{{ route('generate-matches', $tournament->id) }}">Generate matches</a>
+                        <a class="btn btn-secondary" href="{{ route('generate-schedule', $tournament->id) }}">Generate schedule</a>
+                        <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}">Generate matches</a>
                         <a class="btn btn-primary disabled">Schedule next round</a>
                         <a class="btn btn-secondary disabled">Schedule all</a>
                     </div>
                     @else
                     <div class="btn-group">
-                        <a class="btn btn-info disabled">Generate schedule</a>
-                        <a class="btn btn-info" href="{{ route('generate-matches', $tournament->id) }}">Generate matches</a>
+                        <a class="btn btn-secondary disabled">Generate schedule</a>
+                        <a class="btn btn-secondary disabled">Generate matches</a>
                         <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
                         <a class="btn btn-secondary disabled">Schedule all</a>
                     </div>
@@ -79,16 +79,16 @@
                                 <div class="btn-group">
                                     @if ($match->state == 'available')
                                         <a class="btn btn-sm btn-success active">Available</a>
-                                        <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger">Disable</a>
-                                        <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-info">Clinic</a>
+                                        <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Disable</a>
+                                        <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Clinic</a>
                                     @elseif ($match->state == 'disabled')
-                                        <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-success">Available</a>
-                                        <a class="btn btn-sm btn-danger active">Disable</a>
-                                        <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-info">Clinic</a>
+                                        <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Available</a>
+                                        <a class="btn btn-sm btn-success active">Disable</a>
+                                        <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Clinic</a>
                                     @elseif ($match->state == 'clinic')
-                                        <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-success">Available</a>
-                                        <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger">Disable</a>
-                                        <a class="btn btn-sm btn-info active">Clinic</a>
+                                        <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Available</a>
+                                        <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Disable</a>
+                                        <a class="btn btn-sm btn-success">Clinic</a>
                                     @endif
                                 </div>
 
@@ -97,20 +97,20 @@
                                 @if ($match->public == 0)
                                     <a href="{{ route('publish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-primary ms-2">Publish</a>
                                 @else
-                                    <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger ms-2">Unpublish</a>
+                                    <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning ms-2">Unpublish</a>
                                 @endif
                             </div>
                             @endcan
                         @else
                             <div class="ms-auto">
-                                <a href="{{ route('match', $match->id) }}" class="small text-muted">Permalink</a>
+                                <a href="{{ route('match', $match->id) }}" class="small text-muted"><i class="bi bi-link-45deg"></i></a>
 
                                 @can('admin')
                                     @if ($match->public == 0)
-                                        <a href="{{ route('empty-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning ms-2">Empty slot</a>
+                                        <a href="{{ route('empty-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger ms-2">Empty slot</a>
                                         <a href="{{ route('publish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-primary ms-2">Publish</a>
                                     @else
-                                        <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger ms-2">Unpublish</a>
+                                        <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning ms-2">Unpublish</a>
                                     @endif
                                 @endcan
                             </div>
