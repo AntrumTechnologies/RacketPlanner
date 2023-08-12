@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>{{ $user->name }}</h2>
+            <h2>{{ $user->name }} <img src="/{{ $user->avatar }}" class="avatar" /></h2>
         </div>
     </div>
 
