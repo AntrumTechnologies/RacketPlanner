@@ -32,43 +32,79 @@ class UserController extends Controller
 
         $tournaments = Player::where('user_id', $id)->join('tournaments', 'tournaments.id', '=', 'players.tournament_id')->get();
 
-        // TODO(PATBRO): add functionality to calculate total number of points per tournament for a user
-
-        $matches = DB::select("SELECT 
-                    rounds.starttime as 'time',
-                    courts.name as 'court',
-                    user1a.name as `player1a`,
-                    user1a.id as `player1a_id`,
-                    user1a.avatar as `player1a_avatar`,
-                    user1b.name as `player1b`,
-                    user1b.id as `player1b_id`,
-                    user1b.avatar as `player1b_avatar`,
-                    user2a.name as `player2a`,
-                    user2a.id as `player2a_id`,
-                    user2a.avatar as `player2a_avatar`,
-                    user2b.name as `player2b`,
-                    user2b.id as `player2b_id`,
-                    user2b.avatar as `player2b_avatar`,
-                    matches.id,
-                    matches.score1,
-                    matches.score2
-                FROM `schedules`
-                    INNER JOIN `rounds` ON schedules.round_id = rounds.id
-                    INNER JOIN `courts` ON schedules.court_id = courts.id
-                    INNER JOIN `matches` ON schedules.match_id = matches.id
-                    INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
-                    INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
-                    INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
-                    INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
-                    INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
-                    INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
-                    INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
-                    INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
-                WHERE (player1a.user_id = ". $id ." 
-                    OR player1b.user_id = ". $id ." 
-                    OR player2a.user_id = ". $id ." 
-		    OR player2b.user_id = ". $id .")
-		ORDER BY time ASC");
+        if (Auth::user()->can('admin')) {
+            $matches = DB::select("SELECT 
+                        rounds.starttime as 'time',
+                        courts.name as 'court',
+                        user1a.name as `player1a`,
+                        user1a.id as `player1a_id`,
+                        user1a.avatar as `player1a_avatar`,
+                        user1b.name as `player1b`,
+                        user1b.id as `player1b_id`,
+                        user1b.avatar as `player1b_avatar`,
+                        user2a.name as `player2a`,
+                        user2a.id as `player2a_id`,
+                        user2a.avatar as `player2a_avatar`,
+                        user2b.name as `player2b`,
+                        user2b.id as `player2b_id`,
+                        user2b.avatar as `player2b_avatar`,
+                        matches.id,
+                        matches.score1,
+                        matches.score2
+                    FROM `schedules`
+                        INNER JOIN `rounds` ON schedules.round_id = rounds.id
+                        INNER JOIN `courts` ON schedules.court_id = courts.id
+                        INNER JOIN `matches` ON schedules.match_id = matches.id
+                        INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
+                        INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
+                        INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
+                        INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
+                        INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
+                        INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
+                        INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
+                        INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
+                    WHERE (player1a.user_id = ". $id ." 
+                        OR player1b.user_id = ". $id ." 
+                        OR player2a.user_id = ". $id ." 
+                        OR player2b.user_id = ". $id .")
+                    ORDER BY time ASC");
+        } else {
+            $matches = DB::select("SELECT 
+                        rounds.starttime as 'time',
+                        courts.name as 'court',
+                        user1a.name as `player1a`,
+                        user1a.id as `player1a_id`,
+                        user1a.avatar as `player1a_avatar`,
+                        user1b.name as `player1b`,
+                        user1b.id as `player1b_id`,
+                        user1b.avatar as `player1b_avatar`,
+                        user2a.name as `player2a`,
+                        user2a.id as `player2a_id`,
+                        user2a.avatar as `player2a_avatar`,
+                        user2b.name as `player2b`,
+                        user2b.id as `player2b_id`,
+                        user2b.avatar as `player2b_avatar`,
+                        matches.id,
+                        matches.score1,
+                        matches.score2
+                    FROM `schedules`
+                        INNER JOIN `rounds` ON schedules.round_id = rounds.id
+                        INNER JOIN `courts` ON schedules.court_id = courts.id
+                        INNER JOIN `matches` ON schedules.match_id = matches.id
+                        INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
+                        INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
+                        INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
+                        INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
+                        INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
+                        INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
+                        INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
+                        INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
+                    WHERE (player1a.user_id = ". $id ." 
+                        OR player1b.user_id = ". $id ." 
+                        OR player2a.user_id = ". $id ." 
+                        OR player2b.user_id = ". $id .") AND schedules.public = 1
+                    ORDER BY time ASC");
+        }
 
         foreach ($matches as $match) {
             $match->time = date('H:i', strtotime($match->time));
