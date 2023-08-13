@@ -25,10 +25,9 @@ use App\Http\Controllers\PlannerWrapperController;
 |
 */
 
-Auth::routes();
 Route::view('/login', 'auth.login')->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
+Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/', [HomeController::class, 'index'])->name('home');
