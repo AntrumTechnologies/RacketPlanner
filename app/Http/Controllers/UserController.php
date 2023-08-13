@@ -31,7 +31,7 @@ class UserController extends Controller
     public function show($id) {
         $user = User::findOrFail($id);
 
-        $user_tournaments = Player::where('user_id', $id)->join('tournaments', 'tournaments.id', '=', 'players.tournament_id')->get();
+        $user_tournaments = Player::where('user_id', $id)->get();
 
         $user_clinics = array();
         if (Player::where('user_id', $user->id)->where('clinic', 1)->count() > 0) {
