@@ -43,7 +43,7 @@ class MagicEmail extends Notification
         return (new MailMessage)
                     ->subject('Confirm it\'s you to login')
                     ->greeting('Hi '. $this->name .'!')
-                    ->line('We need to confirm it\'s you. Click on the link below to login to the Tennis Event Planner.')
+                    ->line('We need to confirm it\'s you. Click on the link below to login.')
                     ->action('Login', url($this->url))
                     ->line('This link is valid for 72 hours. Never forward this email to anyone else.');
     }
