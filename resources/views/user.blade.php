@@ -13,7 +13,7 @@
         <div class="col-md-8">
             <h4>Scheduled Matches</h4>
 
-            @if (!isset($user_matches_per_tournament[0]) || count($user_matches_per_tournament[0]) == 0)
+            @if ((!isset($user_matches_per_tournament[0]) || count($user_matches_per_tournament[0]) == 0) && (!isset($user_clinics) || count($user_clinics) == 0))
                 <p>No matches have been scheduled for this user yet.</p>
             @else
                 @include('layouts.user-matches')

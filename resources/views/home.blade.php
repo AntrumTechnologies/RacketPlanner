@@ -21,7 +21,7 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h3>Your Matches</h3>
-            @if (!isset($user_matches_per_tournament[0]) || count($user_matches_per_tournament[0]) == 0)
+            @if ((!isset($user_matches_per_tournament[0]) || count($user_matches_per_tournament[0]) == 0) && (!isset($user_clinics) || count($user_clinics) == 0))
                 <p>No matches have been scheduled for you yet.</p>
             @else
                 @include('layouts.user-matches')
