@@ -31,7 +31,7 @@ class HomeController extends Controller
         $user_clinics = array();
         if (Player::where('user_id', Auth::id())->where('clinic', 1)->count() > 0) {
             foreach ($user_tournaments as $player) {
-                $clinic = Schedule::where('schedules.tournament_id', $player->tournament_id)
+                $clinics = Schedule::where('schedules.tournament_id', $player->tournament_id)
                     ->where('schedules.state', 'clinic')
                     ->where('schedules.public', 1)
                     ->join('rounds', 'rounds.id', '=', 'schedules.round_id')
@@ -39,19 +39,21 @@ class HomeController extends Controller
                     ->select(
                         'courts.name as court',
                         'rounds.starttime as time')
-                    ->first();
-                
-                $clinic->time = date('H:i', strtotime($clinic->time));
-
-                $clinic->players = Player::where('tournament_id', $player->tournament_id)
-                    ->where('players.clinic', 1)
-                    ->join('users', 'users.id', '=', 'players.user_id')
-                    ->select(
-                        'users.name as user_name',
-                        'users.id as user_id')
                     ->get();
+                
+                foreach ($clinics as $clinic) {
+                    $clinic->time = date('H:i', strtotime($clinic->time));
 
-                $user_clinics[] = $clinic;
+                    $clinic->players = Player::where('tournament_id', $player->tournament_id)
+                        ->where('players.clinic', 1)
+                        ->join('users', 'users.id', '=', 'players.user_id')
+                        ->select(
+                            'users.name as user_name',
+                            'users.id as user_id')
+                        ->get();
+
+                    $user_clinics[] = $clinic;
+                }
             }   
         }
 
@@ -92,7 +94,8 @@ class HomeController extends Controller
                     (player1a.id = ". $player->id ." 
                         OR player1b.id = ". $player->id ." 
                         OR player2a.id = ". $player->id ." 
-                        OR player2b.id = ". $player->id .")");
+                        OR player2b.id = ". $player->id .")
+                ORDER BY time ASC");
 
             foreach($matches as $match) {
                 $match->time = date('H:i', strtotime($match->time));
