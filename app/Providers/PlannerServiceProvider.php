@@ -14,7 +14,12 @@ class PlannerServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(Planner::class, function ($app) {
-            return new Planner(Route::current()->__get('tournamentId'));
+            $tournamentId = 1;
+            if (Route::current() !== null) {
+            	$tournamentId = Route::current()->__get('tournamentId');
+	    }
+	    
+            return new Planner($tournamentId);
         });
     }
 
