@@ -2,6 +2,8 @@
 
 namespace App\Libraries\Planner;
 
+use Illuminate\Support\Facades\Log;
+
 enum Verbosity: int
 {
   case Fail = 0;
@@ -11,7 +13,7 @@ enum Verbosity: int
   case Trace = 4;
 }
 
-$verbosity = Verbosity::Trace;
+$verbosity = Verbosity::Debug;
 
 class Report
 {
@@ -32,36 +34,36 @@ class Report
   public static function Fail($message)
   {
     global $verbosity;
-    if ($verbosity >= 0)
-      echo "FAIL: $message</br>";
+    if ($verbosity->value >= Verbosity::Fail->value)
+      Log::error($message);
   }
 
   public static function Warning($message)
   {
     global $verbosity;
-    if ($verbosity >= 1)
-      echo "WARN: $message</br>";
+    if ($verbosity->value >= Verbosity::Warning->value)
+      Log::warning($message);
   }
 
 
   public static function Info($message)
   {
     global $verbosity;
-    if ($verbosity >= 2)
-      echo "INFO: $message</br>";
+    if ($verbosity->value >= Verbosity::Info->value)
+      Log::info($message);
   }
 
   public static function Debug($message)
   {
     global $verbosity;
-    if ($verbosity >= 3)
-      echo "DBUG: $message</br>";
+    if ($verbosity->value >= Verbosity::Debug->value)
+      Log::debug($message);
   }
 
   public static function Trace($message)
   {
     global $verbosity;
-    if ($verbosity >= Verbosity::Trace)
+    if ($verbosity->value >= Verbosity::Trace->value)
       echo "TRACE: $message</br>";
   }
 
