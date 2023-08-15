@@ -206,7 +206,12 @@ class DatabaseController
 
     $record['tournament_id'] = $this->tournamentId;
     $record['name'] = $name;
-    return $this->db->Insert(TABLE_COURTS, $record);
+    $result = $this->db->Insert(TABLE_COURTS, $record);
+
+    $this->UpdateSchedule();
+
+    return $result;
+
   }
 
   public function DeleteCourtById($id)
@@ -218,6 +223,9 @@ class DatabaseController
       Report::Fail("Court with id '$id' does not exist.");
       return false;
     }
+
+    // Remove from schedule before it can be removed from the rounds table
+    $this->DeleteSlotsForCourt($id);
 
     $record['id'] = $id;
     return $this->db->Delete(TABLE_COURTS, $record);
@@ -249,7 +257,11 @@ class DatabaseController
     $record['tournament_id'] = $this->tournamentId;
     $record['starttime'] = $startTime->format('Y-m-d H:i:s');
     $record['endtime'] = $endTime->format('Y-m-d H:i:s');
-    return $this->db->Insert(TABLE_ROUNDS, $record);
+    $result = $this->db->Insert(TABLE_ROUNDS, $record);
+
+    $this->UpdateSchedule();
+
+    return $result;
   }
 
   public function DeleteRoundById($id)
@@ -261,6 +273,9 @@ class DatabaseController
       Report::Fail("Round with id '$id' does not exist.");
       return false;
     }
+
+    // Remove from schedule before it can be removed from the rounds table
+    $this->DeleteSlotsForRound($id);
 
     $record['id'] = $id;
     return $this->db->Delete(TABLE_ROUNDS, $record);
@@ -274,6 +289,14 @@ class DatabaseController
     Report::Trace(__METHOD__);
 
     $sql = "SELECT users.name, users.rating, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id";
+    return $this->db->Query($sql);
+  }
+
+  public function GetPresentPlayers()
+  {
+    Report::Trace(__METHOD__);
+
+    $sql = "SELECT users.name, users.rating, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.present = 1";
     return $this->db->Query($sql);
   }
 
@@ -293,6 +316,19 @@ class DatabaseController
     $record['user_id'] = $userId;
     $record['tournament_id'] = $this->tournamentId; // Do not allow getting courts from other tournaments
     return $this->db->Delete(TABLE_PLAYERS, $record);
+  }
+
+  public function SetPlayerToPresent($playerId)
+  {
+    $record['present'] = 1;
+    $filter['id'] = $playerId;
+    return $this->db->Update(TABLE_PLAYERS, $record, $filter);
+  }
+  public function SetPlayerToNotPresent($playerId)
+  {
+    $record['present'] = 0;
+    $filter['id'] = $playerId;
+    return $this->db->Update(TABLE_PLAYERS, $record, $filter);
   }
 
   public function AddPlayerToClinic($playerId)
@@ -352,9 +388,9 @@ class DatabaseController
 
   public function DeleteAllMatches()
   {
-    $this->ResetTable(TABLE_MATCHES);
+    $filter['tournament_id'] = $this->tournamentId;
+    $this->db->Delete(TABLE_MATCHES, $filter);
   }
-
 
   public function EnableAllMatches()
   {
@@ -444,24 +480,54 @@ class DatabaseController
     $this->db->Delete(TABLE_SCHEDULES, $search);
   }
 
-  public function GenerateSchedule()
+  protected function DeleteSlotsForRound($roundId)
+  {
+    // Remove round from schedule first
+    $record['round_id'] = $roundId;
+    $this->db->Delete(TABLE_SCHEDULES, $record);
+  }
+
+  protected function DeleteSlotsForCourt($courtId)
+  {
+    // Remove round from schedule first
+    $record['court_id'] = $courtId;
+    $this->db->Delete(TABLE_SCHEDULES, $record);
+  }
+
+  protected function UpdateSchedule()
   {
     Report::Trace(__METHOD__);
 
+    $slots = $this->GetSchedule();
     $rounds = $this->GetRounds();
     $courts = $this->GetCourts();
 
+    // Create slots for new rounds & courts
     foreach ($rounds as $round)
     {
+      $roundId = $round['id'];
       foreach ($courts as $court)
       {
-        $record['tournament_id'] = $this->tournamentId;
-        $record['court_id'] = $court['id'];
-        $record['round_id'] = $round['id'];
-        if ($this->db->Insert(TABLE_SCHEDULES, $record) == false)
+        $courtId = $court['id'];
+        $exists = false;
+        foreach ($slots as $slot)
         {
-          Report::Fail("Unable add slot to schedule.");
-          return false;
+          if (($slot['round_id'] == $roundId) && ($slot['court_id'] == $courtId))
+          {
+            $exists = true;
+            break;
+          }
+        }
+        if ($exists == false)
+        {
+          $record['tournament_id'] = $this->tournamentId;
+          $record['round_id'] = $roundId;
+          $record['court_id'] = $courtId;
+          if ($this->db->Insert(TABLE_SCHEDULES, $record) == false)
+          {
+            Report::Fail("Unable add slot to schedule.");
+            return false;
+          }
         }
       }
     }

@@ -16,7 +16,7 @@ class Database
   {
     Report::Trace(__METHOD__);
 
-    mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_INDEX);
+    mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
     $this->sql = FALSE;
     $this->fetchResult = FALSE;
 
@@ -88,7 +88,7 @@ class Database
     }
     catch (\Exception $e)
     {
-      Report::Fail("SQL: Error executing query: $e");
+      Report::Fail("SQL: Error executing query: $sql");
     }
 
     return false;
@@ -138,7 +138,8 @@ class Database
     if ($filter == null)
     {
       $sql .= "1;";
-    } else
+    }
+    else
     {
       $i = 0;
       foreach ($filter as $key => $value)
@@ -162,7 +163,8 @@ class Database
     if ($filter == null)
     {
       $sql .= "1;";
-    } else
+    }
+    else
     {
       $i = 0;
       foreach ($filter as $key => $value)
@@ -202,7 +204,8 @@ class Database
     if ($filter == null)
     {
       $sql .= "1;";
-    } else
+    }
+    else
     {
       $i = 0;
       foreach ($filter as $key => $value)
