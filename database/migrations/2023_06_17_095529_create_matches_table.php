@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('matches', function (Blueprint $table) {
             $table->id()->unique();
             $table->bigInteger('tournament_id')->unsigned();
-            $table->bigInteger('player1a_id')->unsigned()->index();
+            $table->bigInteger('player1a_id')->unsigned()->nullable()->index();
             $table->bigInteger('player1b_id')->unsigned()->nullable()->index();
-            $table->bigInteger('player2a_id')->unsigned()->index();
+            $table->bigInteger('player2a_id')->unsigned()->nullable()->index();
             $table->bigInteger('player2b_id')->unsigned()->nullable()->index();
             $table->double('rating')->nullable();
             $table->double('rating_diff')->nullable();
