@@ -63,7 +63,7 @@ class PlayerController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'tournament_id' => 'required|exists:tournaments,id',
-            'clinic' => 'required',
+            'clinic' => 'sometimes',
         ]);
 
         $new_player = new Player([
