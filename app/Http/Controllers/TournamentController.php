@@ -50,6 +50,26 @@ class TournamentController extends Controller
             ->orderBy('users.name')
             ->get();
 
+        foreach ($players as $player) {
+            $matches = DB::select("SELECT * FROM schedules 
+                INNER JOIN `matches` ON schedules.match_id = matches.id
+                INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
+                INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
+                INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
+                INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
+                WHERE schedules.tournament_id = ". $player->tournament_id ." AND 
+                    (player1a.id = ". $player->id ." 
+                        OR player1b.id = ". $player->id ." 
+                        OR player2a.id = ". $player->id ." 
+                        OR player2b.id = ". $player->id .")");
+            
+            if ($player->clinic == true) {
+                $player->no_matches = count($matches) + 1;
+            } else {
+                $player->no_matches = count($matches);
+            }
+        }
+
         if (Auth::user()->can('admin')) {
             $schedule = Schedule::where('schedules.tournament_id', $tournament_id)
                 ->join('rounds', 'rounds.id', '=', 'schedules.round_id')
