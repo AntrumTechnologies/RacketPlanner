@@ -86,6 +86,7 @@
 
 				@if ($match->state == 'available')
 				<a href="{{ route('plan-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Schedule slot</a>
+                <a href="{{ route('store-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Manual fill</a>
 				@else
 				<a class="btn btn-sm btn-secondary disabled ms-2">Schedule slot</a>
 				@endif
@@ -104,6 +105,7 @@
                                 @can('admin')
                                     @if ($match->public == 0)
                                         <a href="{{ route('empty-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger ms-2">Empty slot</a>
+                                        <a href="{{ route('edit-match', [$match->id]) }}" class="btn btn-sm btn-warning ms-2">Edit match</a>
                                         <a href="{{ route('publish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-primary ms-2">Publish</a>
                                     @else
                                         <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning ms-2">Unpublish</a>
@@ -211,7 +213,9 @@
                         <div class="ms-2 me-auto">
                             {{ $user->name }} 
                         </div>
-                        @if ($user->rating != '') <span class="badge bg-primary rounded-pill">Rating: {{ $user->rating }}</span> @endif
+                        @if ($user->clinic == true)<span class="badge bg-danger rounded-pill">Clinic</span>@endif
+                        <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $user->no_matches }} match(es)</span>
+                        @if ($user->rating != '') <span class="badge bg-primary rounded-pill ms-2" style="min-width: 70px">Rating: {{ $user->rating }}</span> @endif
                     </a>
                     @endforeach
                 </div></p>
