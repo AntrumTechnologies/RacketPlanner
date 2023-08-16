@@ -16,7 +16,7 @@ class Database
   {
     Report::Trace(__METHOD__);
 
-    mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+    mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_INDEX);
     $this->sql = FALSE;
     $this->fetchResult = FALSE;
 
