@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\MagicEmail;
@@ -30,4 +31,9 @@ class AuthController extends Controller
 
         return view("auth.verify", ['email' => $user->email]);
     }
+
+    public function logout(Request $request) {
+        Auth::logout();
+        return redirect('/');
+      }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PermissionController;
 use App\Http\Controllers\CourtController;
 use App\Http\Controllers\HomeController;
@@ -27,7 +28,7 @@ use App\Http\Controllers\PlannerWrapperController;
 
 Route::view('/login', 'auth.login')->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -57,6 +58,10 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/admin/tournament/store', [TournamentController::class, 'store'])->name('store-tournament');
 
         Route::get('/admin/leaderboard/{tournament_id}', [ScoreController::class, 'show'])->name('leaderboard');
+
+        Route::get('/admin/match/{match_id}', [MatchDetailsController::class, 'edit_match'])->name('edit-match');
+        Route::post('/admin/match', [MatchDetailsController::class, 'update_match'])->name('update-match');
+        Route::get('/admin/match/{tournament_id}/{slot_id}', [MatchDetailsController::class, 'store_match'])->name('store-match');
 
         Route::get('/admin/plan/{tournamentId}/generate_schedule', [PlannerWrapperController::class, 'GenerateSchedule'])->name('generate-schedule');
         Route::get('/admin/plan/{tournamentId}/generate_matches', [PlannerWrapperController::class, 'GenerateMatches'])->name('generate-matches');
