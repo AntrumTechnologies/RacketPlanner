@@ -27,12 +27,10 @@
             @can('admin')
                 <p><div class="btn-group">
                 @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
-                    <a class="btn btn-secondary disabled">Generate schedule</a>
                     <a class="btn btn-secondary disabled">Generate matches</a>
                     <a class="btn btn-primary disabled">Schedule next round</a>
                     <a class="btn btn-secondary disabled">Schedule all</a>
                 @else
-                    <a class="btn btn-secondary" href="{{ route('generate-schedule', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the schedule?');">Generate schedule</a>
                     <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches?');">Generate matches</a>
                     @if (count($schedule) == 0)
                     <a class="btn btn-primary disabled">Schedule next round</a>
@@ -89,6 +87,7 @@
                 <a href="{{ route('create-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Manual fill</a>
 				@else
 				<a class="btn btn-sm btn-secondary disabled ms-2">Schedule slot</a>
+                <a class="btn btn-sm btn-secondary disabled ms-2">Manual fill</a>
 				@endif
 
                                 @if ($match->public == 0)
