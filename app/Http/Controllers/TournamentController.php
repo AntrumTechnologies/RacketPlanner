@@ -46,6 +46,7 @@ class TournamentController extends Controller
         $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
 
         $players = Player::where('tournament_id', $tournament_id)
+            ->select('players.*', 'users.name as name', 'users.rating as rating')
             ->join('users', 'users.id', '=', 'players.user_id')
             ->orderBy('users.name')
             ->get();
@@ -57,7 +58,7 @@ class TournamentController extends Controller
                 INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
                 INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
                 INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
-                WHERE schedules.tournament_id = ". $player->tournament_id ." AND 
+                WHERE schedules.tournament_id = ". $tournament_id ." AND 
                     (player1a.id = ". $player->id ." 
                         OR player1b.id = ". $player->id ." 
                         OR player2a.id = ". $player->id ." 
