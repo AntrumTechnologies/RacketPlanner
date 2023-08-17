@@ -32,14 +32,14 @@
                     <a class="btn btn-primary disabled">Schedule next round</a>
                     <a class="btn btn-secondary disabled">Schedule all</a>
                 @else
-                    <a class="btn btn-secondary" href="{{ route('generate-schedule', $tournament->id) }}">Generate schedule</a>
-                    <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}">Generate matches</a>
+                    <a class="btn btn-secondary" href="{{ route('generate-schedule', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the schedule?');">Generate schedule</a>
+                    <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches?');">Generate matches</a>
                     @if (count($schedule) == 0)
                     <a class="btn btn-primary disabled">Schedule next round</a>
                     <a class="btn btn-secondary disabled">Schedule all</a>
                     @else
                     <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
-                    <a class="btn btn-secondary disabled">Schedule all</a>
+                    <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
                     @endif
                 @endif
                 </div></p>
