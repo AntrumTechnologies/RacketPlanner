@@ -214,7 +214,11 @@
                             {{ $user->name }} 
                         </div>
                         @if ($user->clinic == true)<span class="badge bg-danger rounded-pill">Clinic</span>@endif
-                        <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $user->no_matches }} match(es)</span>
+                        @if ($user->present == true)
+                            <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $user->no_matches }} match(es)</span>
+                        @else
+                            <span class="badge bg-warning rounded-pill ms-2" style="min-width: 85px">Not present</span>
+                        @endif
                         @if ($user->rating != '') <span class="badge bg-primary rounded-pill ms-2" style="min-width: 70px">Rating: {{ $user->rating }}</span> @endif
                     </a>
                     @endforeach
