@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Round;
+use App\Models\Schedule;
+use App\Http\Controllers\PlannerDatabaseHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -37,6 +39,9 @@ class RoundController extends Controller
         ]);
 
         $new_round->save();
+
+        // Re-generate schedule
+        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
 
         $rounds = Round::all();
         return Redirect::route('tournament', ['tournament_id' => $request->get('tournament_id'), 'rounds' => $rounds]);
@@ -79,6 +84,10 @@ class RoundController extends Controller
 		if ($validator->fails()) {
 			return Response::json($validator->errors()->first(), 400);	
 		}
+
+        $schedule = Schedule::where('tournament_id', $request->get('tournament_id'))
+            ->where('round_id', $request->get('id'))
+            ->delete();
 
         $round = Round::find($request->get('id'));
         $round->delete();

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Court;
+use App\Models\Schedule;
+use App\Http\Controllers\PlannerDatabaseHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -35,6 +37,10 @@ class CourtController extends Controller
         ]);
 
         $newCourt->save();
+
+        // Re-generate schedule
+        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
+
         return Redirect::route('tournament', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully added the court '. $newCourt->name);
     }
 
@@ -70,6 +76,10 @@ class CourtController extends Controller
 		if ($validator->fails()) {
 			return Response::json($validator->errors()->first(), 400);	
 		}
+
+        $schedule = Schedule::where('tournament_id', $request->get('tournament_id'))
+            ->where('court_id', $request->get('id'))
+            ->get();
 
         $court = Court::find($request->get('id'));
         $court->delete();
