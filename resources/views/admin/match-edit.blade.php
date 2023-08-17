@@ -27,15 +27,16 @@
                 </div>
 
                 <div class="card-body">
-                @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <form method="post" action="{{ route('update-match') }}"> 
                         @csrf
 
@@ -48,16 +49,16 @@
                             </div>
                             <div class="col-4">
                                 <select class="form-select" name="player1a_id">
-                                    <option value="">Select a user...</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}"@if($match->player1a_id == $user->id) selected @endif>{{ $user->name }}</option>
+                                    <option value="">Select a player...</option>
+                                    @foreach ($tournament_players as $player)
+                                        <option value="{{ $player->id }}"@if($match->player1a_id == $player->user_id) selected @endif>{{ $player->name }}</option>
                                     @endforeach
                                 </select>
                                 <br />
                                 <select class="form-select" name="player1b_id">
-                                    <option value="">Select a user...</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}"@if($match->player1b_id == $user->id) selected @endif>{{ $user->name }}</option>
+                                    <option value="">Select a player...</option>
+                                    @foreach ($tournament_players as $player)
+                                        <option value="{{ $player->id }}"@if($match->player1b_id == $player->user_id) selected @endif>{{ $player->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -74,16 +75,16 @@
                             </div>
                             <div class="col-4">
                             <select class="form-select" name="player2a_id">
-                                    <option value="">Select a user...</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}"@if($match->player2a_id == $user->id) selected @endif>{{ $user->name }}</option>
+                                    <option value="">Select a player...</option>
+                                    @foreach ($tournament_players as $player)
+                                        <option value="{{ $player->id }}"@if($match->player2a_id == $player->user_id) selected @endif>{{ $player->name }}</option>
                                     @endforeach
                                 </select>
                                 <br />
                                 <select class="form-select" name="player2b_id">
-                                    <option value="">Select a user...</option>
-                                    @foreach ($users as $user)
-                                        <option value="{{ $user->id }}"@if($match->player2b_id == $user->id) selected @endif>{{ $user->name }}</option>
+                                    <option value="">Select a player...</option>
+                                    @foreach ($tournament_players as $player)
+                                        <option value="{{ $player->id }}"@if($match->player2b_id == $player->user_id) selected @endif>{{ $player->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

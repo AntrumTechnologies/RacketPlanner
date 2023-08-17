@@ -184,12 +184,12 @@ class MatchDetailsController extends Controller
         $match[0]->time = date('H:i', strtotime($match[0]->time));
 
         $tournament_players = Player::where('tournament_id', $match[0]->tournament_id)
-            ->select('players.*', 'users.name')
+            ->select('players.*', 'users.id as user_id', 'users.name')
             ->leftJoin('users', 'users.id', '=', 'players.user_id')
             ->orderBy('users.name')
             ->get();
 
-        return view('admin.match-edit', ['match' => $match[0], 'users' => $tournament_players]);
+        return view('admin.match-edit', ['match' => $match[0], 'tournament_players' => $tournament_players]);
     }
 
     public function update_match(Request $request) {
