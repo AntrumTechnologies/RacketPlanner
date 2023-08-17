@@ -25,22 +25,30 @@
         <div class="col-md-8">
             <h4>Scheduled Matches</h4>
             @can('admin')
-                <p><div class="btn-group">
+                <p>
                 @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
-                    <a class="btn btn-secondary disabled">Generate matches</a>
-                    <a class="btn btn-primary disabled">Schedule next round</a>
-                    <a class="btn btn-secondary disabled">Schedule all</a>
+                    <div class="btn-group">
+                        <a class="btn btn-secondary disabled">Generate matches</a>
+                    </div>
+                    <div class="btn-group">
+                        <a class="btn btn-primary disabled">Schedule next round</a>
+                        <a class="btn btn-secondary disabled">Schedule all</a>
+                    </div>
                 @else
-                    <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches?');">Generate matches</a>
-                    @if (count($schedule) == 0)
-                    <a class="btn btn-primary disabled">Schedule next round</a>
-                    <a class="btn btn-secondary disabled">Schedule all</a>
-                    @else
-                    <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
-                    <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
-                    @endif
+                    <div class="btn-group">
+                        <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches?');">Generate matches</a>
+                    </div>
+                    <div class="btn-group">
+                        @if (count($schedule) == 0)
+                        <a class="btn btn-primary disabled">Schedule next round</a>
+                        <a class="btn btn-secondary disabled">Schedule all</a>
+                        @else
+                        <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
+                        <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
+                        @endif
+                    </div>
                 @endif
-                </div></p>
+                </p>
             @endcan
 
             @if (count($schedule) == 0)
