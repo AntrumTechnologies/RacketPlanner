@@ -144,7 +144,7 @@ class Planner
 
     $this->dbc->DeleteAllMatches();
 
-    $players = $this->dbc->GetPresentPlayers();
+    $players = $this->dbc->GetPlayers();
 
     $partnerCounts = array();
     $opponentCounts = array();
@@ -348,6 +348,15 @@ class Planner
     }
   }
 
+  protected function DisableMatchesForNotPresentPlayers()
+  {
+    $players = $this->dbc->GetNotPresentPlayers();
+    foreach ($players as $player)
+    {
+      $this->dbc->DisableMatchesForPlayer($player['id']);
+    }
+  }
+
   protected function DisableMatchesForPlayersOfRound($roundId)
   {
     Report::Trace(__METHOD__);
@@ -423,7 +432,7 @@ class Planner
         $priority += $playerPriorities[$id1] * 10;
         foreach ($playerIds as $id2)
         {
-          $priority += $matesCounts[$id1][$id2] * 10;
+          $priority += $matesCounts[$id1][$id2] * 20;
         }
       }
       $this->dbc->SetPriorityForMatch($match['id'], $priority);
@@ -469,6 +478,7 @@ class Planner
     Report::Warning("Available matches : $nom");
 
     $this->DisableMatchesFromSchedule(); // Don't allow duplicate matches in schedule
+    $this->DisableMatchesForNotPresentPlayers();
     $this->DisableMatchesForPlayersOfRound($slot['round_id']);
     $this->DisableMatchesForPlayersWithBreak($slot['round_id']);
 

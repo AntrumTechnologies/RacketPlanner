@@ -300,6 +300,15 @@ class DatabaseController
     return $this->db->Query($sql);
   }
 
+  public function GetNotPresentPlayers()
+  {
+    Report::Trace(__METHOD__);
+
+    $sql = "SELECT users.name, users.rating, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.present = 0";
+    return $this->db->Query($sql);
+  }
+
+
   public function InsertPlayer($userId)
   {
     Report::Trace(__METHOD__);
