@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Court;
 use App\Models\MatchDetails;
 use App\Models\Player;
+use App\Models\Round;
 use App\Models\Schedule;
+use App\Models\Tournament;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -131,18 +134,54 @@ class MatchDetailsController extends Controller
         return back()->withInput();
     }
 
-    public function store_match($tournament_id, $slot_id) {
+    public function create_match($tournament_id, $slot_id) {
+        $schedule = Schedule::findOrFail($slot_id);
+
+        $tournament = Tournament::findOrFail($schedule->tournament_id);
+
+        $round = Round::findOrFail($schedule->round_id);
+        $time = date('H:i', strtotime($round->starttime));
+
+        $court = Court::findOrFail($schedule->court_id);
+
+        $tournament_players = Player::where('tournament_id', $tournament->id)
+            ->select('players.*', 'users.id as user_id', 'users.name')
+            ->leftJoin('users', 'users.id', '=', 'players.user_id')
+            ->orderBy('users.name')
+            ->get();
+
+        return view('admin.match-create', [
+            'tournament' => $tournament,
+            'slot_id' => $slot_id,
+            'time' => $time, 
+            'court' => $court->name, 
+            'tournament_players' => $tournament_players
+        ]);
+    }
+
+    public function store_match(Request $request) {
+        $request->validate([
+            'tournament_id' => 'required|exists:tournaments,id',
+            'slot_id' => 'required|exists:schedules,id',
+            'player1a_id' => 'required|exists:players,id',
+            'player1b_id' => 'required|exists:players,id',
+            'player2a_id' => 'required|exists:players,id',
+            'player2b_id' => 'required|exists:players,id',
+        ]);
+
         $match = new MatchDetails([
-            'tournament_id' => $tournament_id,
-            'player1a_id' => 0,
-            'player2a_id' => 0,
+            'tournament_id' => $request->get('tournament_id'),
+            'player1a_id' => $request->get('player1a_id'),
+            'player1b_id' => $request->get('player1b_id'),
+            'player2a_id' => $request->get('player2a_id'),
+            'player2b_id' => $request->get('player2b_id'),
         ]);
 
         $match->save();
 
-        Schedule::where('id', $slot_id)->update(['match_id' => $match->id]);
+        Schedule::where('id', $request->get('slot_id'))->update(['match_id' => $match->id]);
         
-        return Redirect::route('edit-match', ['match_id' => $match->id]);
+        return redirect()->to(route('tournament', ['tournament_id' => $request->get('tournament_id')]) .'#slot'. $request->get('slot_id'))->with('status', 'Manually filled slot');
     }
 
     public function edit_match($id) {
@@ -209,6 +248,6 @@ class MatchDetailsController extends Controller
         $match->save();
 
         $schedule = Schedule::where('match_id', $request->get('id'))->first();
-        return redirect()->to(route('tournament', ['tournament_id' => $schedule->tournament_id]) .'#slot'. $schedule->id)->with('status', 'Manually filled slot');
+        return redirect()->to(route('tournament', ['tournament_id' => $schedule->tournament_id]) .'#slot'. $schedule->id)->with('status', 'Manually updated slot');
     }
 }

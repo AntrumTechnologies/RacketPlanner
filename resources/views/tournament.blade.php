@@ -86,7 +86,7 @@
 
 				@if ($match->state == 'available')
 				<a href="{{ route('plan-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Schedule slot</a>
-                <a href="{{ route('store-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Manual fill</a>
+                <a href="{{ route('create-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Manual fill</a>
 				@else
 				<a class="btn btn-sm btn-secondary disabled ms-2">Schedule slot</a>
 				@endif

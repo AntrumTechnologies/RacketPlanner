@@ -60,8 +60,9 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/admin/leaderboard/{tournament_id}', [ScoreController::class, 'show'])->name('leaderboard');
 
         Route::get('/admin/match/{match_id}', [MatchDetailsController::class, 'edit_match'])->name('edit-match');
-        Route::post('/admin/match', [MatchDetailsController::class, 'update_match'])->name('update-match');
-        Route::get('/admin/match/{tournament_id}/{slot_id}', [MatchDetailsController::class, 'store_match'])->name('store-match');
+        Route::post('/admin/match/update', [MatchDetailsController::class, 'update_match'])->name('update-match');
+        Route::get('/admin/match/{tournament_id}/{slot_id}', [MatchDetailsController::class, 'create_match'])->name('create-match');
+        Route::post('/admin/match/store', [MatchDetailsController::class, 'store_match'])->name('store-match');
 
         Route::get('/admin/plan/{tournamentId}/generate_schedule', [PlannerWrapperController::class, 'GenerateSchedule'])->name('generate-schedule');
         Route::get('/admin/plan/{tournamentId}/generate_matches', [PlannerWrapperController::class, 'GenerateMatches'])->name('generate-matches');
