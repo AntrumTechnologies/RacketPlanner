@@ -215,18 +215,18 @@
                 <p>No players are assigned yet. Perhaps start by assigning a few players?</p>
             @else
                 <p><div class="list-group">
-                    @foreach ($players as $user)
-                    <a href="{{ route('user', $user->id) }}" class="list-group-item d-flex justify-content-between align-items-start">
+                    @foreach ($players as $player)
+                    <a href="{{ route('user', $player->user_id) }}" class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
-                            {{ $user->name }} 
+                            {{ $player->name }} 
                         </div>
-                        @if ($user->clinic == true)<span class="badge bg-danger rounded-pill">Clinic</span>@endif
-                        @if ($user->present == true)
-                            <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $user->no_matches }} match(es)</span>
+                        @if ($player->clinic == true)<span class="badge bg-danger rounded-pill">Clinic</span>@endif
+                        @if ($player->present == true)
+                            <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $player->no_matches }} match(es)</span>
                         @else
                             <span class="badge bg-warning rounded-pill ms-2" style="min-width: 85px">Not present</span>
                         @endif
-                        @if ($user->rating != '') <span class="badge bg-primary rounded-pill ms-2" style="min-width: 70px">Rating: {{ $user->rating }}</span> @endif
+                        @if ($player->rating != '') <span class="badge bg-primary rounded-pill ms-2" style="min-width: 70px">Rating: {{ $player->rating }}</span> @endif
                     </a>
                     @endforeach
                 </div></p>
