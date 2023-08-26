@@ -34,10 +34,10 @@
                     <div class="row">
                         <div class="col-9 mt-2">
                             <img src="/{{ $match->player1a_avatar }}" class="avatar-sm" />
-                            <a href="{{ route('user', $match->player1a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1a }}</a>
+                            <a href="{{ route('user', $match->player1a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1a }}</a> ({{ $match->player1a_rating }})
                             <br />
                             <img src="/{{ $match->player1b_avatar }}" class="avatar-sm mt-2" />
-                            <a href="{{ route('user', $match->player1b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1b }}</a>
+                            <a href="{{ route('user', $match->player1b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1b }}</a> ({{ $match->player1b_rating }})
                         </div>
                         <div class="col-3 mt-2 justify-content-center align-self-center">
                             @if ($match->score1 == "")
@@ -60,10 +60,10 @@
                     <div class="row">
                         <div class="col-9 mt-2">
                             <img src="/{{ $match->player2a_avatar }}" class="avatar-sm" />
-                            <a href="{{ route('user', $match->player2a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2a }}</a>
+                            <a href="{{ route('user', $match->player2a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2a }}</a> ({{ $match->player2a_rating }})
                             <br />
                             <img src="/{{ $match->player2b_avatar }}" class="avatar-sm mt-2" />
-                            <a href="{{ route('user', $match->player2b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2b }}</a>
+                            <a href="{{ route('user', $match->player2b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2b }}</a> ({{ $match->player2b_rating }})
                         </div>
                         <div class="col-3 mt-2 justify-content-center align-self-center">
                             @if ($match->score2 == "")
