@@ -111,16 +111,20 @@ class TournamentController extends Controller
                     'matches.score2',
                     'user1a.name as player1a',
                     'user1a.id as player1a_id',
-                    'user1a.avatar as player1a_avatar',
+		    'user1a.avatar as player1a_avatar',
+		    'user1a.rating as player1a_rating',
                     'user1b.name as player1b',
                     'user1b.id as player1b_id',
                     'user1b.avatar as player1b_avatar',
+		    'user1b.rating as player1b_rating',
                     'user2a.name as player2a',
                     'user2a.id as player2a_id',
                     'user2a.avatar as player2a_avatar',
+		    'user2a.rating as player2a_rating',
                     'user2b.name as player2b',
                     'user2b.id as player2b_id',
-                    'user2b.avatar as player2b_avatar')
+                    'user2b.avatar as player2b_avatar',
+		    'user2b.rating as player2b_rating')
 		->orderBy('time', 'asc')
 		->orderBy('courts.id', 'asc')
                 ->get();
@@ -153,15 +157,19 @@ class TournamentController extends Controller
                     'user1a.name as player1a',
                     'user1a.id as player1a_id',
                     'user1a.avatar as player1a_avatar',
+		    'user1a.rating as player1a_rating',
                     'user1b.name as player1b',
                     'user1b.id as player1b_id',
                     'user1b.avatar as player1b_avatar',
+		    'user1b.rating as player1b_rating',
                     'user2a.name as player2a',
                     'user2a.id as player2a_id',
                     'user2a.avatar as player2a_avatar',
+		    'user2a.rating as player2a_rating',
                     'user2b.name as player2b',
                     'user2b.id as player2b_id',
-                    'user2b.avatar as player2b_avatar')
+                    'user2b.avatar as player2b_avatar',
+		    'user2b.rating as player2b_rating')
                 ->orderBy('time', 'asc')
                 ->get();
         }
