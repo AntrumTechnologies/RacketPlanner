@@ -139,10 +139,10 @@
                                 <div class="row">
                                     <div class="col-9">
                                         <img src="/{{ $match->player1a_avatar }}" class="avatar-sm" />
-                                        <a href="{{ route('user', $match->player1a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1a }}</a>
+                                        <a href="{{ route('user', $match->player1a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1a }}</a> ({{ $match->player1a_rating }})
                                         <br />
                                         <img src="/{{ $match->player1b_avatar }}" class="avatar-sm mt-2" />
-                                        <a href="{{ route('user', $match->player1b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1b }}</a>
+                                        <a href="{{ route('user', $match->player1b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player1b }}</a> ({{ $match->player1b_rating }})
                                     </div>
                                     <div class="col-3 justify-content-center align-self-center">
                                         @if ($match->score1 != "")
@@ -166,10 +166,10 @@
                                 <div class="row">
                                     <div class="col-9">
                                         <img src="/{{ $match->player2a_avatar }}" class="avatar-sm" />
-                                        <a href="{{ route('user', $match->player2a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2a }}</a>
+                                        <a href="{{ route('user', $match->player2a_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2a }}</a> ({{ $match->player2a_rating }})
                                         <br />
                                         <img src="/{{ $match->player2b_avatar }}" class="avatar-sm mt-2" />
-                                        <a href="{{ route('user', $match->player2b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2b }}</a>
+                                        <a href="{{ route('user', $match->player2b_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $match->player2b }}</a> ({{ $match->player2b_rating }})
                                     </div>
                                     <div class="col-3 justify-content-center align-self-center">
                                         @if ($match->score2 != "")
@@ -214,6 +214,7 @@
             @if (count($players) == 0)
                 <p>No players are assigned yet. Perhaps start by assigning a few players?</p>
             @else
+                <p>{{ $count['present'] }} players are present, of which {{ $count['clinic'] }} join the clinic. {{ $count['absent'] }} players are absent.</p>
                 <p><div class="list-group">
                     @foreach ($players as $player)
                     <a href="{{ route('user', $player->user_id) }}" class="list-group-item d-flex justify-content-between align-items-start">
