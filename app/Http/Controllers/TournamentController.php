@@ -51,6 +51,7 @@ class TournamentController extends Controller
             ->orderBy('users.name')
             ->get();
 
+        $count = array('present' => 0, 'absent' => 0, 'clinic' => 0); 
         foreach ($players as $player) {
             $matches = DB::select("SELECT * FROM schedules 
                 INNER JOIN `matches` ON schedules.match_id = matches.id
@@ -64,11 +65,24 @@ class TournamentController extends Controller
                         OR player2a.id = ". $player->id ." 
                         OR player2b.id = ". $player->id .")");
             
-            if ($player->clinic == true) {
+	    if ($player->clinic == true) {
+		if ($player->present == true) {
+		    $count['present']++;
+		    $count['clinic']++;
+		}
+
                 $player->no_matches = count($matches) + 1;
             } else {
+		if ($player->present == true) {
+		    $count['present']++;
+		}
+
                 $player->no_matches = count($matches);
-            }
+	    }
+
+	    if ($player->present == false) {
+	        $count['absent']++;
+	    }
         }
 
         if (Auth::user()->can('admin')) {
@@ -183,7 +197,8 @@ class TournamentController extends Controller
         }
 
         return view('tournament', [
-            'tournament' => $tournament, 
+	    'tournament' => $tournament, 
+            'count' => $count, 
             'schedule' => $schedule, 
             'schedule_clinic' => $schedule_clinic,
             'next_round_id' => $next_round_id,
