@@ -51,6 +51,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user');
 
     Route::group(['middleware' => ['can:admin']], function () {
+        Route::get('/admin/organization/{id}', [OrganizationController::class, 'show'])->name('show-organization');
+        Route::post('/admin/organization/{id}', [OrganizationController::class, 'update'])->name('update-organization');
+        
         Route::view('/admin/tournament/create', 'admin.tournament-create')->name('create-tournament');
         Route::get('/admin/tournament/{tournament_id}', [TournamentController::class, 'edit'])->name('edit-tournament');
         Route::post('/admin/tournament/update', [TournamentController::class, 'update'])->name('update-tournament');
@@ -100,5 +103,11 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/admin/user', [UserController::class, 'update'])->name('update-user');
         Route::view('/admin/user/create', 'admin.user-create')->name('create-user');
         Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
+    });
+
+    Route::group(['middleware' => ['can:superuser']], function () {
+        Route::view('/superuser/organizations', 'superuser.organizations')->name('show-organizations');
+        Route::view('/superuser/organization/create', 'superuser.organization')->name('create-organization');
+        Route::post('/superuser/organization/store')->name('create-organization');
     });
 });
