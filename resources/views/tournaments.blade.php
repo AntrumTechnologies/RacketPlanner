@@ -26,19 +26,7 @@
 
     @foreach ($tournaments as $tournament)
     <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    {{ $tournament->name }}
-                </div>
-
-                <div class="card-body">
-                    @include('layouts.tournament-details')
-
-                    <a class="btn btn-primary" href="{{ route('tournament', $tournament->id) }}">View tournament</a>
-                </div>
-            </div>
-        </div>
+        @include('layouts.tournament-details')
     </div>
     @endforeach
 </div>
