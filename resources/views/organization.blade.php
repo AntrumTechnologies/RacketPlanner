@@ -10,12 +10,24 @@
         </div>
     </div>
 
-    <h3>Tournaments</h3>
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <h3>Tournaments</h3>
 
-    <!-- TODO(PATBRO): Ability to show past tournaments, or show them at the buton? -->
+            @can('admin')
+            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
+            @endcan
 
-    @foreach ($tournaments as $tournament)
-        @include('layouts.tournament-details');
-    @endforeach
+            @if (count($tournaments) == 0)
+            <p>No tournaments have been created yet.</p>
+            @endif
+        </div>
+
+        <!-- TODO(PATBRO): Ability to show past tournaments, or show them at the buton? -->
+
+        @foreach ($tournaments as $tournament)
+            @include('layouts.tournament-details')
+        @endforeach  
+    </div>
 </div>
-
+@endsection

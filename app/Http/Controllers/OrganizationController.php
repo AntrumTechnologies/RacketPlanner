@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Organization;
 use App\Models\AdminOrganizationalAssignment;
 use App\Models\UserOrganizationalAssignment;
+use App\Models\Tournament;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrganizationController extends Controller
 {
@@ -16,25 +18,28 @@ class OrganizationController extends Controller
 
     public function index()
     {
+        $user = Auth::user();
         if ($user->can('superuser')) {
             $organizations = Organization::all();
         } else {
-            $adminAssignedOrganizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
-                ->join('organizations', 'organizations.id', '=', 'admins_organizational_assignment.organization_id');
+            $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->join('organizations', 'organizations.id', '=', 'admins_organizational_assignment.organization_id')->get();
         }
         
-        return view('superuser.organizations', ['organizations' => $organizations]);
+        return view('organizations', ['organizations' => $organizations]);
     }
 
     public function show($id)
     {
         $organization = Organization::findOrFail($id);
 
+        $tournaments = Tournament::where('owner_organization_id', $id)->get();
+
         if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $organization->id)) {
             return "User is not allowed to access this organization";
         }
 
-        return view('admin.organization', ['organization' => $organization]);
+        return view('organization', ['organization' => $organization, 'tournaments' => $tournaments]);
     }
 
     public function store(Request $request) 
