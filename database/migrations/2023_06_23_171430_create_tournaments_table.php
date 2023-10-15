@@ -22,6 +22,8 @@ return new class extends Migration
             $table->boolean('allow_singles')->nullable();
             $table->integer('time_between_matches_m')->nullable(); // In minutes
             $table->bigInteger('owner_organization_id')->unsigned();
+            $table->dateTime('enroll_until')->nullable();
+            $table->bigInteger('max_players')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });
