@@ -35,6 +35,12 @@ class PlayerController extends Controller
     }
 
     public function invite(Request $request) {
+        $request->validate([
+            'tournament_id' => 'required|exists:tournaments,id',
+            'email' => 'required|email',
+            'name' => 'required|min:2',
+        ]);
+
         $tournament = Tournament::findOrFail($request->get('tournament_id'));
 
         $enrollAction = new TournamentEnrollAction($request->get('email'), $tournament);
@@ -54,6 +60,8 @@ class PlayerController extends Controller
             Notification::route('mail', $request->get('email'))
                 ->notify(new TournamentEnrollEmail($array));
         }
+
+        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully invited '. $request->get('name') .'('. $request->get('email') .')');
     }
 
     public function markPresent(Request $request) {
