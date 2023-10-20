@@ -29,6 +29,30 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
+            <h4>Invite a player</h4>
+            
+            <form method="post" action="{{ route('invite-player') }}">
+                @csrf
+                
+                <input type="hidden" name="tournament_id" value="{{ $tournament->id }}" />
+
+                <div class="mb-3">
+                    <label for="user_id" class="form-label">Name</label>
+                    <input class="form-control" type="text" name="name" value="{{ old('name') }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="user_id" class="form-label">Email</label>
+                    <input class="form-control" type="text" name="email" value="{{ old('email') }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Invite</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
             <h4>Assign Player</h4>
             
             <form method="post" action="{{ route('assign-player') }}">

@@ -14,6 +14,7 @@ use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\PlannerWrapperController;
+use App\Http\Controllers\OrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ use App\Http\Controllers\PlannerWrapperController;
 Route::view('/login', 'auth.login')->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -42,19 +44,24 @@ Route::group(['middleware' => ['auth']], function() {
      * Note: order for same type of requests matter!
      * First fixed routes (/tournament/create), then similar routes with variable (/tournament/{id}), finally any parent routes
      */
+    Route::get('/organizations', [OrganizationController::class, 'index'])->name('organizations');
+    Route::get('/organization/{id}', [OrganizationController::class, 'show'])->name('organization');
+
+    Route::get('/tournament/{tournament_id}/enroll', [TournamentController::class, 'enroll'])->name('enroll-tournament');
+    Route::get('/tournament/{tournament_id}/withdraw', [TournamentController::class, 'withdraw'])->name('withdraw-tournament');
     Route::get('/tournament/{tournament_id}', [TournamentController::class, 'show'])->name('tournament');
     Route::get('/admin/tournaments', [TournamentController::class, 'index'])->name('tournaments');
 
+    Route::get('/matches', [MatchDetailsController::class, 'index'])->name('matches');
     Route::get('/match/{match_id}', [MatchDetailsController::class, 'show'])->name('match');
     Route::post('/match', [MatchDetailsController::class, 'update'])->name('save-score');
 
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user');
 
     Route::group(['middleware' => ['can:admin']], function () {
-        Route::get('/admin/organization/{id}', [OrganizationController::class, 'show'])->name('show-organization');
         Route::post('/admin/organization/{id}', [OrganizationController::class, 'update'])->name('update-organization');
         
-        Route::view('/admin/tournament/create', 'admin.tournament-create')->name('create-tournament');
+        Route::get('/admin/tournament/create', [TournamentController::class, 'create'])->name('create-tournament');
         Route::get('/admin/tournament/{tournament_id}', [TournamentController::class, 'edit'])->name('edit-tournament');
         Route::post('/admin/tournament/update', [TournamentController::class, 'update'])->name('update-tournament');
         Route::post('/admin/tournament/delete', [TournamentController::class, 'delete'])->name('delete-tournament');
@@ -82,6 +89,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/admin/plan/{tournamentId}/unpublish/{slotId}', [PlannerWrapperController::class, 'UnpublishSlot'])->name('unpublish-slot');
 
         Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'index'])->name('players');
+        Route::post('/admin/player/invite', [PlayerController::class, 'invite'])->name('invite-player');
         Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
         Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
         Route::post('/admin/player/present', [PlayerController::class, 'markPresent'])->name('mark-player-present');
@@ -105,8 +113,7 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
     });
 
-    Route::group(['middleware' => ['can:superuser']], function () {
-        Route::view('/superuser/organizations', 'superuser.organizations')->name('show-organizations');
+    Route::group(['middleware' => ['can:admin']], function () {
         Route::view('/superuser/organization/create', 'superuser.organization')->name('create-organization');
         Route::post('/superuser/organization/store')->name('create-organization');
     });

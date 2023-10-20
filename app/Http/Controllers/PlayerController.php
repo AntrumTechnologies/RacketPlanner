@@ -6,6 +6,7 @@ use App\Actions\TournamentEnrollAction;
 use App\Models\Player;
 use App\Models\Tournament;
 use App\Models\User;
+use App\Notifications\TournamentEnrollEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -41,20 +42,19 @@ class PlayerController extends Controller
             'name' => 'required|min:2',
         ]);
 
-        $tournament = Tournament::findOrFail($request->get('tournament_id'));
-
-        $enrollAction = new TournamentEnrollAction($request->get('email'), $tournament);
+        $enrollAction = new TournamentEnrollAction($request->get('email'), $request->get('tournament_id'));
         $magicUrl = MagicLink::create($enrollAction)->url;
 
         $array = [
             'name' => $request->get('name'),
             'email' => $request->get('email'),
             'url' => $magicUrl,
-            'tournament' => $tournament,
+            'tournament_id' => $request->get('tournament_id'),
+            'tournament_name' => Tournament::findOrFail($request->get('tournament_id'))->name,
         ];
 
-        if (Users::where('email', $request->get('email'))->exists()) {
-            $user = Users::where('email', $request->get('email'))->first();
+        if (User::where('email', $request->get('email'))->exists()) {
+            $user = User::where('email', $request->get('email'))->first();
             $user->notify(new TournamentEnrollEmail($array));
         } else {
             Notification::route('mail', $request->get('email'))
