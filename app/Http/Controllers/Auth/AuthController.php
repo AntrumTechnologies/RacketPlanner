@@ -28,7 +28,9 @@ class AuthController extends Controller
             'url' => $urlToAutoLogin,
         ];
 
-        $user->notify(new MagicEmail($array));
+        //$user->notify(new MagicEmail($array));
+        Auth::login($user);
+        redirect('/');
 
         return view("auth.verify", ['email' => $user->email]);
     }
@@ -42,6 +44,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'rating' => 'required|min:2|max:10',
             'tournament_id' => 'sometimes',
             'magiclink_token' => 'sometimes',
         ]);
@@ -49,7 +52,7 @@ class AuthController extends Controller
         $user = new User([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
-            // TODO: add rating
+            'rating' => $request->get('rating'),
         ]);
 
         if (!empty($request->get('tournament_id')) && !empty($request->get('magiclink_token'))) {
