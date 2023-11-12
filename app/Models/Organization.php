@@ -13,6 +13,7 @@ class Organization extends Model
 
     protected $fillable = [
         'name',
-        'owner_user_id',
+        'contact_person',
+        'contact_email',
     ];
 }
