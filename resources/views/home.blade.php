@@ -10,17 +10,7 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <h3>Your Score</h3>
-            
-            <div class="text-center">
-                <h1 style="font-size: 2.8em"><span class="badge bg-primary" style="width: 75px;">{{ $score }}</span></h1>
-            </div>
-        </div>        
-    </div>
-
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
-            <h3>Your Matches</h3>
+            <h3>Upcoming Matches</h3>
             @if ((!isset($user_matches_per_tournament[0]) || count($user_matches_per_tournament[0]) == 0) && (!isset($user_clinics) || count($user_clinics) == 0))
                 <p>No matches have been scheduled for you yet.</p>
             @else
@@ -31,24 +21,11 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8 mt-4">
-            <h3>All Tournaments</h3>
+            <h3>Upcoming Tournaments</h3>
         </div>
 
         @foreach ($all_tournaments as $tournament)
-            <div class="col-md-8 mt-4">
-                
-                <div class="card">
-                    <div class="card-header">
-                        {{ $tournament->name }}
-                    </div>
-
-                    <div class="card-body">
-                        @include('layouts.tournament-details')
-
-                        <a class="btn btn-primary" href="{{ route('tournament', $tournament->id) }}">View tournament</a>
-                    </div>
-                </div>    
-            </div>
+            @include('layouts.tournament-details')
         @endforeach
     </div>
 </div>
