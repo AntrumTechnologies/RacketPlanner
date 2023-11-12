@@ -9,7 +9,7 @@ use MagicLink\Actions\ActionAbstract;
 
 class TournamentEnrollAction extends ActionAbstract
 {
-    public function __construct(public $email, public $tournament_id)
+    public function __construct(public $name, public $email, public $tournament_id)
     {
     }
 
@@ -26,7 +26,7 @@ class TournamentEnrollAction extends ActionAbstract
             }
         } else {
             // Show register page with information to redirect user to page to enroll for this tournament afterward
-            return view('auth.register', ['tournament_id' => $this->tournament_id]);
+            return view('auth.register', ['tournament_id' => $this->tournament_id, 'name' => $this->name, 'email' => $this->email]);
         }
     }
 }

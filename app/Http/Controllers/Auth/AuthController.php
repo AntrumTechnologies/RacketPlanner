@@ -42,7 +42,8 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'tournament_id' => 'required',
+            'tournament_id' => 'sometimes',
+            'magiclink_token' => 'sometimes',
         ]);
 
         $user = new User([
@@ -51,15 +52,30 @@ class AuthController extends Controller
             // TODO: add rating
         ]);
 
-        $user->save();
+        if (!empty($request->get('tournament_id')) && !empty($request->get('magiclink_token'))) {
+            $token = explode(':', $request->get('magiclink_token'));
+            $magicLink = MagicLink::where('id', $token[0])->where('token', $token[1])->first();
 
-        if (!empty($request->get('tournament_id'))) {
-            // TODO: security vulnerability! Verify magic link of invite link before logging in user
+            if ((!$magicLink) ||
+                (!empty($magicLink->max_visits) && $magicLink->num_visits >= $magicLink->max_visits)) {
+                return "Link expired";
+            }
+
+            // Now save the user, after validating magic link
+            $user->save();
+
+            // Set max visits in order to expire the used link
+            $magicLink->max_visits = 1;
+            $magicLink->save();
+            
             Auth::login($user);
-
+            
             $tournament = Tournament::findOrFail($request->get('tournament_id'));
             return redirect()->route('enroll-tournament', ['tournament_id' => $tournament->id]);
         } else {
+            // Now save the user
+            $user->save();
+
             $magicUrl =  MagicLink::create(new LoginAction($user))->url;
             $array = [
                 'name' => $user->name,

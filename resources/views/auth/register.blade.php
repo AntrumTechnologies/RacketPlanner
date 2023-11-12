@@ -11,11 +11,14 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
+                        <input type="hidden" name="magiclink_token" value="{{ Route::input('token') }}">
+                        <input type="hidden" name="tournament_id" value="@isset($tournament_id) {{ $tournament_id }} @endisset">
+
                         <div class="row mb-3">
                             <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="@isset($name) {{ $name }} @endisset" required autocomplete="name" autofocus>
 
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
@@ -29,7 +32,11 @@
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                @if (isset($email))
+                                    <input id="email" type="email" class="form-control-plaintext" name="email" value="{{ $email }}" readonly>
+                                @else
+                                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" required autocomplete="email">
+                                @endif
 
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
