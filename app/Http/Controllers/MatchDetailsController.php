@@ -24,7 +24,9 @@ class MatchDetailsController extends Controller
 
     public function index() {
         $matches = MatchDetails::all();
-        return $matches;
+        $past_matches = []; // TODO: provide past matches
+
+        return view('matches', ['upcoming_matches' => $matches, 'past_matches' => $past_matches]);
     }
 
     public function show($id) {
