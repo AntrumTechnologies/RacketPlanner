@@ -9,6 +9,8 @@ use App\Models\Player;
 use App\Models\Schedule;
 use App\Models\Round;
 use App\Models\User;
+use App\Models\Organization;
+use App\Models\AdminOrganizationalAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,21 +26,65 @@ class TournamentController extends Controller
     }
 
     public static function index() {
-        $tournaments = Tournament::all();
-        
+        $tournaments = Tournament::join('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
+            ->select('tournaments.*')
+            ->where('users_organizational_assignment.user_id', Auth::id())->get();
+
         foreach ($tournaments as $tournament) {
+            $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
+
+            // Check whether user is enrolled in this tournament or not
+            $tournament->is_enrolled = false;
+            if (Player::where('tournament_id', $tournament->id)->where('user_id', Auth::id())->count() > 0) {
+                $tournament->is_enrolled = true;
+            }
+
+            // Prepare number of players in tournament
+            $no_players = Player::where('tournament_id', $tournament->id)->count();
+
+            $tournament->can_enroll = true;
+            if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
+                (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
+                $tournament->can_enroll = false;
+            }
+
             // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
             $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
             $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
-            
-            $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
+            if (!empty($tournament->enroll_until)) {
+                $tournament->enroll_until = date('Y-m-d H:i', strtotime($tournament->enroll_until));
+            }
         }
 
         return view('tournaments', ['tournaments' => $tournaments]);
     }
 
     public function show($tournament_id) {
-        $tournament = Tournament::findOrFail($tournament_id);
+        $tournament = Tournament::where('tournaments.id', $tournament_id)
+            ->select('tournaments.*')
+            ->join('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
+            ->where('users_organizational_assignment.user_id', Auth::id())
+            ->first();
+
+        if (!$tournament) {
+            return "User is not enrolled to the organization this tournament belongs to";
+        }
+
+        // Check whether user is enrolled in this tournament or not
+        $tournament->is_enrolled = false;
+        if (Player::where('tournament_id', $tournament->id)->where('user_id', Auth::id())->count() > 0) {
+            $tournament->is_enrolled = true;
+        }
+
+        // Prepare number of players in tournament
+        $no_players = Player::where('tournament_id', $tournament->id)->count();
+
+        $tournament->can_enroll = true;
+        if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
+            (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
+            $tournament->can_enroll = false;
+        }
+
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
         $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
         $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
@@ -205,7 +251,7 @@ class TournamentController extends Controller
         }
 
         return view('tournament', [
-	    'tournament' => $tournament, 
+            'tournament' => $tournament, 
             'count' => $count, 
             'schedule' => $schedule, 
             'schedule_clinic' => $schedule_clinic,
@@ -222,6 +268,18 @@ class TournamentController extends Controller
         return view('admin.tournament-edit', ['tournament' => $tournament]);
     }
 
+    public function create() {
+        $user = Auth::user();
+        if ($user->can('superuser')) {
+            $organizations = Organization::all();
+        } else {
+            $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->join('organizations', 'organizations.id', '=', 'admins_organizational_assignment.organization_id')->get();
+        }
+
+        return view('admin.tournament-create', ['organizations' => $organizations]);
+    }
+
     public function store(Request $request) {
         $request->validate([
             'name' => 'required|max:50',
@@ -229,7 +287,16 @@ class TournamentController extends Controller
             'datetime_end' => 'required|date_format:Y-m-d H:i',
             'type' => 'required', // TODO: define enum class?
             'allow_singles' => 'required',
+            'enroll_until' => 'sometimes|date_format:Y-m-d H:i',
+            'max_players' => 'sometimes|min:0',
+            'owner_organization_id' => 'required',
 		]);
+
+        if (AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $request->get('owner_organization_id'))->count() == 0) {
+            // TODO(PATBRO): improve error handling
+            return "User is not an administrator of this organization";
+        }
 
         $newTournament = new Tournament([
             'name' => $request->get('name'),
@@ -237,6 +304,9 @@ class TournamentController extends Controller
             'datetime_end' => $request->get('datetime_end'),
             'type' => $request->get('type'),
             'allow_singles' => $request->get('allow_singles'),
+            'owner_organization_id' => $request->get('owner_organization_id'),
+            'enroll_until' => $request->get('enroll_until'),
+            'max_players' => $request->get('max_players'),
             'created_by' => Auth::id(),
         ]);
 
@@ -274,6 +344,14 @@ class TournamentController extends Controller
 
         if ($request->has('allow_singles')) {
             $tournament->allow_singles = $request->get('allow_singles');
+        }
+
+        if ($request->has('enroll_until')) {
+            $tournament->enroll_until = $request->get('enroll_until');
+        }
+
+        if ($request->has('max_players')) {
+            $tournament->max_players = $request->get('max_players');
         }
 
         $tournament->save();
