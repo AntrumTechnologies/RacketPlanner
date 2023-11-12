@@ -24,11 +24,21 @@
             </div>
 
             <div class="btn-group">
-                @if ($tournament->can_enroll == true)
-                <a class="btn btn-primary" href="{{ route('tournament-enroll', $tournament->id) }}">Enroll</a>
-                @endif
+                <a class="btn btn-primary" href="{{ route('tournament', $tournament->id) }}">View tournament</a>
 
-                <a class="btn btn-secondary" href="{{ route('tournament', $tournament->id) }}">View tournament</a>
+                @if ($tournament->can_enroll == true)
+                    @if ($tournament->is_enrolled == true)
+                        <a class="btn btn-warning" href="{{ route('tournament-withdraw', $tournament->id) }}">Withdraw</a>
+                    @else
+                        <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament->id) }}">Enroll</a>
+                    @endif
+                @else
+                    @if ($tournament->is_enrolled == true)
+                        <a class="btn btn-warning disabled">Withdraw</a>
+                    @else
+                        <a class="btn btn-success disabled">Enroll</a>
+                    @endif
+                @endif
             </div>
         </div>
     </div>    
