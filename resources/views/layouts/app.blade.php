@@ -92,7 +92,7 @@
         </main>
 
         <footer class="mt-4 mb-4 text-center">
-            <small class="text-muted">Made with <span style="color: #e25555;">&hearts;</span> by PATBRO &amp; JB<br />Powered by Antrum</small>
+            <small class="text-muted">Made with <span style="color: #e25555;">&hearts;</span> in Eindhoven<br/>Powered by <a href="https://antrum-technologies.nl">Antrum</a></small>
         </footer>
     </div>
 </body>
