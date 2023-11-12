@@ -9,7 +9,7 @@ class UserOrganizationalAssignment extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_organizational_assignment';
+    protected $table = 'users_organizational_assignment';
 
     protected $fillable = [
         'organization_id',
