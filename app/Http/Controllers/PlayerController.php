@@ -29,8 +29,13 @@ class PlayerController extends Controller
             ->orderBy('users.name')
             ->get();
         // Only return users that are not yet assigned to the given tournament
-        $user_ids = Player::where('tournament_id', $tournament_id)->pluck('user_id')->all();
-        $users = User::whereNotIn('id', $user_ids)->get();
+        $user_ids = Player::where('tournament_id', $tournament_id)
+            ->pluck('players.user_id')
+            ->all();
+        $users = User::whereNotIn('users.id', $user_ids)
+            ->leftJoin('users_organizational_assignment', 'users_organizational_assignment.user_id', '=', 'users.id')
+            ->where('users_organizational_assignment.organization_id', $tournament->owner_organization_id)
+            ->get();
 
         return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users]);
     }
@@ -42,7 +47,7 @@ class PlayerController extends Controller
             'name' => 'required|min:2',
         ]);
 
-        $enrollAction = new TournamentEnrollAction($request->get('email'), $request->get('tournament_id'));
+        $enrollAction = new TournamentEnrollAction($request->get('name'), $request->get('email'), $request->get('tournament_id'));
         $magicUrl = MagicLink::create($enrollAction)->url;
 
         $array = [
@@ -57,6 +62,7 @@ class PlayerController extends Controller
             $user = User::where('email', $request->get('email'))->first();
             $user->notify(new TournamentEnrollEmail($array));
         } else {
+            return $magicUrl;
             Notification::route('mail', $request->get('email'))
                 ->notify(new TournamentEnrollEmail($array));
         }
@@ -107,6 +113,21 @@ class PlayerController extends Controller
         ]);
 
         $new_player->save();
+
+        // Which organization is the tournament part of?
+        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+
+        // Determine whether to add user to this organization or not
+        $alreadyPresent = UserOrganizationalAssignment::where('organization_id', $tournament->owner_organization_id)
+            ->where('user_id', Auth::id())->firstOrFail();
+        if ($alreadyPresent->count() == 0) {
+            $newUserOrganizationalAssignment = new UserOrganizationalAssignment([
+                'organization_id' => $tournament->owner_organization_id,
+                'user_id' => Auth::id(),
+            ]);
+    
+            $newUserOrganizationalAssignment->save();
+        }
 
         return redirect()->route('tournament', ['tournamnet_id' => $request->get('tournament_id')]);
     }
