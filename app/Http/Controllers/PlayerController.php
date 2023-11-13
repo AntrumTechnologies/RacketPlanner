@@ -6,6 +6,7 @@ use App\Actions\TournamentEnrollAction;
 use App\Models\Player;
 use App\Models\Tournament;
 use App\Models\User;
+use App\Models\UserOrganizationalAssignment;
 use App\Notifications\TournamentEnrollEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -101,10 +102,14 @@ class PlayerController extends Controller
     public function enroll(Request $request) {
         $request->validate([
             'tournament_id' => 'required|exists:tournaments,id',
-            'clinic' => 'sometimes',
+            //'clinic' => 'sometimes',
         ]);
 
         // TODO: add validation like whether the deadline has not been reached yet
+
+        if(Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->exists()) {
+            return "You are already enrolled!";
+        }
 
         $new_player = new Player([
             'user_id' => Auth::id(),
@@ -129,20 +134,19 @@ class PlayerController extends Controller
             $newUserOrganizationalAssignment->save();
         }
 
-        return redirect()->route('tournament', ['tournamnet_id' => $request->get('tournament_id')]);
+        return redirect()->route('tournament', ['tournament_id' => $request->get('tournament_id')]);
     }
 
     public function withdraw(Request $request) {
         // TODO(PATBRO): add constraints that user is not part of any matches for example
         $request->validate([
-            'id' => 'required|exists:players',
-            'name' => 'required',
+            'tournament_id' => 'required|exists:tournaments,id',
         ]);
 
-        $player = Player::find($request->get('id'));
-        $player->delete();
+        $player = Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->get();
+        $player->each->delete();
 
-        return redirect()->route('tournament', ['tournamnet_id' => $request->get('tournament_id')]);
+        return redirect()->route('tournament', ['tournament_id' => $request->get('tournament_id')]);
     }
 
     public function store(Request $request) {

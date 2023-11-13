@@ -18,12 +18,12 @@
             @if ($tournament->is_enrolled == true)
                 <div class="alert alert-light" role="alert">
                     <p>You are enrolled in this tournament! You can withdraw until @if (empty($tournament->can_enroll_date)) the tournament starts. @else {{ $tournament->can_enroll_date }}. @endif</p>
-                    <a class="btn btn-warning" href="{{ route('tournament-withdraw', $tournament->id) }}">Withdraw</a>
+                    <a class="btn btn-warning" href="{{ route('tournament-withdraw', $tournament) }}">Withdraw</a>
                 </div>
             @else
                 <div class="alert alert-light" role="alert">
                     <p>You are <strong>not</strong> enrolled in this tournament.</p>
-                    <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament->id) }}">Enroll</a>
+                    <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament) }}">Enroll</a>
                 </div>
             @endif
         @else
@@ -342,6 +342,10 @@
                     @endforeach
                 </div></p>
             @endif
+
+            @can('admin')
+                <a class="btn btn-primary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a>
+            @endcan
         </div>
     </div>
 </div>

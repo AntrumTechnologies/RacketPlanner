@@ -263,6 +263,18 @@ class TournamentController extends Controller
         ]);
     }
 
+    public function enroll($tournament_id) {
+        $tournament = Tournament::findOrFail($tournament_id);
+
+        return view('tournament-enroll', ['tournament' => $tournament]);
+    }
+
+    public function withdraw($tournament_id) {
+        $tournament = Tournament::findOrFail($tournament_id);
+
+        return view('tournament-withdraw', ['tournament' => $tournament]);
+    }
+
     public function edit($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
 

@@ -48,8 +48,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/organizations', [OrganizationController::class, 'index'])->name('organizations');
     Route::get('/organization/{id}', [OrganizationController::class, 'show'])->name('organization');
 
-    Route::get('/tournament/{tournament_id}/enroll', [TournamentController::class, 'enroll'])->name('enroll-tournament');
-    Route::get('/tournament/{tournament_id}/withdraw', [TournamentController::class, 'withdraw'])->name('withdraw-tournament');
+    Route::post('/tournament/enroll', [PlayerController::class, 'enroll'])->name('confirm-enroll');
+    Route::post('/tournament/withdraw', [PlayerController::class, 'withdraw'])->name('confirm-withdraw');
+    Route::get('/tournament/{tournament_id}/enroll', [TournamentController::class, 'enroll'])->name('tournament-enroll');
+    Route::get('/tournament/{tournament_id}/withdraw', [TournamentController::class, 'withdraw'])->name('tournament-withdraw');
     Route::get('/tournament/{tournament_id}', [TournamentController::class, 'show'])->name('tournament');
     Route::get('/admin/tournaments', [TournamentController::class, 'index'])->name('tournaments');
 

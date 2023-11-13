@@ -14,11 +14,19 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <h4>Enroll to this tournament</h4>
+            <h3>Enroll</h3>
+
+            <p>If you want to join this tournament, then click the button below to confirm your participation.</p>
 
             <!-- TODO: make it possible for tournament organizers to ask special questions here (e.g. join the clinic?) -->
 
-            <a class="btn btn-success" href="{{ route('enroll-tournament', $tournament->id) }}">Enroll!</a>
+            <form method="post" action="{{ route('confirm-enroll') }}">
+                @csrf
+                
+                <input type="hidden" name="tournament_id" value="{{ $tournament->id }}">
+
+                <button class="btn btn-success" type="submit" name="submit">Enroll</button>
+            </form>
         </div>
     </div>
 

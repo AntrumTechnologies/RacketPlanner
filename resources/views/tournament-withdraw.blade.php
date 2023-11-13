@@ -14,8 +14,18 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <h4>Join this tournament</h4>
-            <a class="btn btn-primary" href="{{ route('tournament-join', $tournament->id) }}">Join!</a>
+            <h3>Withdraw</h3>
+
+            <p>If you want to withdraw from this tournament for whatever reason, then click the button below.</p>
+
+            <form method="post" action="{{ route('confirm-withdraw') }}">
+                @csrf
+                
+                <input type="hidden" name="tournament_id" value="{{ $tournament->id }}">
+
+                <button class="btn btn-danger" type="submit" name="submit">Withdraw definitely</button>
+            </form>
+            
         </div>
     </div>
 
