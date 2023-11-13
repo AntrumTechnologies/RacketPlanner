@@ -12,45 +12,73 @@
         </div>
     </div>
 
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+        @if ($tournament->can_enroll == true)
+            @if ($tournament->is_enrolled == true)
+                <div class="alert alert-light" role="alert">
+                    <p>You are enrolled in this tournament! You can withdraw until @if (empty($tournament->can_enroll_date)) the tournament starts. @else {{ $tournament->can_enroll_date }}. @endif</p>
+                    <a class="btn btn-warning" href="{{ route('tournament-withdraw', $tournament->id) }}">Withdraw</a>
+                </div>
+            @else
+                <div class="alert alert-light" role="alert">
+                    <p>You are <strong>not</strong> enrolled in this tournament.</p>
+                    <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament->id) }}">Enroll</a>
+                </div>
+            @endif
+        @else
+            @if ($tournament->is_enrolled == true)
+                <div class="alert alert-light" role="alert">
+                    <p>You are enrolled in this tournament! You can't withdraw anymore.</p>
+                </div>
+            @else
+                <div class="alert alert-light" role="alert">
+                    <p>You are <strong>not</strong> enrolled in this tournament and can't enroll anymore.</p>
+                </div>
+            @endif
+        @endif
+        </div>
+    </div>
+
     @can('admin')
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
+            <h3>Admin</h3>
+            <h4>Manage</h4>
+            <p><a class="btn btn-primary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a></p>
+
+            @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
+                <p><div class="btn-group">
+                    <a class="btn btn-secondary disabled">Generate matches</a>
+                </div></p>
+                <p><div class="btn-group">
+                    <a class="btn btn-primary disabled">Schedule next round</a>
+                    <a class="btn btn-secondary disabled">Schedule all</a>
+                </div></p>
+            @else
+                <p><div class="btn-group">
+                    <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches?');">Generate matches</a>
+                </div></p>
+                <p><div class="btn-group">
+                    @if (count($schedule) == 0)
+                    <a class="btn btn-primary disabled">Schedule next round</a>
+                    <a class="btn btn-secondary disabled">Schedule all</a>
+                    @else
+                    <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
+                    <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
+                    @endif
+                </div></p>
+            @endif
+
             <h4>Leaderboard</h4>
             <a class="btn btn-primary" href="{{ route('leaderboard', $tournament->id) }}">Show leaderboard</a>
         </div>
-    </div>
+    </div>           
     @endcan
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h4>Scheduled Matches</h4>
-            @can('admin')
-                <p>
-                @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
-                    <div class="btn-group">
-                        <a class="btn btn-secondary disabled">Generate matches</a>
-                    </div>
-                    <div class="btn-group">
-                        <a class="btn btn-primary disabled">Schedule next round</a>
-                        <a class="btn btn-secondary disabled">Schedule all</a>
-                    </div>
-                @else
-                    <div class="btn-group">
-                        <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches?');">Generate matches</a>
-                    </div>
-                    <div class="btn-group">
-                        @if (count($schedule) == 0)
-                        <a class="btn btn-primary disabled">Schedule next round</a>
-                        <a class="btn btn-secondary disabled">Schedule all</a>
-                        @else
-                        <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
-                        <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
-                        @endif
-                    </div>
-                @endif
-                </p>
-            @endcan
-
             @if (count($schedule) == 0)
                 <p>No matches have been scheduled yet.</p>
             @endif
@@ -154,10 +182,19 @@
                                             @php
                                                 }
                                             @endphp
+
+                                            @can('admin')
+                                                <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
+                                            @endcan
+                                        @else
+                                            @can('admin')
+                                                <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
+                                            @else
+                                                @if ($match->user_is_player)
+                                                    <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
+                                                @endif
+                                            @endcan
                                         @endif
-                                        @can('admin')
-                                            <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
-                                        @endcan
                                     </div>
                                 </div>
 
@@ -181,10 +218,19 @@
                                             @php
                                                 }
                                             @endphp
+
+                                            @can('admin')
+                                                <input class="form-control form-control-sm" type="number" name="score2" placeholder="Score">
+                                            @endcan
+                                        @else
+                                            @can('admin')
+                                                <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
+                                            @else
+                                                @if ($match->user_is_player)
+                                                    <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
+                                                @endif
+                                            @endcan
                                         @endif
-                                        @can('admin')
-                                            <input class="form-control form-control-sm" type="number" name="score2" placeholder="Score">
-                                        @endcan
                                     </div>
                                 </div>
 
@@ -198,6 +244,18 @@
                                             </div>    
                                         </div>
                                     </div>
+                                @else
+                                    @if ($match->user_is_player)
+                                        <div class="row mt-2">
+                                            <div class="col-sm-9">
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="d-grid gap-2">
+                                                    <button type="submit" class="btn btn-primary btn-sm">Save score</button>
+                                                </div>    
+                                            </div>
+                                        </div>
+                                    @endif
                                 @endcan
                             </form>
                         </div>
@@ -206,38 +264,6 @@
             @endforeach  
         </div>
     </div> 
-            
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
-            <h4>All Players in Tournament</h4>
-
-            @if (count($players) == 0)
-                <p>No players are assigned yet. Perhaps start by assigning a few players?</p>
-            @else
-                <p>{{ $count['present'] }} players are present, of which {{ $count['clinic'] }} join the clinic. {{ $count['absent'] }} players are absent.</p>
-                <p><div class="list-group">
-                    @foreach ($players as $player)
-                    <a href="{{ route('user', $player->user_id) }}" class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            {{ $player->name }} 
-                        </div>
-                        @if ($player->clinic == true)<span class="badge bg-danger rounded-pill">Clinic</span>@endif
-                        @if ($player->present == true)
-                            <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $player->no_matches }} match(es)</span>
-                        @else
-                            <span class="badge bg-warning rounded-pill ms-2" style="min-width: 85px">Not present</span>
-                        @endif
-                        @if ($player->rating != '') <span class="badge bg-primary rounded-pill ms-2" style="min-width: 70px">Rating: {{ $player->rating }}</span> @endif
-                    </a>
-                    @endforeach
-                </div></p>
-            @endif
-
-            @can('admin')
-                <a class="btn btn-secondary" href="{{ route('players', $tournament->id) }}">Manage players</a>
-            @endcan
-        </div>
-    </div>
 
     @can('admin')
     <div class="row justify-content-center mt-4">
@@ -290,5 +316,33 @@
         </div>
     </div>
     @endcan
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <h4>All Players in Tournament</h4>
+
+            @if (count($players) == 0)
+                <p>No players are assigned yet. Perhaps start by assigning a few players?</p>
+            @else
+                <p>{{ $count['present'] }} players are present, of which {{ $count['clinic'] }} join the clinic. {{ $count['absent'] }} players are absent.</p>
+                <p><div class="list-group">
+                    @foreach ($players as $player)
+                    <a href="{{ route('user', $player->user_id) }}" class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            {{ $player->name }} 
+                        </div>
+                        @if ($player->clinic == true)<span class="badge bg-danger rounded-pill">Clinic</span>@endif
+                        @if ($player->present == true)
+                            <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $player->no_matches }} match(es)</span>
+                        @else
+                            <span class="badge bg-warning rounded-pill ms-2" style="min-width: 85px">Not present</span>
+                        @endif
+                        @if ($player->rating != '') <span class="badge bg-primary rounded-pill ms-2" style="min-width: 70px">Rating: {{ $player->rating }}</span> @endif
+                    </a>
+                    @endforeach
+                </div></p>
+            @endif
+        </div>
+    </div>
 </div>
 @endsection
