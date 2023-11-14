@@ -6,6 +6,8 @@ use App\Models\Organization;
 use App\Models\AdminOrganizationalAssignment;
 use App\Models\UserOrganizationalAssignment;
 use App\Models\Tournament;
+use App\Models\Player;
+use App\Models\Round;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,6 +26,11 @@ class OrganizationController extends Controller
         } else {
             $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
                 ->join('organizations', 'organizations.id', '=', 'admins_organizational_assignment.organization_id')->get();
+
+            if ($organizations->count() == 0) {
+                $organizations = UserOrganizationalAssignment::where('user_id', Auth::id())
+                    ->join('organizations', 'organizations.id', '=', 'users_organizational_assignment.organization_id')->get();
+            }
         }
         
         return view('organizations', ['organizations' => $organizations]);
@@ -33,10 +40,45 @@ class OrganizationController extends Controller
     {
         $organization = Organization::findOrFail($id);
 
-        $tournaments = Tournament::where('owner_organization_id', $id)->get();
-
         if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $organization->id)) {
             return "User is not allowed to access this organization";
+        }
+
+        $tournaments = Tournament::where('owner_organization_id', $id)
+            ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+            ->select('tournaments.*', 'organizations.name as organizer')
+            ->get();
+
+        foreach ($tournaments as $tournament) {
+            $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
+
+            // Check whether user is enrolled in this tournament or not
+            $tournament->is_enrolled = false;
+            if (Player::where('tournament_id', $tournament->id)->where('user_id', Auth::id())->count() > 0) {
+                $tournament->is_enrolled = true;
+            }
+
+            // Prepare number of players in tournament
+            $no_players = Player::where('tournament_id', $tournament->id)->count();
+
+            $tournament->can_enroll = true;
+            if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
+                (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
+                $tournament->can_enroll = false;
+            }
+
+            // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
+            $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
+            $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
+            if (!empty($tournament->enroll_until)) {
+                $tournament->enroll_until = date('Y-m-d H:i', strtotime($tournament->enroll_until));
+            }
+
+            $tournament->score = 0;
+            $points = Player::where('user_id', Auth::id())->where('tournament_id', $tournament->id)->select('points')->get();
+            foreach ($points as $point) {
+                $tournament->score += $point->points;
+            }
         }
 
         return view('organization', ['organization' => $organization, 'tournaments' => $tournaments]);

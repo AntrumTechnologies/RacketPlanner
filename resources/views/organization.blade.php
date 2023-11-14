@@ -12,7 +12,7 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <h3>Tournaments</h3>
+            <h3>All tournaments</h3>
 
             @can('admin')
             <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>

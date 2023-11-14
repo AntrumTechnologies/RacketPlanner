@@ -21,7 +21,7 @@
     <div class="row justify-content-center">
         @foreach ($organizations as $organization)
         <div class="col-md-8">
-            <h3>{{ $organization->name }}</h3>
+            <h4>{{ $organization->name }}</h4>
 
             <p>Location: {{ $organization->location}}</p>
 
