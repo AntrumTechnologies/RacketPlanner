@@ -44,41 +44,55 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h3>Admin</h3>
-            <h4>Manage</h4>
-            <p><a class="btn btn-primary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a></p>
-
-            @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
-                <p><div class="btn-group">
-                    <a class="btn btn-secondary disabled">Generate matches</a>
-                </div></p>
-                <p><div class="btn-group">
-                    <a class="btn btn-primary disabled">Schedule next round</a>
-                    <a class="btn btn-secondary disabled">Schedule all</a>
-                </div></p>
-            @else
-                <p><div class="btn-group">
-                    <a class="btn btn-secondary" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches?');">Generate matches</a>
-                </div></p>
-                <p><div class="btn-group">
-                    @if (count($schedule) == 0)
-                    <a class="btn btn-primary disabled">Schedule next round</a>
-                    <a class="btn btn-secondary disabled">Schedule all</a>
+            <div class="row">
+                <div class="col-lg-4">
+                    <p><a class="btn btn-primary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a></p>
+                    <p><a class="btn btn-secondary" href="{{ route('leaderboard', $tournament->id) }}">Show leaderboard</a></p>
+                </div>
+                <div class="col-lg-4">
+                    @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
+                        <div class="btn-group">
+                            <a class="btn btn-warning disabled">Generate matches</a>
+                        </div>
+                        <p><div class="btn-group">
+                            <a class="btn btn-primary disabled">Schedule next round</a>
+                            <a class="btn btn-secondary disabled">Schedule all</a>
+                        </div></p>
                     @else
-                    <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
-                    <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
+                        <div class="btn-group">
+                            <a class="btn btn-warning" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches (again)?');">Generate matches</a>
+                        </div>
+                        <p><div class="btn-group">
+                            @if (count($schedule) == 0)
+                            <a class="btn btn-primary disabled">Schedule next round</a>
+                            <a class="btn btn-secondary disabled">Schedule all</a>
+                            @else
+                            <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
+                            <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
+                            @endif
+                        </div></p>
                     @endif
-                </div></p>
-            @endif
-
-            <h4>Leaderboard</h4>
-            <a class="btn btn-primary" href="{{ route('leaderboard', $tournament->id) }}">Show leaderboard</a>
+                </div>
+            </div>
         </div>
     </div>           
     @endcan
 
+    @if ($tournament->is_enrolled == true)
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <h4>Scheduled Matches</h4>
+            <h3>Your Score</h3>
+
+            <div class="text-center">
+                <h1 style="font-size: 2.8em"><span class="badge bg-primary" style="width: 75px;">{{ $score }}</span></h1>
+            </div>
+        </div>        
+    </div>
+    @endif
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <h3>Scheduled Matches</h3>
             @if (count($schedule) == 0)
                 <p>No matches have been scheduled yet.</p>
             @endif
