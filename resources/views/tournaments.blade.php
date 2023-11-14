@@ -6,6 +6,12 @@
         <div class="col-md-8">
             <h2>Tournaments</h2>
 
+            @if (count($tournaments) == 1)
+            <p>There is 1 tournament to show.</p>
+            @else
+            <p>There are {{ count($tournaments) }} tournaments to show.</p>
+            @endif
+
             @can('admin')
             <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
             @endcan
