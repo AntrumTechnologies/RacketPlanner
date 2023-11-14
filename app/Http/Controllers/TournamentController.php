@@ -26,8 +26,9 @@ class TournamentController extends Controller
     }
 
     public static function index() {
-        $tournaments = Tournament::join('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
-            ->select('tournaments.*')
+        $tournaments = Tournament::leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
+            ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+            ->select('tournaments.*', 'organizations.name as organizer')
             ->where('users_organizational_assignment.user_id', Auth::id())->get();
 
         foreach ($tournaments as $tournament) {
@@ -46,6 +47,12 @@ class TournamentController extends Controller
             if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
                 (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
                 $tournament->can_enroll = false;
+            }
+
+            $tournament->score = 0;
+            $points = Player::where('user_id', Auth::id())->where('tournament_id', $tournament->id)->select('points')->get();
+            foreach ($points as $point) {
+                $tournament->score += $point->points;
             }
 
             // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
@@ -83,6 +90,12 @@ class TournamentController extends Controller
         if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
             (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
             $tournament->can_enroll = false;
+        }
+
+        $score = 0;
+        $points = Player::where('user_id', Auth::id())->where('tournament_id', $tournament_id)->select('points')->get();
+        foreach ($points as $point) {
+            $score += $point->points;
         }
 
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
@@ -253,6 +266,7 @@ class TournamentController extends Controller
 
         return view('tournament', [
             'tournament' => $tournament, 
+            'score' => $score,
             'count' => $count, 
             'schedule' => $schedule, 
             'schedule_clinic' => $schedule_clinic,
