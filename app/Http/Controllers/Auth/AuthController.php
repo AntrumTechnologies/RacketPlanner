@@ -44,7 +44,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'rating' => 'required|min:2|max:10',
+            'rating' => 'required|integer|min:2|max:10',
             'tournament_id' => 'sometimes',
             'magiclink_token' => 'sometimes',
         ]);
@@ -74,7 +74,7 @@ class AuthController extends Controller
             Auth::login($user);
             
             $tournament = Tournament::findOrFail($request->get('tournament_id'));
-            return redirect()->route('enroll-tournament', ['tournament_id' => $tournament->id]);
+            return redirect()->route('tournament-enroll', ['tournament_id' => $tournament->id]);
         } else {
             // Now save the user
             $user->save();
