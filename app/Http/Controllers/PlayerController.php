@@ -63,12 +63,11 @@ class PlayerController extends Controller
             $user = User::where('email', $request->get('email'))->first();
             $user->notify(new TournamentEnrollEmail($array));
         } else {
-            return $magicUrl;
             Notification::route('mail', $request->get('email'))
                 ->notify(new TournamentEnrollEmail($array));
         }
 
-        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully invited '. $request->get('name') .'('. $request->get('email') .')');
+        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully invited '. $request->get('name') .' ('. $request->get('email') .')');
     }
 
     public function markPresent(Request $request) {
@@ -124,7 +123,9 @@ class PlayerController extends Controller
 
         // Determine whether to add user to this organization or not
         $alreadyPresent = UserOrganizationalAssignment::where('organization_id', $tournament->owner_organization_id)
-            ->where('user_id', Auth::id())->firstOrFail();
+            ->where('user_id', Auth::id())
+            ->get();
+
         if ($alreadyPresent->count() == 0) {
             $newUserOrganizationalAssignment = new UserOrganizationalAssignment([
                 'organization_id' => $tournament->owner_organization_id,
