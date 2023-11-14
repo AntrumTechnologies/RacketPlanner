@@ -6,6 +6,7 @@ use App\Models\Player;
 use App\Models\Tournament;
 use App\Models\Round;
 use App\Models\Schedule;
+use App\Models\UserOrganizationalAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,12 +22,8 @@ class HomeController extends Controller
     public function index() {
         $user = Auth::user();
         $user_tournaments = Player::where('user_id', Auth::id())->get();
-
-        $score = 0;
-        $points = Player::where('user_id', Auth::id())->select('points')->get();
-        foreach ($points as $tournament) {
-            $score += $tournament->points;
-        }
+        $user_organizations = UserOrganizationalAssignment::where('user_id', Auth::id())
+            ->join('organizations', 'organizations.id', '=', 'users_organizational_assignment.organization_id');
 
         $user_clinics = array();
         if (Player::where('user_id', Auth::id())->where('clinic', 1)->count() > 0) {
@@ -108,22 +105,49 @@ class HomeController extends Controller
             $user_matches_per_tournament[] = $matches;
         }
 
-        $all_tournaments = Tournament::all();
-        
+        $your_tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+            ->select('tournaments.*', 'organizations.name as organizer')
+            ->where('tournaments.datetime_end', '>', date('Y-m-d H:i:s'))
+            ->get();
+
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
-        foreach ($all_tournaments as $tournament) {
+        foreach ($your_tournaments as $tournament) {
+            $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
+
+            // Check whether user is enrolled in this tournament or not
+            $tournament->is_enrolled = false;
+            if (Player::where('tournament_id', $tournament->id)->where('user_id', Auth::id())->count() > 0) {
+                $tournament->is_enrolled = true;
+            }
+
+            // Prepare number of players in tournament
+            $no_players = Player::where('tournament_id', $tournament->id)->count();
+
+            $tournament->can_enroll = true;
+            if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
+                (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
+                $tournament->can_enroll = false;
+            }
+
+            // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
             $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
             $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
+            if (!empty($tournament->enroll_until)) {
+                $tournament->enroll_until = date('Y-m-d H:i', strtotime($tournament->enroll_until));
+            }
 
-            $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
+            $tournament->score = 0;
+            $points = Player::where('user_id', Auth::id())->where('tournament_id', $tournament->id)->select('points')->get();
+            foreach ($points as $point) {
+                $tournament->score += $point->points;
+            }
         }
 
         return view('home', [
             'first_name' => strtok($user->name, " "),
-            'score' => $score,
             'user_clinics' => $user_clinics,
             'user_matches_per_tournament' => $user_matches_per_tournament, 
-            'all_tournaments' => $all_tournaments,
+            'your_tournaments' => $your_tournaments,
         ]);
     }
 }
