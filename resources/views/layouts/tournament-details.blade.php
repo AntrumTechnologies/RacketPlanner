@@ -5,6 +5,17 @@
         </div>
 
         <div class="card-body">
+            @if ($tournament->is_enrolled == true)
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    Your total score
+                </div>
+                <div class="col-md-3">
+                    {{ $tournament->score }}
+                </div>
+            </div>
+            @endif
+
             <div class="row mb-3">
                 <div class="col-md-3">
                     Start<br/>
@@ -17,9 +28,11 @@
 
                 <div class="col-md-3">
                     Number of rounds<br />
+                    Organizer
                 </div>
                 <div class="col-md-3">
-                    <span class="text-muted">{{ $tournament->rounds }}</span>
+                    <span class="text-muted">{{ $tournament->rounds }}<br />
+                    {{ $tournament->organizer }}</span>
                 </div>
             </div>
 
@@ -40,6 +53,10 @@
                     @endif
                 @endif
             </div>
+
+            @can('admin')
+            <a class="btn btn-secondary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a>
+            @endcan
         </div>
     </div>    
 </div>
