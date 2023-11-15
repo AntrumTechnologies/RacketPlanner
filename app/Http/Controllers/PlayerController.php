@@ -36,6 +36,7 @@ class PlayerController extends Controller
         $users = User::whereNotIn('users.id', $user_ids)
             ->leftJoin('users_organizational_assignment', 'users_organizational_assignment.user_id', '=', 'users.id')
             ->where('users_organizational_assignment.organization_id', $tournament->owner_organization_id)
+            ->select('users.*')
             ->get();
 
         return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users]);
