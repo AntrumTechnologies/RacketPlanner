@@ -76,6 +76,11 @@
                             <div class="form-text" id="basic-addon4">When single matches are allowed, matches will still be scheduled as mixes, but singles could also occur</div>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="max_players" class="form-label">Maximum number of players</label>
+                            <input class="form-control @error('max_players') is-invalid @enderror" id="max_players" name="max_players" type="text" placeholder="0 for infinite" value="@if(old('max_players')){{ old('max_players') }}@endif">
+                        </div>
+
                         <button type="submit" class="btn btn-primary" name="submit">Create</button>
                     </form>
                 </div>
