@@ -29,7 +29,7 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <h4>Invite a player</h4>
+            <h4>Invite a new player</h4>
             
             <form method="post" action="{{ route('invite-player') }}">
                 @csrf
@@ -53,7 +53,7 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <h4>Assign Player</h4>
+            <h4>Assign an existing player</h4>
             
             <form method="post" action="{{ route('assign-player') }}">
                 @csrf
