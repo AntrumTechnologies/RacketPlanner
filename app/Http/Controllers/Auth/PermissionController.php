@@ -16,27 +16,45 @@ class PermissionController extends Controller
         $this->middleware('auth');
     }
 
-    public function create_admin_permission() {
-        $permission = Permission::create(['name' => 'admin']);
-        if ($permission) {
-            return Response::json('Successfully created permission', 200);
+    public function create_permissions() {
+        $permission_admin = true;
+        if (count(Permission::findByName('admin')->get()) == 0) {
+            $permission_admin = Permission::create(['name' => 'admin']);
+        }
+
+        $permission_superuser = true;
+        if (count(Permission::findByName('superuser')->get()) == 0) {
+            $permission_superuser = Permission::create(['name' => 'superuser']);
+        }
+
+        if ($permission_admin && $permission_superuser) {
+            return Response::json('Successfully created permissions', 200);
         } else {
-            return Response::json('Failed to create permission. Perhaps the permission already exists?', 400);
+            return Response::json('Failed to create permissions. Perhaps the permission already exists?', 400);
         }
     }
 
     public function assign_admin_permission() {
         $user = Auth::User();
         if ($user->givePermissionTo('admin')) {
-            return Response::json('Successfully assigned permission to '. $user->name, 200);
+            return Response::json('Successfully assigned admin permission to '. $user->name, 200);
         } else {
             return Response::json('Failed to assign permission to '. $user->name, 400);
         }
     }
 
-    public function revoke_admin_permission() {
+    public function assign_superuser_permission() {
         $user = Auth::User();
-        if ($user->revokePermissionTo('admin')) {
+        if ($user->givePermissionTo('superuser')) {
+            return Response::json('Successfully assigned superuser permission to '. $user->name, 200);
+        } else {
+            return Response::json('Failed to assign permission to '. $user->name, 400);
+        }
+    }
+
+    public function revoke_permissions() {
+        $user = Auth::User();
+        if ($user->revokePermissionTo('admin') && $user->revokePermissionTo('superuser')) {
             return Response::json('Successfully revoked permission of '. $user->name, 200);
         } else {
             return Response::json('Failed to revoke permission of '. $user->name, 400);

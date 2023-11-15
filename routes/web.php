@@ -37,9 +37,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/home', [HomeController::class, 'index']);
 
-    Route::get('/create_admin_permission', [PermissionController::class, 'create_admin_permission']);
+    Route::get('/create_permissions', [PermissionController::class, 'create_permissions']);
     Route::get('/elevate', [PermissionController::class, 'assign_admin_permission']);
-    Route::get('/revoke', [PermissionController::class, 'revoke_admin_permission']);
+    Route::get('/superuser', [PermissionController::class, 'assign_superuser_permission']);
+    Route::get('/revoke', [PermissionController::class, 'revoke_permissions']);
 
     /** 
      * Note: order for same type of requests matter!
