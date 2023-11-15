@@ -30,6 +30,20 @@
                         @csrf
 
                         <div class="mb-3">
+                            <label for="organization" class="form-label">Organization</label>
+                            @if (count($organizations) > 1)
+                                <select class="form-select" id="organization" name="owner_organization_id">
+                                    @foreach ($organizations as $organization)
+                                        <option value="{{ $organization->id }}" @if (old('organization') == $organization->id) selected @endif>{{ $organization->name }}</option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <input type="hidden" id="owner_organization_id" name="owner_organization_id" value="{{ $organizations[0]->id }}">
+                                <input readonly class="form-control-plaintext" id="organization" value="{{ $organizations[0]->name }}">
+                            @endif
+                        </div>
+
+                        <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input class="form-control @error('name') is-invalid @enderror" id="name" name="name" type="text" value="@if(old('name')){{ old('name') }}@endif">
                         </div>
