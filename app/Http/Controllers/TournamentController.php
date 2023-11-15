@@ -353,6 +353,10 @@ class TournamentController extends Controller
 
         $tournament = Tournament::find($request->get('id'));
         
+        if ($request->has('owner_organization_id')) {
+            $tournament->owner_organization_id = $request->get('owner_organization_id');
+        }
+
         if ($request->has('name')) {
             $tournament->name = $request->get('name');
         }
