@@ -37,15 +37,12 @@
                             <a class="nav-link" href="{{ route('home') }}">{{ __('Home') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('matches') }}">{{ __('Matches') }}</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="{{ route('tournaments') }}">{{ __('Tournaments') }}</a>
                         </li>
-                        @can('admin')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('organizations') }}">{{ __('Organizations') }}</a>
                         </li>
+                        @can('admin')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('users') }}">{{ __('Users') }}</a>
                         </li>
