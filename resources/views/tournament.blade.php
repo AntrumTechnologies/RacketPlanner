@@ -46,10 +46,16 @@
             <h3>Admin</h3>
             <div class="row">
                 <div class="col-lg-4">
+                    <h5>Players</h5>
                     <p><a class="btn btn-primary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a></p>
+                    @if (count($players) == 0)
+                    <p><a class="btn btn-secondary disabled">Show leaderboard</a></p>
+                    @else
                     <p><a class="btn btn-secondary" href="{{ route('leaderboard', $tournament->id) }}">Show leaderboard</a></p>
+                    @endif
                 </div>
                 <div class="col-lg-4">
+                    <h5>Matches</h5>
                     @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
                         <div class="btn-group">
                             <a class="btn btn-warning disabled">Generate matches</a>
