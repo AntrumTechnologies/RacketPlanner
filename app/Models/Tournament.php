@@ -20,7 +20,8 @@ class Tournament extends Model
         'duration_m',
         'type',
         'allow_singles',
-        'time_between_matches_m',
-        'created_by',
+	'enroll_until',
+	'max_players',
+        'owner_organization_id',
     ];
 }

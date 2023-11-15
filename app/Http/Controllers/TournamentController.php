@@ -331,10 +331,9 @@ class TournamentController extends Controller
             'datetime_end' => $request->get('datetime_end'),
             'type' => $request->get('type'),
             'allow_singles' => $request->get('allow_singles'),
-            'owner_organization_id' => $request->get('owner_organization_id'),
             'enroll_until' => $request->get('enroll_until'),
             'max_players' => $request->get('max_players'),
-            'created_by' => Auth::id(),
+            'owner_organization_id' => $request->get('owner_organization_id'),
         ]);
 
         $newTournament->save();
