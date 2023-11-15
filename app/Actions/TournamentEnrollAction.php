@@ -17,13 +17,11 @@ class TournamentEnrollAction extends ActionAbstract
     {
         if (User::where('email', $this->email)->exists()) {
             $tournament = Tournament::findOrFail($this->tournament_id);
-            if (Auth::check()) {
-                return view('tournament-enroll', ['tournament' => $tournament]);
-            } else {
-                if (Auth::login(User::where('email', $this->email)->first())) {
-                    return view('tournament-enroll', ['tournament' => $tournament]);
-                }
-            }
+            
+            $user = User::where('email', $this->email)->first();
+            Auth::login($user);
+            
+            return view('tournament-enroll', ['tournament' => $tournament]);
         } else {
             // Show register page with information to redirect user to page to enroll for this tournament afterward
             return view('auth.register', ['tournament_id' => $this->tournament_id, 'name' => $this->name, 'email' => $this->email]);
