@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-8 mb-5">
             <h2>Organizations</h2>
 
             @if (count($organizations) == 1)
@@ -18,16 +18,16 @@
         </div>
     </div>
 
+    @foreach ($organizations as $organization)
     <div class="row justify-content-center">
-        @foreach ($organizations as $organization)
-        <div class="col-md-8">
+        <div class="col-md-8 mb-5">
             <h4>{{ $organization->name }}</h4>
 
             <p>Location: {{ $organization->location}}</p>
 
             <a class="btn btn-primary" href="{{ route('organization', $organization->id) }}">View organization' tournaments</a>
         </div>
-        @endforeach
     </div>
+    @endforeach
 </div>
 @endsection

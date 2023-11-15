@@ -117,8 +117,8 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
     });
 
-    Route::group(['middleware' => ['can:admin']], function () {
-        Route::view('/superuser/organization/create', 'superuser.organization')->name('create-organization');
-        Route::post('/superuser/organization/store')->name('create-organization');
+    Route::group(['middleware' => ['can:superuser']], function () {
+        Route::view('/superuser/organization/create', 'superuser.organization-create')->name('create-organization');
+        Route::post('/superuser/organization/store', [OrganizationController::class, 'store'])->name('store-organization');
     });
 });

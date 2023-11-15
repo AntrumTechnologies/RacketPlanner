@@ -8,8 +8,10 @@ use App\Models\UserOrganizationalAssignment;
 use App\Models\Tournament;
 use App\Models\Player;
 use App\Models\Round;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class OrganizationController extends Controller
 {
@@ -89,7 +91,14 @@ class OrganizationController extends Controller
         $request->validate([
             'name' => 'required|max:70',
             'location' => 'required|max:70',
+            'email' => 'required|email|exists:users,email',
         ]);
+
+        // Find user
+        $user = User::where('email', $request->get('email'))->first();
+        if (!$user) {
+            return "User email address does not exist";
+        }
 
         // Create new organization
         $newOrganization = new Organization([
@@ -99,17 +108,16 @@ class OrganizationController extends Controller
 
         $organization = $newOrganization->save();
 
-        if (!Auth::user()->can('superuser')) {
+        if (!$user->can('superuser')) {
             // Assign current user as admin to organization
             $newAdminOrganizationalAssignment = new AdminOrganizationalAssignment([
                 'organization_id' => $organization->id,
-                'user_id' => Auth::id(),
+                'user_id' => $user->id,
             ]);
 
             $newAdminOrganizationalAssignment->save();
         }
 
-        $organization = Organization::find($organization->id);
         return Redirect::route('organization', ['organization' => $organization]);
     }
 
