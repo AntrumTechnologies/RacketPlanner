@@ -40,12 +40,12 @@
 
                                 <div class="mb-3">
                                     <label for="starttime" class="form-label">Start time</label>
-                                    <input class="form-control @error('starttime') is-invalid @enderror" id="starttime" name="starttime" type="text" value="@if(old('starttime')){{ old('starttime') }}@endif">
+                                    <input class="form-control @error('starttime') is-invalid @enderror" id="starttime" name="starttime" type="text" value="@if(old('starttime')){{ old('starttime') }}@endif" placeholder="Y-m-d H:i">
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="endtime" class="form-label">End time</label>
-                                    <input class="form-control @error('endtime') is-invalid @enderror" id="endtime" name="endtime" type="text" value="@if(old('endtime')){{ old('endtime') }}@endif">
+                                    <input class="form-control @error('endtime') is-invalid @enderror" id="endtime" name="endtime" type="text" value="@if(old('endtime')){{ old('endtime') }}@endif" placeholder="Y-m-d H:i">
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Add</button>

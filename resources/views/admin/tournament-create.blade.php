@@ -1,10 +1,18 @@
-@extends('layouts.app', ['title' => 'Create tournament'])
+@extends('layouts.app', ['title' => 'Create Tournament'])
 
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>Create New Tournament</h2>
+            <h2>Create Tournament</h2>
+
+            <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+                <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page"><a href="{{ route('home') }}">Home</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('tournaments') }}">Tournaments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Tournament</li>
+                </ol>
+            </nav>
 
             @if ($errors->any())
                 @foreach ($errors->all() as $error)
@@ -82,6 +90,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary" name="submit">Create</button>
+                        <a href="{{ url()->previous() }}" class="btn btn-danger">Cancel</a>
                     </form>
                 </div>
             </div>
