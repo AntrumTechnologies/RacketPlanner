@@ -30,8 +30,6 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Update Court Details</h4>
-
                             <form method="post" action="{{ route('update-court') }}">
                                 @csrf
                                 
@@ -43,21 +41,6 @@
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Update</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="row mt-5">
-                        <div class="col-md-12">
-                            <h4>Delete Court</h4>
-
-                            <form method="post" action="{{ route('delete-court') }}">
-                                @csrf
-                                
-                                <input type="hidden" name="id" value="{{ $court->id }}" />
-                                <input type="hidden" name="tournament_id" value="{{ $court->tournament_id }}" />
-
-                                <button type="submit" class="btn btn-danger">Delete</button>
                             </form>
                         </div>
                     </div>

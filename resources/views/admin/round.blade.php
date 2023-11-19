@@ -30,8 +30,6 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <h4>Update Round Details</h4>
-
                             <form method="post" action="{{ route('update-round') }}">
                                 @csrf
                                 
@@ -44,30 +42,15 @@
 
                                 <div class="mb-3">
                                     <label for="starttime" class="form-label">Start time</label>
-                                    <input class="form-control @error('starttime') is-invalid @enderror" id="starttime" name="starttime" type="text" value="@if(old('starttime')){{ old('starttime') }}@else{{ $round->starttime }}@endif">
+                                    <input class="form-control @error('starttime') is-invalid @enderror" id="starttime" name="starttime" type="text" value="@if(old('starttime')){{ old('starttime') }}@else{{ $round->starttime }}@endif" placeholder="Y-m-d H:i">
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="endtime" class="form-label">End time</label>
-                                    <input class="form-control @error('endtime') is-invalid @enderror" id="endtime" name="endtime" type="text" value="@if(old('endtime')){{ old('endtime') }}@else{{ $round->endtime }}@endif">
+                                    <input class="form-control @error('endtime') is-invalid @enderror" id="endtime" name="endtime" type="text" value="@if(old('endtime')){{ old('endtime') }}@else{{ $round->endtime }}@endif" placeholder="Y-m-d H:i">
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Update</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="row mt-5">
-                        <div class="col-md-12">
-                            <h4>Delete Round</h4>
-
-                            <form method="post" action="{{ route('delete-round') }}">
-                                @csrf
-                                
-                                <input type="hidden" name="id" value="{{ $round->id }}" />
-                                <input type="hidden" name="tournament_id" value="{{ $round->tournament_id }}" />
-
-                                <button type="submit" class="btn btn-danger">Delete</button>
                             </form>
                         </div>
                     </div>
