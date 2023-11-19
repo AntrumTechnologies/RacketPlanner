@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Libraries\Planner\Planner;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 class PlannerServiceProvider extends ServiceProvider
 {
@@ -17,8 +18,8 @@ class PlannerServiceProvider extends ServiceProvider
             $tournamentId = 1;
             if (Route::current() !== null) {
             	$tournamentId = Route::current()->__get('tournamentId');
-	    }
-	    
+            }
+
             return new Planner($tournamentId);
         });
     }
