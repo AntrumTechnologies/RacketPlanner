@@ -46,6 +46,26 @@ class PlannerWrapperController extends Controller
         return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#slot'. $slotId)->with('status', 'Emptied slot');
     }
 
+    public function EmptyAllSlots($tournamentId) {
+        Schedule::where('tournament_id', $tournamentId)->update(['match_id' => NULL]);
+
+        return Redirect::route('tournament', ['tournament_id' => $tournamentId])->with('status', 'Emptied all slots');
+    }
+
+    public function PublishRound($tournamentId, $roundId)
+    {
+        Schedule::where('round_id', $roundId)->where('state', '!=', 'disabled')->update(['public' => 1]);
+
+        return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#round'. $roundId)->with('status', 'Published round');
+    }
+
+    public function UnpublishRound($tournamentId, $roundId)
+    {
+        Schedule::where('round_id', $roundId)->update(['public' => 0]);
+
+        return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'#round'. $roundId)->with('status', 'Unpublished round');
+    }
+
     public function PublishSlot($tournamentId, $slotId)
     {
         Schedule::where('id', $slotId)->update(['public' => 1]);
