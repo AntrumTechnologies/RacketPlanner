@@ -42,7 +42,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('organizations') }}">{{ __('Organizations') }}</a>
                         </li>
-                        @can('admin')
+                        @can('superuser')
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('users') }}">{{ __('Users') }}</a>
                         </li>
