@@ -175,6 +175,16 @@ class UserController extends Controller
         ]);
     }
 
+    public function edit($user_id) {
+        if ($user_id == Auth::id()) {
+            $user = User::findOrFail($user_id);
+        } else {
+            return Redirect::route('user', $user_id);
+        }
+
+        return view('user-edit', ['user' => $user]);
+    }
+
     public function update(Request $request) {
         $request->validate([
             'id' => 'required|exists:users',
@@ -182,8 +192,7 @@ class UserController extends Controller
             'email' => 'required',
             'password' => 'sometimes',
             'rating' => 'sometimes|min:0',
-	    'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
-	    'yOffset' => 'required|min:0|max:60',
+            'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
         ]);
 
         $user = User::find($request->get('id'));
@@ -208,17 +217,16 @@ class UserController extends Controller
             }
 
             $file = $request->file('avatar');
-	    $path = $file->hashName('avatars');
-            $avatar = Image::make($file)->crop(190, 190, 0, $request->get('yOffset'))->encode('jpg', 100);
-            Storage::disk('public')->put($path, (string) $avatar->encode());
+            $path = $file->hashName('avatars');
+            $avatar = Image::make($file)->fit(180)->encode('jpg', 100);
+            $store = Storage::disk('public')->put($path, (string) $avatar->encode());
 
             $user->avatar = $path;
         }
         
         $user->save();
 
-        return Redirect::route('users')->with('status', 'Successfully updated user '. $user->name);
-        return Redirect::route('user', [$user->id])->with('status', 'Successfully updated user details');
+        return Redirect::route('user', $user->id)->with('status', 'Successfully updated user details');
     }
 
     public function store(Request $request) {
