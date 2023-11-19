@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PermissionController;
 use App\Http\Controllers\CourtController;
+use App\Http\Controllers\CourtRoundController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoundController;
 use App\Http\Controllers\TournamentController;
@@ -53,6 +54,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/tournament/withdraw', [PlayerController::class, 'withdraw'])->name('confirm-withdraw');
     Route::get('/tournament/{tournament_id}/enroll', [TournamentController::class, 'enroll'])->name('tournament-enroll');
     Route::get('/tournament/{tournament_id}/withdraw', [TournamentController::class, 'withdraw'])->name('tournament-withdraw');
+    Route::get('/tournament/{tournament_id}/leaderboard', [ScoreController::class, 'show'])->name('leaderboard');
     Route::get('/tournament/{tournament_id}', [TournamentController::class, 'show'])->name('tournament');
     Route::get('/tournaments', [TournamentController::class, 'index'])->name('tournaments');
 
@@ -60,7 +62,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/match/{match_id}', [MatchDetailsController::class, 'show'])->name('match');
     Route::post('/match', [MatchDetailsController::class, 'update'])->name('save-score');
 
+    Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('edit-user');
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user');
+    Route::post('/user', [UserController::class, 'update'])->name('update-user');
 
     Route::group(['middleware' => ['can:admin']], function () {
         Route::post('/admin/organization/{id}', [OrganizationController::class, 'update'])->name('update-organization');
@@ -70,8 +74,6 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/admin/tournament/update', [TournamentController::class, 'update'])->name('update-tournament');
         Route::post('/admin/tournament/delete', [TournamentController::class, 'delete'])->name('delete-tournament');
         Route::post('/admin/tournament/store', [TournamentController::class, 'store'])->name('store-tournament');
-
-        Route::get('/admin/leaderboard/{tournament_id}', [ScoreController::class, 'show'])->name('leaderboard');
 
         Route::get('/admin/match/{match_id}', [MatchDetailsController::class, 'edit_match'])->name('edit-match');
         Route::post('/admin/match/update', [MatchDetailsController::class, 'update_match'])->name('update-match');
@@ -88,16 +90,21 @@ Route::group(['middleware' => ['auth']], function() {
         Route::get('/admin/plan/{tournamentId}/clinic/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToClinic'])->name('slot-clinic');
         Route::get('/admin/plan/{tournamentId}/disable/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToDisabled'])->name('slot-disable');
 
+        Route::get('/admin/plan/{tournamentId}/empty_all', [PlannerWrapperController::class, 'EmptyAllSlots'])->name('empty-all-slots');
         Route::get('/admin/plan/{tournamentId}/empty/{slotId}', [PlannerWrapperController::class, 'EmptySlot'])->name('empty-slot');
-        Route::get('/admin/plan/{tournamentId}/publish/{slotId}', [PlannerWrapperController::class, 'PublishSlot'])->name('publish-slot');
-        Route::get('/admin/plan/{tournamentId}/unpublish/{slotId}', [PlannerWrapperController::class, 'UnpublishSlot'])->name('unpublish-slot');
+        Route::get('/admin/plan/{tournamentId}/publish_slot/{slotId}', [PlannerWrapperController::class, 'PublishSlot'])->name('publish-slot');
+        Route::get('/admin/plan/{tournamentId}/unpublish_slot/{slotId}', [PlannerWrapperController::class, 'UnpublishSlot'])->name('unpublish-slot');
+        Route::get('/admin/plan/{tournamentId}/publish_round/{roundId}', [PlannerWrapperController::class, 'PublishRound'])->name('publish-round');
+        Route::get('/admin/plan/{tournamentId}/unpublish_round/{roundId}', [PlannerWrapperController::class, 'UnpublishRound'])->name('unpublish-round');
 
-        Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'index'])->name('players');
+        Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'show'])->name('players');
         Route::post('/admin/player/invite', [PlayerController::class, 'invite'])->name('invite-player');
         Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
         Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
         Route::post('/admin/player/present', [PlayerController::class, 'markPresent'])->name('mark-player-present');
         Route::post('/admin/player/absent', [PlayerController::class, 'markAbsent'])->name('mark-player-absent');
+
+        Route::get('/admin/tournament/{tournament_id}/courts_rounds', [CourtRoundController::class, 'show'])->name('courts-rounds');
 
         Route::view('/admin/tournament/{tournament_id}/court', 'admin.court-create')->name('create-court');
         Route::get('/admin/court/{court_id}', [CourtController::class, 'show'])->name('court');
@@ -112,7 +119,6 @@ Route::group(['middleware' => ['auth']], function() {
         Route::post('/admin/round/delete', [RoundController::class, 'delete'])->name('delete-round');
 
         Route::get('/admin/users', [UserController::class, 'index'])->name('users');
-        Route::post('/admin/user', [UserController::class, 'update'])->name('update-user');
         Route::view('/admin/user/create', 'admin.user-create')->name('create-user');
         Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
     });
