@@ -24,7 +24,7 @@
                         {{ $user->name }}
                     </div>
                     <div class="ms-auto">
-                         <a href="{{ route('user', $user->id) }}">Edit</a>
+                         <a href="{{ route('edit-user', $user->id) }}">Edit</a>
                     </div>
                 </div>
 

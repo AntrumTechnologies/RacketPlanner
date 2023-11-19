@@ -25,7 +25,8 @@
                 
                 <input type="hidden" name="tournament_id" value="{{ $tournament->id }}">
 
-                <button class="btn btn-success" type="submit" name="submit">Enroll</button>
+                <button class="btn btn-success" type="submit" name="submit" style="color: #fff">Enroll</button>
+                <a href="{{ url()->previous() }}" class="btn btn-warning">I made up my mind</a>
             </form>
         </div>
     </div>
