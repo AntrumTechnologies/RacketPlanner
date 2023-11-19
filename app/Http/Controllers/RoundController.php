@@ -92,6 +92,9 @@ class RoundController extends Controller
         $round = Round::find($request->get('id'));
         $round->delete();
 
+        // Re-generate schedule
+        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
+
         return Redirect::route('tournament', ['tournament_id' => $round->tournament_id])
             ->with('status', 'Successfully deleted round '. $round->name);
     }

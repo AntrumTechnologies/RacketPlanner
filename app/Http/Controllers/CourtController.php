@@ -41,7 +41,7 @@ class CourtController extends Controller
         // Re-generate schedule
         PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
 
-        return Redirect::route('tournament', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully added the court '. $newCourt->name);
+        return Redirect::route('courts-rounds', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully added the court '. $newCourt->name);
     }
 
     public function update(Request $request) {
@@ -63,7 +63,7 @@ class CourtController extends Controller
 
         $court->save();
         
-        return Redirect::route('tournament', ['tournament_id' => $court->tournament_id])
+        return Redirect::route('courts-rounds', ['tournament_id' => $court->tournament_id])
             ->with('status', 'Successfully updated court details for '. $court->name);
     }
 
@@ -79,12 +79,15 @@ class CourtController extends Controller
 
         $schedule = Schedule::where('tournament_id', $request->get('tournament_id'))
             ->where('court_id', $request->get('id'))
-            ->get();
+            ->delete();
 
         $court = Court::find($request->get('id'));
         $court->delete();
 
-        return Redirect::route('tournament', ['tournament_id' => $court->tournament_id])
+        // Re-generate schedule
+        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
+
+        return Redirect::route('courts-rounds', ['tournament_id' => $court->tournament_id])
             ->with('status', 'Successfully deleted court '. $court->name);
     }
 }
