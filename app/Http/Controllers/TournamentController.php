@@ -256,13 +256,9 @@ class TournamentController extends Controller
             $match->time = date('H:i', strtotime($match->time));
         }
 
-        $courts = Court::where('tournament_id', $tournament_id)->get();
-        $rounds = Round::where('tournament_id', $tournament_id)->get();
-
-        foreach ($rounds as $round) {
-            $round->starttime = date('H:i', strtotime($round->starttime));
-            $round->endtime = date('H:i', strtotime($round->endtime));
-        }
+        $courts = Court::where('tournament_id', $tournament_id)->count();
+        $rounds = Round::where('tournament_id', $tournament_id)->count();
+        $matches_scheduled = Schedule::where('tournament_id', $tournament_id)->where('state', 'available')->where('match_id', '!=', NULL)->count();
 
         return view('tournament', [
             'tournament' => $tournament, 
@@ -272,8 +268,9 @@ class TournamentController extends Controller
             'schedule_clinic' => $schedule_clinic,
             'next_round_id' => $next_round_id,
             'players' => $players, 
-            'courts' => $courts, 
+            'courts' => $courts,
             'rounds' => $rounds,
+            'matches_scheduled' => $matches_scheduled,
         ]);
     }
 

@@ -6,6 +6,14 @@
         <div class="col-md-8">
             <h2>{{ $tournament->name }}</h2>
 
+            <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+                <ol class="breadcrumb">
+                <li class="breadcrumb-item" aria-current="page"><a href="{{ route('home') }}">Home</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('tournaments') }}">Tournaments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $tournament->name }}</li>
+                </ol>
+            </nav>
+
             @if (session('status'))
                 <div class="alert alert-success">{{ session('status') }}</div>
             @endif
@@ -23,17 +31,17 @@
             @else
                 <div class="alert alert-light" role="alert">
                     <p>You are <strong>not</strong> enrolled in this tournament.</p>
-                    <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament) }}">Enroll</a>
+                    <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament) }}" style="color: #fff">Enroll</a>
                 </div>
             @endif
         @else
             @if ($tournament->is_enrolled == true)
                 <div class="alert alert-light" role="alert">
-                    <p>You are enrolled in this tournament! You can't withdraw anymore.</p>
+                    You are enrolled in this tournament! You can't withdraw anymore.
                 </div>
             @else
                 <div class="alert alert-light" role="alert">
-                    <p>You are <strong>not</strong> enrolled in this tournament and can't enroll anymore.</p>
+                    You are <strong>not</strong> enrolled in this tournament and can't enroll anymore.
                 </div>
             @endif
         @endif
@@ -45,30 +53,30 @@
         <div class="col-md-8">
             <h3>Admin</h3>
             <div class="row">
-                <div class="col-lg-4">
-                    <h5>Players</h5>
-                    <p><a class="btn btn-primary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a></p>
-                    @if (count($players) == 0)
-                    <p><a class="btn btn-secondary disabled">Show leaderboard</a></p>
-                    @else
-                    <p><a class="btn btn-secondary" href="{{ route('leaderboard', $tournament->id) }}">Show leaderboard</a></p>
-                    @endif
+                <div class="col-lg-6 mb-4">
+                    <h5>Manage</h5>
+                    <ul class="list-group">
+                        <a href="{{ route('players', $tournament->id) }}" class="list-group-item link-primary">Manage or invite players</a>
+                        <a href="{{ route('courts-rounds', $tournament->id) }}" class="list-group-item link-primary">Manage courts and rounds</a>
+                        @if (count($players) == 0)
+                        <a class="list-group-item disabled">Show leaderboard</a>
+                        @else
+                        <a href="{{ route('leaderboard', $tournament->id) }}" class="list-group-item link-primary">Show leaderboard</a>
+                        @endif
+                    </ul>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <h5>Matches</h5>
-                    @if (count($players) == 0 || count($courts) == 0 || count($rounds) == 0)
-                        <div class="btn-group">
-                            <a class="btn btn-warning disabled">Generate matches</a>
-                        </div>
-                        <p><div class="btn-group">
+                    @if (count($players) == 0 || $courts == 0 || $rounds == 0)
+                        <div class="btn-group mb-2">
                             <a class="btn btn-primary disabled">Schedule next round</a>
                             <a class="btn btn-secondary disabled">Schedule all</a>
-                        </div></p>
-                    @else
+                        </div><br />
                         <div class="btn-group">
-                            <a class="btn btn-warning" href="{{ route('generate-matches', $tournament->id) }}" onclick="return confirm('Are you sure you want to generate the matches (again)?');">Generate matches</a>
+                            <a class="btn btn-danger disabled">Empty all slots</a>
                         </div>
-                        <p><div class="btn-group">
+                    @else
+                        <div class="btn-group mb-2">
                             @if (count($schedule) == 0)
                             <a class="btn btn-primary disabled">Schedule next round</a>
                             <a class="btn btn-secondary disabled">Schedule all</a>
@@ -76,7 +84,14 @@
                             <a class="btn btn-primary" href="{{ route('plan-round', [$tournament->id, $next_round_id]) }}">Schedule next round</a>
                             <a class="btn btn-secondary" href="{{ route('plan-schedule', $tournament->id) }} ">Schedule all</a>
                             @endif
-                        </div></p>
+                        </div><br />
+                        <div class="btn-group">
+                            @if ($matches_scheduled == 0)
+                            <a class="btn btn-danger disabled">Empty all slots</a>
+                            @else
+                            <a class="btn btn-danger" href="{{ route('empty-all-slots', [$tournament->id]) }}">Empty all slots</a>
+                            @endif
+                        </div>
                     @endif
                 </div>
             </div>
@@ -88,7 +103,15 @@
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h3>Your Score</h3>
-
+            
+            @if ($tournament->leaderboard == 1)
+                @if (count($players) == 0)
+                <p><a class="btn btn-secondary disabled">Show leaderboard</a></p>
+                @else
+                <p><a class="btn btn-secondary" href="{{ route('leaderboard', $tournament->id) }}">Show leaderboard</a></p>
+                @endif
+            @endif
+            
             <div class="text-center">
                 <h1 style="font-size: 2.8em"><span class="badge bg-primary" style="width: 75px;">{{ $score }}</span></h1>
             </div>
@@ -107,7 +130,18 @@
                 @php
                     if (!isset($previous_match_time) || $match->time != $previous_match_time) {
                 @endphp
-                <h5>{{ $match->round }}</h5>
+                <div class="input-group gap-3">
+                    <h4 style="padding-top: 0.3em" id="round{{ $match->round_id }}">{{ $match->round }}</h4>
+
+                    <p class="ms-auto">
+                    @if ($match->public == 0)
+                        <a href="{{ route('publish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-primary">Publish round</a>
+                    @else
+                        <a href="{{ route('unpublish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-warning">Unpublish round</a>
+                    @endif
+                    </p>
+                </div>
+
                 @php
                     }
                     
@@ -124,27 +158,19 @@
                             <div class="ms-auto">
                                 <div class="btn-group">
                                     @if ($match->state == 'available')
-                                        <a class="btn btn-sm btn-success active">Available</a>
+                                        <a class="btn btn-sm btn-success active" style="color: #fff">Available</a>
                                         <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Disable</a>
                                         <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Clinic</a>
                                     @elseif ($match->state == 'disabled')
                                         <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Available</a>
-                                        <a class="btn btn-sm btn-success active">Disable</a>
+                                        <a class="btn btn-sm btn-success active" style="color: #fff">Disable</a>
                                         <a href="{{ route('slot-clinic', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Clinic</a>
                                     @elseif ($match->state == 'clinic')
                                         <a href="{{ route('slot-available', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Available</a>
                                         <a href="{{ route('slot-disable', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning">Disable</a>
-                                        <a class="btn btn-sm btn-success">Clinic</a>
+                                        <a class="btn btn-sm btn-success" style="color: #fff">Clinic</a>
                                     @endif
                                 </div>
-
-				@if ($match->state == 'available')
-				<a href="{{ route('plan-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Schedule slot</a>
-                <a href="{{ route('create-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary ms-2">Manual fill</a>
-				@else
-				<a class="btn btn-sm btn-secondary disabled ms-2">Schedule slot</a>
-                <a class="btn btn-sm btn-secondary disabled ms-2">Manual fill</a>
-				@endif
 
                                 @if ($match->public == 0)
                                     <a href="{{ route('publish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-primary ms-2">Publish</a>
@@ -279,93 +305,45 @@
                                 @endcan
                             </form>
                         </div>
+                    @else
+                        @if ($match->state == 'available')
+                        <div class="card-body">
+                            <div class="btn-group">
+                                <a href="{{ route('plan-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-dark">Schedule slot</a>
+                                <a href="{{ route('create-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary">Manual fill</a>
+                            </div>
+                        </div>
+                        @endif
                     @endif
                 </div>
             @endforeach  
         </div>
     </div> 
 
-    @can('admin')
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
-            <div class="row">
-                <div class="col-md-6">
-                    <h4>Assigned Courts</h4>
-
-                    @if (count($courts) == 0)
-                        <p>There are no courts for this tournament yet.</p>
-                    @else
-                        <p><div class="list-group">
-                            @foreach ($courts as $court)
-                            <a href="{{ route('court', $court->id) }}" class="list-group-item d-flex justify-content-between align-items-start">
-                                <div class="ms-2 me-auto">
-                                    {{ $court->name }} 
-                                </div>
-                            </a>
-                            @endforeach
-                        </div></p>
-                    @endif
-
-                    @can('admin')
-                    <a class="btn btn-secondary" href="{{ route('create-court', $tournament->id) }}">Add new court</a>
-                    @endcan
-                </div>
-
-                <div class="col-md-6">
-                    <h4>Assigned Rounds</h4>
-
-                    @if (count($rounds) == 0)
-                        <p>There are no rounds for this tournament yet.</p>
-                    @else
-                        <p><div class="list-group">
-                            @foreach ($rounds as $round)
-                            <a href="{{ route('round', $round->id) }}" class="list-group-item d-flex justify-content-between align-items-start">
-                                <div class="ms-2 me-auto">
-                                    {{ $round->name }} ({{ $round->starttime }} - {{ $round->endtime }})
-                                </div>
-                            </a>
-                            @endforeach
-                        </div></p>
-                    @endif
-
-                    @can('admin')
-                    <a class="btn btn-secondary" href="{{ route('create-round', $tournament->id) }}">Add new round</a>
-                    @endcan
-                </div>
-            </div>
-        </div>
-    </div>
-    @endcan
-
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
-            <h4>All Players in Tournament</h4>
+            <h4>All Players</h4>
 
             @if (count($players) == 0)
-                <p>No players are assigned yet. Perhaps start by assigning a few players?</p>
+                <p>No players are enrolled yet.</p>
             @else
                 <p>{{ $count['present'] }} players are present, of which {{ $count['clinic'] }} join the clinic. {{ $count['absent'] }} players are absent.</p>
                 <p><div class="list-group">
                     @foreach ($players as $player)
                     <a href="{{ route('user', $player->user_id) }}" class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
-                            {{ $player->name }} 
+                            {{ $player->name }} ({{ $player->rating }})
                         </div>
-                        @if ($player->clinic == true)<span class="badge bg-danger rounded-pill">Clinic</span>@endif
+                        @if ($player->clinic == true)<span class="badge bg-info rounded-pill">Clinic</span>@endif
                         @if ($player->present == true)
                             <span class="badge bg-success rounded-pill ms-2" style="min-width: 85px">{{ $player->no_matches }} match(es)</span>
                         @else
                             <span class="badge bg-warning rounded-pill ms-2" style="min-width: 85px">Not present</span>
                         @endif
-                        @if ($player->rating != '') <span class="badge bg-primary rounded-pill ms-2" style="min-width: 70px">Rating: {{ $player->rating }}</span> @endif
                     </a>
                     @endforeach
                 </div></p>
             @endif
-
-            @can('admin')
-                <a class="btn btn-primary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a>
-            @endcan
         </div>
     </div>
 </div>
