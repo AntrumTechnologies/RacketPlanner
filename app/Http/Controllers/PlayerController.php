@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\TournamentEnrollAction;
 use App\Models\Player;
 use App\Models\Tournament;
+use App\Models\Schedule;
 use App\Models\User;
 use App\Models\UserOrganizationalAssignment;
 use App\Notifications\TournamentEnrollEmail;
@@ -22,7 +23,7 @@ class PlayerController extends Controller
         $this->middleware('auth');
     }
 
-    public function index($tournament_id) {
+    public function show($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
         $tournament_players = Player::where('tournament_id', $tournament_id)
             ->select('players.*', 'users.name', 'users.email')
@@ -39,7 +40,9 @@ class PlayerController extends Controller
             ->select('users.*')
             ->get();
 
-        return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users]);
+        $matches_scheduled = Schedule::where('tournament_id', $tournament_id)->where('state', 'available')->where('match_id', '!=', NULL)->count();
+
+        return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users, 'matches_scheduled' => $matches_scheduled]);
     }
 
     public function invite(Request $request) {
@@ -82,7 +85,7 @@ class PlayerController extends Controller
         $player->save();
 
         $user = User::findOrFail($player->user_id);
-        return Redirect::route('players', ['tournament_id' => $player->tournament_id])->with('status', 'Marked '. $user->name .' present');
+        return redirect()->to(route('players', ['tournament_id' => $player->tournament_id]) .'#player'. $player->id)->with('status', 'Marked '. $user->name .' present');
     }
 
     public function markAbsent(Request $request) {
@@ -96,7 +99,7 @@ class PlayerController extends Controller
         $player->save();
 
         $user = User::findOrFail($player->user_id);
-        return Redirect::route('players', ['tournament_id' => $player->tournament_id])->with('status', 'Marked '. $user->name .' absent');
+        return redirect()->to(route('players', ['tournament_id' => $player->tournament_id]) .'#player'. $player->id)->with('status', 'Marked '. $user->name .' absent');
     }
 
     public function enroll(Request $request) {
