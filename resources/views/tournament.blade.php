@@ -126,28 +126,49 @@
                 <p>No matches have been scheduled yet.</p>
             @endif
 
+            <div class="accordion" id="accordionExample">
             @foreach ($schedule as $match)
                 @php
+                    if (isset($previous_match_time) && $match->time != $previous_match_time) {
+                        echo '</div></div>';
+                    }
+                
                     if (!isset($previous_match_time) || $match->time != $previous_match_time) {
                 @endphp
-                <div class="input-group gap-3">
-                    <h4 style="padding-top: 0.3em" id="round{{ $match->round_id }}">{{ $match->round }}</h4>
+                <div class="accordion-item">
+                
+                    <div class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $match->round_id }}" aria-expanded="true" aria-controls="collapse{{ $match->round_id }}" style="background-color: #f8fafc !important;">
+                            <div class="input-group gap-3 accordion-header">
+                                <h5 style="padding-top: 0.3em" id="round{{ $match->round_id }}">{{ $match->round }}</h5>
 
-                    <p class="ms-auto">
-                    @if ($match->public == 0)
-                        <a href="{{ route('publish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-primary">Publish round</a>
-                    @else
-                        <a href="{{ route('unpublish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-warning">Unpublish round</a>
-                    @endif
-                    </p>
-                </div>
+                                <span class="ms-auto me-3">
+                                @if ($match->public == 0)
+                                    <a href="{{ route('publish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-primary">Publish round</a>
+                                @else
+                                    <a href="{{ route('unpublish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-warning">Unpublish round</a>
+                                @endif
+                                </span>
+                            </div>
+                        </button>
+                    </div>
 
+                    @php
+                        if (!isset($previous_match_time)) {
+                    @endphp
+                    <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse show">
                 @php
+                        } else {
+                @endphp
+                        <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse">
+                @php   
+                        }
                     }
                     
                     $previous_match_time = $match->time;
                 @endphp
-                <div class="card mb-4">
+                
+                <div class="card mb-4 m-3">
                     <div class="card-header d-flex">
                         <div class="me-auto" style="font-size: 1.2em" id="slot{{ $match->schedule_id }}">
                             {{ $match->time }} @ {{ $match->court }}
@@ -317,6 +338,7 @@
                     @endif
                 </div>
             @endforeach  
+            </div></div>
         </div>
     </div> 
 
