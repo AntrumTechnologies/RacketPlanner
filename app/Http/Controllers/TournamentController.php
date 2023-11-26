@@ -347,14 +347,15 @@ class TournamentController extends Controller
         }
 
         $newTournament = new Tournament([
+            'owner_organization_id' => $request->get('owner_organization_id'),
             'name' => $request->get('name'),
             'datetime_start' => $request->get('datetime_start'),
             'datetime_end' => $request->get('datetime_end'),
-            'type' => $request->get('type'),
-            'allow_singles' => $request->get('allow_singles'),
-            'enroll_until' => $request->get('enroll_until'),
+            'description' => $request->get('description'),
+            'location' => $request->get('location'),
+            'location_link' => $request->get('location_link'),
             'max_players' => $request->get('max_players'),
-            'owner_organization_id' => $request->get('owner_organization_id'),
+            'enroll_until' => $request->get('enroll_until'),
         ]);
 
         $newTournament->save();
@@ -364,11 +365,15 @@ class TournamentController extends Controller
     public function update(Request $request) {
         $request->validate([
             'id' => 'required|exists:tournaments',
+            'owner_organization_id' => 'required|exists:organizations,id',
             'name' => 'required|max:50',
             'datetime_start' => 'required|date_format:Y-m-d H:i',
             'datetime_end' => 'required|date_format:Y-m-d H:i',
-            'type' => 'required', // TODO: define enum class?
-            'allow_singles' => 'required',
+            'description' => 'sometimes',
+            'location' => 'sometimes',
+            'location_link' => 'sometimes',
+            'max_players' => 'sometimes|min:0',
+            'enroll_until' => 'sometimes|date_format:Y-m-d H:i',
 		]);
 
         $tournament = Tournament::find($request->get('id'));
@@ -389,20 +394,24 @@ class TournamentController extends Controller
             $tournament->datetime_end = $request->get('datetime_end');
         }
 
-        if ($request->has('type')) {
-            $tournament->type = $request->get('type');
+        if ($request->get('description')) {
+            $tournament->description = $request->get('description');
         }
 
-        if ($request->has('allow_singles')) {
-            $tournament->allow_singles = $request->get('allow_singles');
+        if ($request->get('location')) {
+            $tournament->location = $request->get('location');
         }
 
-        if ($request->has('enroll_until')) {
-            $tournament->enroll_until = $request->get('enroll_until');
+        if ($request->get('location_link')) {
+            $tournament->location_link = $request->get('location_link');
         }
 
         if ($request->has('max_players')) {
             $tournament->max_players = $request->get('max_players');
+        }
+
+        if ($request->has('enroll_until')) {
+            $tournament->enroll_until = $request->get('enroll_until');
         }
 
         $tournament->save();
