@@ -161,7 +161,7 @@ class UserController extends Controller
             }
 
             foreach($matches as $match) {
-                $match->time = date('H:i', strtotime($match->time));
+                $match->time = date('d M Y - H:i', strtotime($match->time));
             }
 
             $user_matches_per_tournament[] = $matches;
@@ -171,7 +171,8 @@ class UserController extends Controller
             'user' => $user, 
             'user_tournaments' => $user_tournaments, 
             'user_clinics' => $user_clinics,
-            'user_matches_per_tournament' => $user_matches_per_tournament
+            'user_matches_per_tournament' => $user_matches_per_tournament,
+            'count_matches' => count($user_clinics) + count($matches),
         ]);
     }
 
