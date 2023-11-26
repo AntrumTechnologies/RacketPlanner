@@ -17,5 +17,6 @@ class Player extends Model
         'break_round_id',
         'clinic',
         'points',
+        'rating',
     ];
 }
