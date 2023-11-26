@@ -68,9 +68,10 @@ class TournamentController extends Controller
 
     public function show($tournament_id) {
         $tournament = Tournament::where('tournaments.id', $tournament_id)
-            ->select('tournaments.*')
-            ->join('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
+            ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+            ->leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
             ->where('users_organizational_assignment.user_id', Auth::id())
+            ->select('tournaments.*', 'organizations.name as organizer')
             ->first();
 
         if (!$tournament) {
@@ -96,6 +97,19 @@ class TournamentController extends Controller
         $points = Player::where('user_id', Auth::id())->where('tournament_id', $tournament_id)->select('points')->get();
         foreach ($points as $point) {
             $score += $point->points;
+        }
+
+        // Determine whether courts, rounds, or players changed
+        $regenerate_schedule = false;
+        $regenerate_matches = false;
+        if ($tournament->change_to_courts_rounds == true) {
+            // Generate schedule & matches again if courts or rounds change
+            $regenerate_schedule = true;
+        } else {
+            // Generate only matches again if only players change
+            if ($tournament->change_to_players == true) {
+                $regenerate_matches = true;
+            }
         }
 
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
@@ -124,24 +138,24 @@ class TournamentController extends Controller
                         OR player2a.id = ". $player->id ." 
                         OR player2b.id = ". $player->id .")");
             
-	    if ($player->clinic == true) {
-		if ($player->present == true) {
-		    $count['present']++;
-		    $count['clinic']++;
-		}
+            if ($player->clinic == true) {
+            if ($player->present == true) {
+                $count['present']++;
+                $count['clinic']++;
+            }
 
-                $player->no_matches = count($matches) + 1;
-            } else {
-		if ($player->present == true) {
-		    $count['present']++;
-		}
+                    $player->no_matches = count($matches) + 1;
+                } else {
+            if ($player->present == true) {
+                $count['present']++;
+            }
 
-                $player->no_matches = count($matches);
-	    }
+                    $player->no_matches = count($matches);
+            }
 
-	    if ($player->present == false) {
-	        $count['absent']++;
-	    }
+            if ($player->present == false) {
+                $count['absent']++;
+            }
         }
 
         if (Auth::user()->can('admin')) {
@@ -264,6 +278,8 @@ class TournamentController extends Controller
             'tournament' => $tournament, 
             'score' => $score,
             'count' => $count, 
+            'regenerate_schedule' => $regenerate_schedule,
+            'regenerate_matches' => $regenerate_matches,
             'schedule' => $schedule, 
             'schedule_clinic' => $schedule_clinic,
             'next_round_id' => $next_round_id,
@@ -288,8 +304,15 @@ class TournamentController extends Controller
 
     public function edit($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
+        $user = Auth::user();
+        if ($user->can('superuser')) {
+            $organizations = Organization::all();
+        } else {
+            $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->join('organizations', 'organizations.id', '=', 'admins_organizational_assignment.organization_id')->get();
+        }
 
-        return view('admin.tournament-edit', ['tournament' => $tournament]);
+        return view('admin.tournament-edit', ['tournament' => $tournament, 'organizations' => $organizations]);
     }
 
     public function create() {
@@ -306,14 +329,15 @@ class TournamentController extends Controller
 
     public function store(Request $request) {
         $request->validate([
+            'owner_organization_id' => 'required|exists:organizations,id',
             'name' => 'required|max:50',
             'datetime_start' => 'required|date_format:Y-m-d H:i',
             'datetime_end' => 'required|date_format:Y-m-d H:i',
-            'type' => 'required', // TODO: define enum class?
-            'allow_singles' => 'required',
-            'enroll_until' => 'sometimes|date_format:Y-m-d H:i',
+            'description' => 'sometimes',
+            'location' => 'sometimes',
+            'location_link' => 'sometimes',
             'max_players' => 'sometimes|min:0',
-            'owner_organization_id' => 'required',
+            'enroll_until' => 'sometimes|date_format:Y-m-d H:i',
 		]);
 
         if (AdminOrganizationalAssignment::where('user_id', Auth::id())
