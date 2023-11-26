@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Court;
 use App\Models\Schedule;
-use App\Http\Controllers\PlannerDatabaseHelper;
+use App\Models\Tournament;
+use App\Http\Controllers\PlannerWrapperController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -38,8 +39,9 @@ class CourtController extends Controller
 
         $newCourt->save();
 
-        // Re-generate schedule
-        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $tournament->change_to_courts_rounds = true;
+        $tournament->save();
 
         return Redirect::route('courts-rounds', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully added the court '. $newCourt->name);
     }
@@ -84,8 +86,9 @@ class CourtController extends Controller
         $court = Court::find($request->get('id'));
         $court->delete();
 
-        // Re-generate schedule
-        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $tournament->change_to_courts_rounds = true;
+        $tournament->save();
 
         return Redirect::route('courts-rounds', ['tournament_id' => $court->tournament_id])
             ->with('status', 'Successfully deleted court '. $court->name);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Round;
 use App\Models\Schedule;
+use App\Models\Tournament;
 use App\Http\Controllers\PlannerDatabaseHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,11 +41,11 @@ class RoundController extends Controller
 
         $new_round->save();
 
-        // Re-generate schedule
-        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $tournament->change_to_courts_rounds = true;
+        $tournament->save();
 
-        $rounds = Round::all();
-        return Redirect::route('tournament', ['tournament_id' => $request->get('tournament_id'), 'rounds' => $rounds]);
+        return Redirect::route('courts-rounds', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully added the round '. $new_round->name);
     }
 
     public function update(Request $request) {
@@ -92,10 +93,10 @@ class RoundController extends Controller
         $round = Round::find($request->get('id'));
         $round->delete();
 
-        // Re-generate schedule
-        PlannerDatabaseHelper::RegenerateSchedule($request->get('tournament_id'));
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $tournament->change_to_courts_rounds = true;
+        $tournament->save();
 
-        return Redirect::route('tournament', ['tournament_id' => $round->tournament_id])
-            ->with('status', 'Successfully deleted round '. $round->name);
+        return Redirect::route('courts-rounds', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully deleted the round '. $new_round->name);
     }
 }

@@ -40,9 +40,28 @@ class PlayerController extends Controller
             ->select('users.*')
             ->get();
 
+
+        $count = array('present' => 0, 'absent' => 0, 'clinic' => 0); 
+        foreach ($tournament_players as $player) {
+            if ($player->clinic == true) {
+                if ($player->present == true) {
+                    $count['present']++;
+                    $count['clinic']++;
+                }
+            } else {
+                if ($player->present == true) {
+                    $count['present']++;
+                }
+
+                if ($player->present == false) {
+                    $count['absent']++;
+                }
+            }
+        }
+
         $matches_scheduled = Schedule::where('tournament_id', $tournament_id)->where('state', 'available')->where('match_id', '!=', NULL)->count();
 
-        return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users, 'matches_scheduled' => $matches_scheduled]);
+        return view('admin.players', ['tournament' => $tournament, 'tournament_players' => $tournament_players, 'users' => $users, 'matches_scheduled' => $matches_scheduled, 'count' => $count]);
     }
 
     public function invite(Request $request) {
@@ -125,6 +144,10 @@ class PlayerController extends Controller
         // Which organization is the tournament part of?
         $tournament = Tournament::findOrFail($request->get('tournament_id'));
 
+        // Save change made to players
+        $tournament->change_to_players = true;
+        $tournament->save();
+
         // Determine whether to add user to this organization or not
         $alreadyPresent = UserOrganizationalAssignment::where('organization_id', $tournament->owner_organization_id)
             ->where('user_id', Auth::id())
@@ -151,6 +174,11 @@ class PlayerController extends Controller
         $player = Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->get();
         $player->each->delete();
 
+        // Save change made to players
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $tournament->change_to_players = true;
+        $tournament->save();
+
         return redirect()->route('tournament', ['tournament_id' => $request->get('tournament_id')]);
     }
 
@@ -158,16 +186,30 @@ class PlayerController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'tournament_id' => 'required|exists:tournaments,id',
+            'rating' => 'sometimes',
             'clinic' => 'sometimes',
         ]);
+
+        if (!$request->has('rating') || empty($request->get('rating'))) {
+            $user = User::find($request->get('user_id'));
+            $rating = $user->rating;
+        } else {
+            $rating = $request->get('rating');
+        }
 
         $new_player = new Player([
             'user_id' => $request->get('user_id'),
             'tournament_id' => $request->get('tournament_id'),
+            'rating' => $rating,
             'clinic' => $request->get('clinic'),
         ]);
 
         $new_player->save();
+
+        // Save change made to players
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $tournament->change_to_players = true;
+        $tournament->save();
 
         $user = User::find($request->get('user_id'));
         return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully assigned '. $user->name .' to tournament');
@@ -181,7 +223,13 @@ class PlayerController extends Controller
         ]);
 
         $player = Player::find($request->get('id'));
+        $tournament_id = $player->tournament_id;
         $player->delete();
+
+        // Save change made to players
+        $tournament = Tournament::find($tournament_id);
+        $tournament->change_to_players = true;
+        $tournament->save();
 
         return Redirect::route('players', ['tournament_id' => $player->tournament_id])->with('status', 'Successfully deleted player '. $request->get('name'));
     }
