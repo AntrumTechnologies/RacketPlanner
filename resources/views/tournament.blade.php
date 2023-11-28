@@ -55,7 +55,7 @@
                 </div>
             @else
                 <div class="alert alert-light" role="alert">
-                    <p>You are <strong>not</strong> enrolled in this tournament.</p>
+                    <p>You are <strong>not</strong> enrolled in this tournament. You can enroll until @if (empty($tournament->enroll_until)) the tournament starts. @else {{ $tournament->enroll_until }}. @endif</p>
                     <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament) }}" style="color: #fff">Enroll</a>
                 </div>
             @endif
