@@ -8,10 +8,16 @@ require_once 'DatabaseController.php';
 use App\Libraries\Planner\Report;
 use App\Libraries\Planner\DatabaseController;
 
+use Illuminate\Support\Facades\Log;
+
 class Planner
 {
   private DatabaseController $dbc;
   private $playerMaxMatchCount = 5;
+
+  private $desiredNumberOfIterations = 20;
+  private $desiredPartnerRatingTolerance = 10.0;
+  private $desiredTeamRatingTolerance = 4.0;
 
   function __construct($tournamentId)
   {
@@ -199,9 +205,9 @@ class Planner
     $required = $this->DetermineMinMatchCount();
 
     $count = 0;
-    for ($i = 1; $i < 50; $i += 5)
+    for ($i = 1; $i < ($this->desiredNumberOfIterations * 5); $i += 5)
     {
-      $count = $this->TryGenerateMatches(10.0, 1.0, $i, $i);
+      $count = $this->TryGenerateMatches($this->desiredPartnerRatingTolerance, $this->desiredTeamRatingTolerance, $i, $i);
       Report::Info("Number of matches generated: $count");
       if ($count >= $required)
         break;
