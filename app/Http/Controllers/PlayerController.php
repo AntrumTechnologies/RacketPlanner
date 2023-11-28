@@ -127,7 +127,15 @@ class PlayerController extends Controller
             //'clinic' => 'sometimes',
         ]);
 
-        // TODO: add validation like whether the deadline has not been reached yet
+	$tournament = Tournament::findOrFail($request->get('tournament_id'));
+	if (strtotime(now()) > strtotime($tournament->enroll_until)) {
+            return "The register deadline has been reached!";
+	}
+
+	$no_players = Player::where('tournament_id', $request->get('tournament_id'))->count();
+	if ($no_players >= $tournament->max_players && $tournament->max_players > 0) {
+            return "Maximum number of players has been reached";
+	}
 
         if(Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->exists()) {
             return "You are already enrolled!";
