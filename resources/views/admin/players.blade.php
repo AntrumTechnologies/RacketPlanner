@@ -115,11 +115,13 @@
                             
             @if (count($tournament_players) == 0)
                 <p>There are no players assigned yet.</p>
+            @else
+            <p>{{ $count['present'] }} players are present, of which {{ $count['clinic'] }} join the clinic. {{ $count['absent'] }} players are absent.</p>
             @endif
 
             <ul class="list-group">
                 @foreach ($tournament_players as $player)
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <a href="{{ route('user', $player->user_id) }}" class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto" id="player{{ $player->id }}">
                             {{ $player->name }} ({{ $player->rating }})
                         </div>
@@ -152,7 +154,7 @@
 
                             <button type="submit" name="submit" class="btn btn-danger ms-2" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" @if($matches_scheduled > 0) disabled @endif>Remove</button>
                         </form>
-                    </li>
+                    </a>
                 @endforeach
             </ul>
         </div>
