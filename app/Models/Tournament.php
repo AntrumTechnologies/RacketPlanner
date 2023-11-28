@@ -19,9 +19,16 @@ class Tournament extends Model
         'matches',
         'duration_m',
         'type',
-        'allow_singles',
+	'allow_singles',
+	'time_between_matches_m',
+        'owner_organization_id',
 	'enroll_until',
 	'max_players',
-        'owner_organization_id',
+	'leaderboard',
+	'description',
+	'location',
+	'location_link',
+	'change_to_courts_rounds',
+	'change_to_players',
     ];
 }
