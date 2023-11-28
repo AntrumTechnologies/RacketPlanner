@@ -115,6 +115,7 @@ class TournamentController extends Controller
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
         $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
         $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
+        $tournament->enroll_until = date('d-m-Y H:i', strtotime($tournament->enroll_until));
 
         $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
 
@@ -407,6 +408,8 @@ class TournamentController extends Controller
 
         if ($request->has('enroll_until')) {
             $tournament->enroll_until = $request->get('enroll_until');
+        } else {
+            $tournament->enroll_until = null;
         }
 
         $tournament->save();
