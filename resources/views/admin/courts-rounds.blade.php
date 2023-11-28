@@ -44,7 +44,22 @@
             <h4>Courts</h4>
 
             @if (count($courts) == 0)
-                <p>There are no courts for this tournament yet.</p>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <form method="post" action="{{ route('store-court') }}">
+                            @csrf
+                            <input type="hidden" name="tournament_id" value="{{ $tournament->id }}" />
+
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="me-auto">
+                                    <input type="text" class="form-control form-control-sm" name="name" placeholder="New court name..." />
+                                </div>
+                        
+                                <button type="submit" name="submit" class="btn btn-primary" style="--bs-btn-padding-y: 0.1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" @if($matches_scheduled > 0) disabled @endif>Add court</button>
+                            </div>
+                        </form>    
+                    </div>
+                </div>
             @else
                 <p class="text-muted">Select a court to edit its details.</p>
                 <p><div class="list-group">
@@ -108,7 +123,7 @@
                 </div></p>
             @endif
 
-            <a class="btn btn-primary" href="{{ route('create-round', $tournament->id) }}">Add round</a>
+            <a class="btn btn-primary @if($matches_scheduled > 0) disabled @endif" href="{{ route('create-round', $tournament->id) }}">Add round</a>
         </div>
     </div>
 </div>
