@@ -88,6 +88,12 @@ class MatchDetailsController extends Controller
         $player2a = Player::find($match->player2a_id);
         $player2b = Player::find($match->player2b_id);
 
+        // Prevent adding score before start of tournament
+        $tournament = Tournament::findOrFail($match->tournament_id);
+        if (date('Y-m-d H:i:s') < $tournament->datetime_start) {
+            return back()->with('error', 'The tournament did not start yet');
+        }
+
         if (!Auth::user()->can('admin')) {
             if ($player1a->user_id != Auth::id() && $player1b->user_id != Auth::id() && 
                 $player2a->user_id != Auth::id() && $player2b->user_id != Auth::id()) {
@@ -187,7 +193,7 @@ class MatchDetailsController extends Controller
 
         Schedule::where('id', $request->get('slot_id'))->update(['match_id' => $match->id]);
         
-        return redirect()->to(route('tournament', ['tournament_id' => $request->get('tournament_id')]) .'#slot'. $request->get('slot_id'))->with('status', 'Manually filled slot');
+        return redirect()->to(route('tournament', ['tournament_id' => $request->get('tournament_id')]) .'?showround=all#slot'. $request->get('slot_id'))->with('status', 'Manually filled slot');
     }
 
     public function edit_match($id) {
@@ -254,6 +260,6 @@ class MatchDetailsController extends Controller
         $match->save();
 
         $schedule = Schedule::where('match_id', $request->get('id'))->first();
-        return redirect()->to(route('tournament', ['tournament_id' => $schedule->tournament_id]) .'#slot'. $schedule->id)->with('status', 'Manually updated slot');
+        return redirect()->to(route('tournament', ['tournament_id' => $schedule->tournament_id]) .'?showround=all#slot'. $schedule->id)->with('status', 'Manually updated slot');
     }
 }
