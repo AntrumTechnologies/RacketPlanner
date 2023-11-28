@@ -331,13 +331,13 @@ class TournamentController extends Controller
         $request->validate([
             'owner_organization_id' => 'required|exists:organizations,id',
             'name' => 'required|max:50',
-            'datetime_start' => 'required|date_format:Y-m-d H:i',
-            'datetime_end' => 'required|date_format:Y-m-d H:i',
+            'datetime_start' => 'required|date_format:Y-m-d\TH:i',
+            'datetime_end' => 'required|date_format:Y-m-d\TH:i',
             'description' => 'sometimes',
             'location' => 'sometimes',
             'location_link' => 'sometimes',
-            'max_players' => 'sometimes|min:0',
-            'enroll_until' => 'sometimes|date_format:Y-m-d H:i',
+            'max_players' => 'required|min:0',
+            'enroll_until' => 'sometimes|nullable|date_format:Y-m-d\TH:i',
 		]);
 
         if (AdminOrganizationalAssignment::where('user_id', Auth::id())
@@ -365,22 +365,17 @@ class TournamentController extends Controller
     public function update(Request $request) {
         $request->validate([
             'id' => 'required|exists:tournaments',
-            'owner_organization_id' => 'required|exists:organizations,id',
             'name' => 'required|max:50',
-            'datetime_start' => 'required|date_format:Y-m-d H:i',
-            'datetime_end' => 'required|date_format:Y-m-d H:i',
+            'datetime_start' => 'required|date_format:Y-m-d\TH:i',
+            'datetime_end' => 'required|date_format:Y-m-d\TH:i',
             'description' => 'sometimes',
             'location' => 'sometimes',
             'location_link' => 'sometimes',
-            'max_players' => 'sometimes|min:0',
-            'enroll_until' => 'sometimes|date_format:Y-m-d H:i',
+            'max_players' => 'required|min:0',
+            'enroll_until' => 'sometimes|nullable|date_format:Y-m-d\TH:i',
 		]);
 
         $tournament = Tournament::find($request->get('id'));
-        
-        if ($request->has('owner_organization_id')) {
-            $tournament->owner_organization_id = $request->get('owner_organization_id');
-        }
 
         if ($request->has('name')) {
             $tournament->name = $request->get('name');
@@ -415,7 +410,7 @@ class TournamentController extends Controller
         }
 
         $tournament->save();
-        return Redirect::route('tournament', ['id' => $tournament->id])->with('status', 'Successfully updated the tournament details');
+        return Redirect::route('tournament', ['tournament_id' => $tournament->id])->with('status', 'Successfully updated the tournament details');
     }
 
     public function delete(Request $request) {
