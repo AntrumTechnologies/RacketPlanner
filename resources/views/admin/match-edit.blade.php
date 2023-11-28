@@ -8,7 +8,9 @@
 
             <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('tournament', $match->tournament_id) }}">Tournament</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('home') }}">Home</a></li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="{{ route('tournaments') }}">Tournaments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('tournament', $match->tournament_id) }}">{{ $match->tournament_name }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Edit Match details</li>
                 </ol>
             </nav>
@@ -51,14 +53,14 @@
                                 <select class="form-select" name="player1a_id">
                                     <option value="">Select a player...</option>
                                     @foreach ($tournament_players as $player)
-                                        <option value="{{ $player->id }}"@if($match->player1a_id == $player->user_id) selected @endif>{{ $player->name }}</option>
+                                        <option value="{{ $player->id }}"@if($match->player1a_id == $player->user_id) selected @endif>{{ $player->name }} ({{ $player->rating }})</option>
                                     @endforeach
                                 </select>
                                 <br />
                                 <select class="form-select" name="player1b_id">
                                     <option value="">Select a player...</option>
                                     @foreach ($tournament_players as $player)
-                                        <option value="{{ $player->id }}"@if($match->player1b_id == $player->user_id) selected @endif>{{ $player->name }}</option>
+                                        <option value="{{ $player->id }}"@if($match->player1b_id == $player->user_id) selected @endif>{{ $player->name }} ({{ $player->rating }})</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -77,14 +79,14 @@
                             <select class="form-select" name="player2a_id">
                                     <option value="">Select a player...</option>
                                     @foreach ($tournament_players as $player)
-                                        <option value="{{ $player->id }}"@if($match->player2a_id == $player->user_id) selected @endif>{{ $player->name }}</option>
+                                        <option value="{{ $player->id }}"@if($match->player2a_id == $player->user_id) selected @endif>{{ $player->name }} ({{ $player->rating }})</option>
                                     @endforeach
                                 </select>
                                 <br />
                                 <select class="form-select" name="player2b_id">
                                     <option value="">Select a player...</option>
                                     @foreach ($tournament_players as $player)
-                                        <option value="{{ $player->id }}"@if($match->player2b_id == $player->user_id) selected @endif>{{ $player->name }}</option>
+                                        <option value="{{ $player->id }}"@if($match->player2b_id == $player->user_id) selected @endif>{{ $player->name }} ({{ $player->rating }})</option>
                                     @endforeach
                                 </select>
                             </div>
