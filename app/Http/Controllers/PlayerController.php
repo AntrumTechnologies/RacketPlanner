@@ -127,18 +127,18 @@ class PlayerController extends Controller
             //'clinic' => 'sometimes',
         ]);
 
-	$tournament = Tournament::findOrFail($request->get('tournament_id'));
-	if (strtotime(now()) > strtotime($tournament->enroll_until)) {
-            return "The register deadline has been reached!";
-	}
+        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+        if (strtotime(now()) > strtotime($tournament->enroll_until) || strtotime(now()) > strtotime($tournament->datetime_start)) {
+            return back()->with('error', 'You can not enroll anymore. The enrollment deadline has been reached or the tournament already started');
+        }
 
-	$no_players = Player::where('tournament_id', $request->get('tournament_id'))->count();
-	if ($no_players >= $tournament->max_players && $tournament->max_players > 0) {
-            return "Maximum number of players has been reached";
-	}
+        $no_players = Player::where('tournament_id', $request->get('tournament_id'))->count();
+        if ($no_players >= $tournament->max_players && $tournament->max_players > 0) {
+            return back()->with('error', 'You can not enroll anymore. The maximum number of players has been reached');
+        }
 
         if(Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->exists()) {
-            return "You are already enrolled!";
+            return back()->with('error', 'You are already enrolled');
         }
 
         $new_player = new Player([
@@ -178,6 +178,11 @@ class PlayerController extends Controller
         $request->validate([
             'tournament_id' => 'required|exists:tournaments,id',
         ]);
+
+        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+        if (strtotime(now()) > strtotime($tournament->enroll_until) || strtotime(now()) > strtotime($tournament->datetime_start)) {
+            return back()->with('error', 'You can not withdraw anymore. The withdraw deadline has been reached or the tournament already started');
+        }
 
         $player = Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->get();
         $player->each->delete();
