@@ -8,32 +8,54 @@
             @if ($tournament->is_enrolled == true)
             <div class="row mb-3">
                 <div class="col-md-3">
-                    Your total score
+                    <h5>Your score</h5>
                 </div>
                 <div class="col-md-3">
-                    {{ $tournament->score }}
+                    <span class="text-muted">{{ $tournament->score }}</span>
                 </div>
             </div>
             @endif
 
+            @if (!empty($tournament->description))
+            <h5>Description</h5>
+            <p class="text-muted">{{ $tournament->description }}</p>
+            @endif
+
             <div class="row mb-3">
                 <div class="col-md-3">
-                    Start<br/>
-                    End
+                    <h5>Start</h5>
                 </div>
+                <div class="col-md-3 mb-3">
+                    <span class="text-muted">{{ $tournament->datetime_start }}</span>
+                </div>
+
+                
                 <div class="col-md-3">
-                    <span class="text-muted">{{ $tournament->datetime_start }}<br />
-                    {{ $tournament->datetime_end }}</span>
+                    <h5>@if (!empty($tournament->enroll_until)) Enroll until @endif</h5>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <span class="text-muted">@if (!empty($tournament->enroll_until)) {{ $tournament->enroll_until }} @endif</span>
                 </div>
 
                 <div class="col-md-3">
-                    Number of rounds<br />
-                    Organizer
+                    <h5>Organizer</h5>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <span class="text-muted">{{ $tournament->organizer }}</span>
+                </div>
+
+                @if (!empty($tournament->location))
+                <div class="col-md-3">
+                    <h5>Location</h5>
                 </div>
                 <div class="col-md-3">
-                    <span class="text-muted">{{ $tournament->rounds }}<br />
-                    {{ $tournament->organizer }}</span>
+                    @if (empty($tournament->location_link))
+                        <span class="text-muted">{{ $tournament->location }}</span>
+                    @else
+                        <span class="text-muted"><a href="{{ $tournament->location_link }}" title="Link to location">{{ $tournament->location }}</a></span>
+                    @endif
                 </div>
+                @endif
             </div>
 
             <div class="btn-group">
@@ -60,17 +82,3 @@
         </div>
     </div>    
 </div>
-
-@can('admin')
-<!--
-<div class="row mt-3 mb-3">
-<div class="col-md-3">
-    Type<br />
-    Singles allowed
-</div>
-<div class="col-md-3">
-    <span class="text-muted">{{ ucfirst($tournament->type) }}<br />
-    @if ($tournament->allow_singles == 1) Yes @else No @endif</span>
-</div>
--->
-@endcan
