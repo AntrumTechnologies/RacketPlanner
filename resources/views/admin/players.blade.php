@@ -58,11 +58,6 @@
                     <input class="form-control" type="text" name="email" value="{{ old('email') }}" @if($matches_scheduled > 0) disabled @endif>
                 </div>
 
-                <div class="mb-3">
-                    <label for="rating" class="form-label">Rating</label>
-                    <input class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating" type="number" value="@if(old('rating')){{ old('rating') }}@endif" placeholder="Leave empty to let user decide rating">
-                </div>
-
                 <button type="submit" class="btn btn-primary" @if($matches_scheduled > 0) disabled @endif>Invite</button>
             </form>
         </div>
