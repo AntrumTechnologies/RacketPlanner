@@ -29,12 +29,11 @@
                     <span class="text-muted">{{ $tournament->datetime_start }}</span>
                 </div>
 
-                
                 <div class="col-md-3">
-                    <h5>@if (!empty($tournament->enroll_until)) Enroll until @endif</h5>
+                    <h5>@if (!empty($tournament->enroll_until)) Enroll until @else @if (!empty($tournament->max_players) && $tournament->max_players != 0) Max. players @endif @endif</h5>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <span class="text-muted">@if (!empty($tournament->enroll_until)) {{ $tournament->enroll_until }} @endif</span>
+                    <span class="text-muted">@if (!empty($tournament->enroll_until)) {{ $tournament->enroll_until }} @else @if (!empty($tournament->max_players) && $tournament->max_players != 0) {{ $tournament->max_players }} @endif @endif</span>
                 </div>
 
                 <div class="col-md-3">
@@ -43,6 +42,15 @@
                 <div class="col-md-3 mb-3">
                     <span class="text-muted">{{ $tournament->organizer }}</span>
                 </div>
+
+                @if (!empty($tournament->enroll_until) && !empty($tournament->max_players) && $tournament->max_players != 0)
+                <div class="col-md-3">
+                    <h5>Max. players</h5>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <span class="text-muted">{{ $tournament->max_players }}</span>
+                </div>
+                @endif
 
                 @if (!empty($tournament->location))
                 <div class="col-md-3">

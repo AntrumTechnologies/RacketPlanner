@@ -115,7 +115,9 @@ class TournamentController extends Controller
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
         $tournament->datetime_start = date('Y-m-d H:i', strtotime($tournament->datetime_start));
         $tournament->datetime_end = date('Y-m-d H:i', strtotime($tournament->datetime_end));
-        $tournament->enroll_until = date('d-m-Y H:i', strtotime($tournament->enroll_until));
+        if ($tournament->enroll_until != null) {
+            $tournament->enroll_until = date('d-m-Y H:i', strtotime($tournament->enroll_until));
+        }
 
         $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
 
@@ -378,33 +380,13 @@ class TournamentController extends Controller
 
         $tournament = Tournament::find($request->get('id'));
 
-        if ($request->has('name')) {
-            $tournament->name = $request->get('name');
-        }
-        
-        if ($request->has('datetime_start')) {
-            $tournament->datetime_start = $request->get('datetime_start');
-        }
-        
-        if ($request->has('datetime_end')) {
-            $tournament->datetime_end = $request->get('datetime_end');
-        }
-
-        if ($request->get('description')) {
-            $tournament->description = $request->get('description');
-        }
-
-        if ($request->get('location')) {
-            $tournament->location = $request->get('location');
-        }
-
-        if ($request->get('location_link')) {
-            $tournament->location_link = $request->get('location_link');
-        }
-
-        if ($request->has('max_players')) {
-            $tournament->max_players = $request->get('max_players');
-        }
+        $tournament->name = $request->get('name');
+        $tournament->datetime_start = $request->get('datetime_start');
+        $tournament->datetime_end = $request->get('datetime_end');
+        $tournament->description = $request->get('description');
+        $tournament->location = $request->get('location');
+        $tournament->location_link = $request->get('location_link');
+        $tournament->max_players = $request->get('max_players');
 
         if ($request->has('enroll_until')) {
             $tournament->enroll_until = $request->get('enroll_until');
