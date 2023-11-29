@@ -28,15 +28,13 @@ class RoundController extends Controller
         $request->validate([
             'name' => 'required|max:30',
             'tournament_id' => 'required|exists:tournaments,id',
-            'starttime' => 'required',
-            'endtime' => 'required',
+            'starttime' => 'required|date_format:H:i',
         ]);
 
         $new_round = new Round([
             'name' => $request->get('name'),
             'tournament_id' => $request->get('tournament_id'),
             'starttime' => $request->get('starttime'),
-            'endtime' => $request->get('endtime'),
         ]);
 
         $new_round->save();
@@ -53,7 +51,6 @@ class RoundController extends Controller
             'id' => 'required|exists:rounds',
             'name' => 'sometimes|required|max:30',
             'starttime' => 'sometimes|required',
-            'endtime' => 'sometimes|required',
         ]);
 
         $round = Round::find($request->get('id'));
@@ -66,13 +63,9 @@ class RoundController extends Controller
             $round->starttime = $request->get('starttime');
         }
 
-        if ($request->has('endtime')) {
-            $round->endtime = $request->get('endtime');
-        }
-
         $round->save();
         
-        return Redirect::route('tournament', ['tournament_id' => $round->tournament_id])
+        return Redirect::route('courts-rounds', ['tournament_id' => $round->tournament_id])
             ->with('status', 'Successfully updated round details for '. $round->name);
     }
 
@@ -97,6 +90,6 @@ class RoundController extends Controller
         $tournament->change_to_courts_rounds = true;
         $tournament->save();
 
-        return Redirect::route('courts-rounds', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully deleted the round '. $new_round->name);
+        return Redirect::route('courts-rounds', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully deleted the round '. $round->name);
     }
 }
