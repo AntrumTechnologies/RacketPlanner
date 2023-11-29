@@ -115,7 +115,7 @@ class UserController extends Controller
                             OR player1b.id = ". $player->id ." 
                             OR player2a.id = ". $player->id ." 
                             OR player2b.id = ". $player->id .")
-                    ORDER BY time ASC");
+                    ORDER BY time DESC");
             } else {
                 $matches = DB::select("SELECT 
                         rounds.starttime as 'time',
@@ -157,7 +157,7 @@ class UserController extends Controller
                             OR player1b.id = ". $player->id ." 
                             OR player2a.id = ". $player->id ." 
                             OR player2b.id = ". $player->id .")
-                    ORDER BY time ASC");
+                    ORDER BY time DESC");
             }
 
             foreach($matches as $match) {
