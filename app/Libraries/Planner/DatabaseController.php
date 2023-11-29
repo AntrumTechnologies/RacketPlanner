@@ -288,7 +288,7 @@ class DatabaseController
   {
     Report::Trace(__METHOD__);
 
-    $sql = "SELECT users.name, users.rating, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id";
+    $sql = "SELECT users.name, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id";
     return $this->db->Query($sql);
   }
 
@@ -296,7 +296,7 @@ class DatabaseController
   {
     Report::Trace(__METHOD__);
 
-    $sql = "SELECT users.name, users.rating, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.present = 1";
+    $sql = "SELECT users.name, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.present = 1";
     return $this->db->Query($sql);
   }
 
@@ -304,7 +304,7 @@ class DatabaseController
   {
     Report::Trace(__METHOD__);
 
-    $sql = "SELECT users.name, users.rating, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.present = 0";
+    $sql = "SELECT users.name, players.* FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.present = 0";
     return $this->db->Query($sql);
   }
 
@@ -356,7 +356,7 @@ class DatabaseController
 
   public function GetPlayersForClinic()
   {
-    $sql = "SELECT players.id, players.user_id, users.rating FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.clinic = 1";
+    $sql = "SELECT players.id, players.user_id FROM `players`INNER JOIN `users` WHERE players.tournament_id = $this->tournamentId AND players.user_id = users.id AND players.clinic = 1";
     return $this->db->Query($sql);
   }
 
