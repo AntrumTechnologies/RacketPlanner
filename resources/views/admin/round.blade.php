@@ -43,7 +43,7 @@
 
                 <div class="mb-3">
                     <label for="starttime" class="form-label">Start time <span class="text-danger">*</span></label>
-                    <input class="form-control @error('starttime') is-invalid @enderror" id="starttime" name="starttime" type="text" value="@if(old('starttime')){{ old('starttime') }}@else{{ $round->starttime }}@endif" placeholder="Y-m-d H:i">
+                    <input class="form-control @error('starttime') is-invalid @enderror" id="starttime" name="starttime" type="time" value="@if(old('starttime')){{ old('starttime') }}@else{{ $round->starttime }}@endif" placeholder="Y-m-d H:i">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Update</button>

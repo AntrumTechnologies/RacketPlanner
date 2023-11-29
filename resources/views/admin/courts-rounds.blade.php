@@ -107,7 +107,7 @@
                     @foreach ($rounds as $round)
                     <a href="{{ route('round', $round->id) }}" class="list-group-item d-flex justify-content-between align-items-start">
                         <div class="ms-2 me-auto">
-                            {{ $round->name }} ({{ $round->starttime }} - {{ $round->endtime }})
+                            {{ $round->name }} ({{ $round->starttime }})
                         </div>
 
                         <form method="post" action="{{ route('delete-round') }}">
