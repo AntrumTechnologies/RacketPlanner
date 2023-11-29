@@ -88,8 +88,13 @@ class TournamentController extends Controller
         $no_players = Player::where('tournament_id', $tournament->id)->count();
 
         $tournament->can_enroll = true;
-        if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
-            (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
+        $tournament->can_withdraw = true;
+        if (!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) {
+            $tournament->can_enroll = false;
+            $tournament->can_withdraw = false;
+        }
+
+        if (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players) {
             $tournament->can_enroll = false;
         }
 

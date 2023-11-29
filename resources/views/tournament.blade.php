@@ -40,29 +40,29 @@
             @endif
 
             @if (session('error'))
-                <div class="alert alert-error">{{ session('error') }}</div>
+                <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
         </div>
     </div>
 
     <div class="row justify-content-center">
         <div class="col-md-8">
-        @if ($tournament->can_enroll == true)
-            @if ($tournament->is_enrolled == true)
+        @if ($tournament->is_enrolled == true)
+            @if ($tournament->can_withdraw == true)
                 <div class="alert alert-light" role="alert">
                     <p>You are enrolled in this tournament! You can withdraw until @if (empty($tournament->enroll_until)) the tournament starts. @else {{ $tournament->enroll_until }}. @endif</p>
                     <a class="btn btn-warning" href="{{ route('tournament-withdraw', $tournament) }}">Withdraw</a>
                 </div>
             @else
                 <div class="alert alert-light" role="alert">
-                    <p>You are <strong>not</strong> enrolled in this tournament. You can enroll until @if (empty($tournament->enroll_until)) the tournament starts. @else {{ $tournament->enroll_until }}. @endif</p>
-                    <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament) }}" style="color: #fff">Enroll</a>
+                    You are enrolled in this tournament! You can't withdraw anymore.
                 </div>
             @endif
         @else
-            @if ($tournament->is_enrolled == true)
+            @if ($tournament->can_enroll == true)
                 <div class="alert alert-light" role="alert">
-                    You are enrolled in this tournament! You can't withdraw anymore.
+                    <p>You are <strong>not</strong> enrolled in this tournament. You can enroll until @if (empty($tournament->enroll_until)) the tournament starts. @else {{ $tournament->enroll_until }}. @endif</p>
+                    <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament) }}" style="color: #fff">Enroll</a>
                 </div>
             @else
                 <div class="alert alert-light" role="alert">
