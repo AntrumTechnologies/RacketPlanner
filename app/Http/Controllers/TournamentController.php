@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\TournamentEnrollAction;
 use App\Models\Court;
 use App\Models\MatchDetails;
 use App\Models\Tournament;
@@ -11,20 +12,19 @@ use App\Models\Round;
 use App\Models\User;
 use App\Models\Organization;
 use App\Models\AdminOrganizationalAssignment;
+use App\Notifications\TournamentEnrollEmail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Notification;
+use MagicLink\MagicLink;
 
 class TournamentController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public static function index() {
         $tournaments = Tournament::leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
             ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
@@ -78,6 +78,48 @@ class TournamentController extends Controller
         }
 
         return view('tournaments', ['tournaments' => $tournaments, 'is_user_admin' => $is_user_admin]);
+    }
+
+    public function invite($public_link) {
+        $tournament = Tournament::where('tournaments.public_link', $public_link)
+            ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+            ->select('tournaments.*', 'organizations.name as organizer')
+            ->first();
+
+        return view('tournament-invite', ['tournament' => $tournament]);
+    }
+
+    public function store_invite(Request $request) {
+        $request->validate([
+            'tournament_id' => 'required|exists:tournaments,id',
+            'email' => 'required|email',
+        ]);
+
+        $name = '';
+        if (User::where('email', $request->get('email'))->exists()) {
+            $user = User::where('email', $request->get('email'))->first();
+            $name = $user->name;
+        }
+
+        $enrollAction = new TournamentEnrollAction($name, $request->get('email'), $request->get('tournament_id'));
+        $magicUrl = MagicLink::create($enrollAction)->url;
+
+        $array = [
+            'name' => $name,
+            'email' => $request->get('email'),
+            'url' => $magicUrl,
+            'tournament_id' => $request->get('tournament_id'),
+            'tournament_name' => Tournament::findOrFail($request->get('tournament_id'))->name,
+        ];
+
+        if (User::where('email', $request->get('email'))->exists()) {
+            $user->notify(new TournamentEnrollEmail($array));
+        } else {
+            Notification::route('mail', $request->get('email'))
+                ->notify(new TournamentEnrollEmail($array));
+        }
+
+        return view("auth.verify", ['email' => $request->get('email')]);
     }
 
     public function show($tournament_id) {
@@ -385,6 +427,7 @@ class TournamentController extends Controller
             'location_link' => $request->get('location_link'),
             'max_players' => $request->get('max_players'),
             'enroll_until' => $request->get('enroll_until'),
+            'public_link' => Str::random(21),
         ]);
 
         $newTournament->save();

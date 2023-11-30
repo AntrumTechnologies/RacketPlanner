@@ -12,7 +12,7 @@
                         @csrf
 
                         <input type="hidden" name="magiclink_token" value="{{ Route::input('token') }}">
-                        <input type="hidden" name="tournament_id" value="@isset($tournament_id) {{ $tournament_id }} @endisset">
+                        <input type="hidden" name="tournament_id" value="@isset($tournament_id){{ $tournament_id }}@else{{ Request::get('tournament_id') }}@endisset">
 
                         <div class="row mb-3">
                             <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
