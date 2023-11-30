@@ -115,7 +115,7 @@
         </div>
     </div>
 
-    @can('admin')
+    @if ($is_user_admin)
     <div class="row justify-content-center mt-4">
         <div class="col-md-8">
             <h3>Admin</h3>
@@ -164,7 +164,7 @@
             </div>
         </div>
     </div>           
-    @endcan
+    @endif
 
     @if ($tournament->is_enrolled == true)
     <div class="row justify-content-center mt-4">
@@ -240,7 +240,7 @@
                             </div>
 
                             @if ($match->id == null)
-                                @can('admin')
+                                @if ($is_user_admin)
                                 <div class="ms-auto">
                                     <div class="btn-group">
                                         @if ($match->state == 'available')
@@ -264,12 +264,12 @@
                                         <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning ms-2">Unpublish</a>
                                     @endif
                                 </div>
-                                @endcan
+                                @endif
                             @else
                                 <div class="ms-auto">
                                     <a href="{{ route('match', $match->id) }}"><i class="bi bi-link-45deg" style="font-size: 1rem;"></i></a>
 
-                                    @can('admin')
+                                    @if ($is_user_admin)
                                         @if ($match->public == 0)
                                             <a href="{{ route('empty-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-danger ms-2">Empty slot</a>
                                             <a href="{{ route('edit-match', [$match->id]) }}" class="btn btn-sm btn-warning ms-2">Edit match</a>
@@ -277,7 +277,7 @@
                                         @else
                                             <a href="{{ route('unpublish-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-warning ms-2">Unpublish</a>
                                         @endif
-                                    @endcan
+                                    @endif
                                 </div>
                             @endcan
                         </div>
@@ -315,17 +315,17 @@
                                                     }
                                                 @endphp
 
-                                                @can('admin')
+                                                @if ($is_user_admin)
                                                     <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
-                                                @endcan
+                                                @endif
                                             @else
-                                                @can('admin')
+                                                @if ($is_user_admin)
                                                     <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
                                                 @else
                                                     @if ($match->user_is_player)
                                                         <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
                                                     @endif
-                                                @endcan
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
@@ -351,22 +351,22 @@
                                                     }
                                                 @endphp
 
-                                                @can('admin')
+                                                @if ($is_user_admin)
                                                     <input class="form-control form-control-sm" type="number" name="score2" placeholder="Score">
-                                                @endcan
+                                                @endif
                                             @else
-                                                @can('admin')
+                                                @if ($is_user_admin)
                                                     <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
                                                 @else
                                                     @if ($match->user_is_player)
                                                         <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
                                                     @endif
-                                                @endcan
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
 
-                                    @can('admin')
+                                    @if ($is_user_admin)
                                         <div class="row mt-2">
                                             <div class="col-sm-9">
                                             </div>
@@ -388,7 +388,7 @@
                                                 </div>
                                             </div>
                                         @endif
-                                    @endcan
+                                    @endif
                                 </form>
                             </div>
                         @else

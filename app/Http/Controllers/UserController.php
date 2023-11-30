@@ -24,8 +24,12 @@ class UserController extends Controller
     }
     
     public function index() {
-        $users = User::orderBy('name')->get();
-        return view('admin.users', ['users' => $users]);
+        if (Auth::user()->can('superuser')) {
+            $users = User::orderBy('name')->get();
+            return view('admin.users', ['users' => $users]);
+        }
+
+        return redirect('/');
     }
 
     public function show($id) {
@@ -36,7 +40,12 @@ class UserController extends Controller
         $user_clinics = array();
         if (Player::where('user_id', $user->id)->where('clinic', 1)->count() > 0) {
             foreach ($user_tournaments as $player) {
-                if (Auth::user()->can('admin')) {
+                $isUserAdmin = Tournament::where('tournaments.id', $player->tournament_id)
+                    ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignmentid', '=', 'tournaments.owner_organization_id')
+                    ->where('admins_organizational_assignment.user_id', Auth::id())
+                    ->first();
+                
+                if ($isUserAdmin || Auth::user()->can('superuser')) {
                     $clinics = Schedule::where('schedules.tournament_id', $player->tournament_id)
                         ->where('schedules.state', 'clinic')
                         ->join('rounds', 'rounds.id', '=', 'schedules.round_id')
@@ -177,7 +186,7 @@ class UserController extends Controller
     }
 
     public function edit($user_id) {
-        if ($user_id == Auth::id()) {
+        if ($user_id == Auth::id() || Auth::user()->can('superuser')) {
             $user = User::findOrFail($user_id);
         } else {
             return Redirect::route('user', $user_id);

@@ -84,9 +84,9 @@
                 @endif
             </div>
 
-            @can('admin')
+            @if ($tournament->is_user_admin)
             <a class="btn btn-secondary" href="{{ route('players', $tournament->id) }}">Manage or invite players</a>
-            @endcan
+            @endif
         </div>
     </div>    
 </div>

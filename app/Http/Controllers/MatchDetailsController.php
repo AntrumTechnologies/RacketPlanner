@@ -94,7 +94,12 @@ class MatchDetailsController extends Controller
             return back()->with('error', 'The tournament did not start yet');
         }
 
-        if (!Auth::user()->can('admin')) {
+        $isUserAdmin = Tournament::where('tournaments.id', $tournament->id)
+            ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignmentid', '=', 'tournaments.owner_organization_id')
+            ->where('admins_organizational_assignment.user_id', Auth::id())
+            ->first();
+        
+        if (!$isUserAdmin && !Auth::user()->can('superuser')) {
             if ($player1a->user_id != Auth::id() && $player1b->user_id != Auth::id() && 
                 $player2a->user_id != Auth::id() && $player2b->user_id != Auth::id()) {
                 return Response::json("You are not allowed to save the score for this match", 400);

@@ -22,9 +22,9 @@
         <div class="col-md-8">
             <h3>All tournaments</h3>
 
-            @can('admin')
+            @if ($is_user_admin)
             <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
-            @endcan
+            @endif
 
             @if (count($tournaments) == 0)
             <p>No tournaments have been created yet.</p>

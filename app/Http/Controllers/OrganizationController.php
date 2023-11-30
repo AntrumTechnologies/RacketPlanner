@@ -42,8 +42,20 @@ class OrganizationController extends Controller
     {
         $organization = Organization::findOrFail($id);
 
-        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $organization->id)) {
-            return "User is not allowed to access this organization";
+        $is_user_admin = false;
+        $isUserAdmin = AdminOrganizationalAssignment::where('user_id', Auth::id())
+            ->where('organization_id', $organization->id)
+            ->first();
+        if ($isUserAdmin || Auth::user()->can('superuser')) {
+            $is_user_admin = true;
+        } else {
+            $is_user = UserOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $organization->id)
+                ->first();
+
+            if (!$is_user) {
+                return "You are not allowed to access this organization";
+            }
         }
 
         $tournaments = Tournament::where('owner_organization_id', $id)
@@ -83,7 +95,7 @@ class OrganizationController extends Controller
             }
         }
 
-        return view('organization', ['organization' => $organization, 'tournaments' => $tournaments]);
+        return view('organization', ['organization' => $organization, 'tournaments' => $tournaments, 'is_user_admin' => $is_user_admin]);
     }
 
     public function store(Request $request) 

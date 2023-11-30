@@ -31,6 +31,8 @@ class TournamentController extends Controller
             ->select('tournaments.*', 'organizations.name as organizer')
             ->where('users_organizational_assignment.user_id', Auth::id())->get();
 
+        $is_user_admin = false;
+
         foreach ($tournaments as $tournament) {
             $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
 
@@ -61,9 +63,21 @@ class TournamentController extends Controller
             if (!empty($tournament->enroll_until)) {
                 $tournament->enroll_until = date('Y-m-d H:i', strtotime($tournament->enroll_until));
             }
+
+            $tournament->is_user_admin = false;
+            $isUserAdmin = Tournament::where('tournaments.id', $tournament->id)
+                ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignment.id', '=', 'tournaments.owner_organization_id')
+                ->where('admins_organizational_assignment.user_id', Auth::id())
+                ->first();
+            if ($isUserAdmin || Auth::user()->can('superuser')) {
+                $tournament->is_user_admin = true;
+                if ($is_user_admin == false) {
+                    $is_user_admin = true;
+                }
+            }
         }
 
-        return view('tournaments', ['tournaments' => $tournaments]);
+        return view('tournaments', ['tournaments' => $tournaments, 'is_user_admin' => $is_user_admin]);
     }
 
     public function show($tournament_id) {
@@ -166,7 +180,12 @@ class TournamentController extends Controller
             }
         }
 
-        if (Auth::user()->can('admin')) {
+        $isUserAdmin = Tournament::where('tournaments.id', $tournament_id)
+            ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignment.id', '=', 'tournaments.owner_organization_id')
+            ->where('admins_organizational_assignment.user_id', Auth::id())
+            ->first();
+        if ($isUserAdmin || Auth::user()->can('superuser')) {
+            $is_user_admin = true;
             $schedule = Schedule::where('schedules.tournament_id', $tournament_id)
                 ->join('rounds', 'rounds.id', '=', 'schedules.round_id')
                 ->join('courts', 'courts.id', '=', 'schedules.court_id')
@@ -210,6 +229,7 @@ class TournamentController extends Controller
 		->orderBy('courts.id', 'asc')
                 ->get();
         } else {
+            $is_user_admin = false;
             $schedule = Schedule::where('schedules.tournament_id', $tournament_id)
                 ->where('schedules.state', '!=', 'disabled') // Hide disabled courts
                 ->where('schedules.public', '=', '1') // Only show published matches
@@ -295,6 +315,7 @@ class TournamentController extends Controller
             'courts' => $courts,
             'rounds' => $rounds,
             'matches_scheduled' => $matches_scheduled,
+            'is_user_admin' => $is_user_admin,
         ]);
     }
 

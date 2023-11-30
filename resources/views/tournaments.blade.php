@@ -19,9 +19,9 @@
             <p>There are {{ count($tournaments) }} tournaments to show.</p>
             @endif
 
-            @can('admin')
+            @if ($is_user_admin)
             <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
-            @endcan
+            @endif
 
             @if (session('status'))
                 <div class="alert alert-success">{{ session('status') }}</div>
