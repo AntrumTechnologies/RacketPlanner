@@ -28,7 +28,7 @@ use App\Http\Controllers\OrganizationController;
 |
 */
 
-Route::view('/login', 'auth.login')->name('login');
+Route::view('/login', 'auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::view('/register', 'auth.register');
@@ -69,62 +69,60 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user');
     Route::post('/user', [UserController::class, 'update'])->name('update-user');
 
-    Route::group(['middleware' => ['can:admin']], function () {
-        Route::post('/admin/organization/{id}', [OrganizationController::class, 'update'])->name('update-organization');
-        
-        Route::get('/admin/tournament/create', [TournamentController::class, 'create'])->name('create-tournament');
-        Route::get('/admin/tournament/{tournament_id}', [TournamentController::class, 'edit'])->name('edit-tournament');
-        Route::post('/admin/tournament/update', [TournamentController::class, 'update'])->name('update-tournament');
-        Route::post('/admin/tournament/delete', [TournamentController::class, 'delete'])->name('delete-tournament');
-        Route::post('/admin/tournament/store', [TournamentController::class, 'store'])->name('store-tournament');
+    Route::post('/admin/organization/{id}', [OrganizationController::class, 'update'])->name('update-organization');
+    
+    Route::get('/admin/tournament/create', [TournamentController::class, 'create'])->name('create-tournament');
+    Route::get('/admin/tournament/{tournament_id}', [TournamentController::class, 'edit'])->name('edit-tournament');
+    Route::post('/admin/tournament/update', [TournamentController::class, 'update'])->name('update-tournament');
+    Route::post('/admin/tournament/delete', [TournamentController::class, 'delete'])->name('delete-tournament');
+    Route::post('/admin/tournament/store', [TournamentController::class, 'store'])->name('store-tournament');
 
-        Route::get('/admin/match/{match_id}', [MatchDetailsController::class, 'edit_match'])->name('edit-match');
-        Route::post('/admin/match/update', [MatchDetailsController::class, 'update_match'])->name('update-match');
-        Route::get('/admin/match/{tournament_id}/{slot_id}', [MatchDetailsController::class, 'create_match'])->name('create-match');
-        Route::post('/admin/match/store', [MatchDetailsController::class, 'store_match'])->name('store-match');
+    Route::get('/admin/match/{match_id}', [MatchDetailsController::class, 'edit_match'])->name('edit-match');
+    Route::post('/admin/match/update', [MatchDetailsController::class, 'update_match'])->name('update-match');
+    Route::get('/admin/match/{tournament_id}/{slot_id}', [MatchDetailsController::class, 'create_match'])->name('create-match');
+    Route::post('/admin/match/store', [MatchDetailsController::class, 'store_match'])->name('store-match');
 
-        Route::get('/admin/plan/{tournamentId}/generate_schedule', [PlannerWrapperController::class, 'GenerateSchedule'])->name('generate-schedule');
-        Route::get('/admin/plan/{tournamentId}/generate_matches', [PlannerWrapperController::class, 'GenerateMatches'])->name('generate-matches');
-        Route::get('/admin/plan/{tournamentId}/slot/{slotId}', [PlannerWrapperController::class, 'PlanSlot'])->name('plan-slot');
-        Route::get('/admin/plan/{tournamentId}/round/{roundId}', [PlannerWrapperController::class, 'PlanRound'])->name('plan-round');
-        Route::get('/admin/plan/{tournamentId}/schedule', [PlannerWrapperController::class, 'PlanSchedule'])->name('plan-schedule');
+    Route::get('/admin/plan/{tournamentId}/generate_schedule', [PlannerWrapperController::class, 'GenerateSchedule'])->name('generate-schedule');
+    Route::get('/admin/plan/{tournamentId}/generate_matches', [PlannerWrapperController::class, 'GenerateMatches'])->name('generate-matches');
+    Route::get('/admin/plan/{tournamentId}/slot/{slotId}', [PlannerWrapperController::class, 'PlanSlot'])->name('plan-slot');
+    Route::get('/admin/plan/{tournamentId}/round/{roundId}', [PlannerWrapperController::class, 'PlanRound'])->name('plan-round');
+    Route::get('/admin/plan/{tournamentId}/schedule', [PlannerWrapperController::class, 'PlanSchedule'])->name('plan-schedule');
 
-        Route::get('/admin/plan/{tournamentId}/available/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToAvailable'])->name('slot-available');
-        Route::get('/admin/plan/{tournamentId}/clinic/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToClinic'])->name('slot-clinic');
-        Route::get('/admin/plan/{tournamentId}/disable/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToDisabled'])->name('slot-disable');
+    Route::get('/admin/plan/{tournamentId}/available/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToAvailable'])->name('slot-available');
+    Route::get('/admin/plan/{tournamentId}/clinic/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToClinic'])->name('slot-clinic');
+    Route::get('/admin/plan/{tournamentId}/disable/{slotId}', [PlannerWrapperController::class, 'SetSlotStateToDisabled'])->name('slot-disable');
 
-        Route::get('/admin/plan/{tournamentId}/empty_all', [PlannerWrapperController::class, 'EmptyAllSlots'])->name('empty-all-slots');
-        Route::get('/admin/plan/{tournamentId}/empty/{slotId}', [PlannerWrapperController::class, 'EmptySlot'])->name('empty-slot');
-        Route::get('/admin/plan/{tournamentId}/publish_slot/{slotId}', [PlannerWrapperController::class, 'PublishSlot'])->name('publish-slot');
-        Route::get('/admin/plan/{tournamentId}/unpublish_slot/{slotId}', [PlannerWrapperController::class, 'UnpublishSlot'])->name('unpublish-slot');
-        Route::get('/admin/plan/{tournamentId}/publish_round/{roundId}', [PlannerWrapperController::class, 'PublishRound'])->name('publish-round');
-        Route::get('/admin/plan/{tournamentId}/unpublish_round/{roundId}', [PlannerWrapperController::class, 'UnpublishRound'])->name('unpublish-round');
+    Route::get('/admin/plan/{tournamentId}/empty_all', [PlannerWrapperController::class, 'EmptyAllSlots'])->name('empty-all-slots');
+    Route::get('/admin/plan/{tournamentId}/empty/{slotId}', [PlannerWrapperController::class, 'EmptySlot'])->name('empty-slot');
+    Route::get('/admin/plan/{tournamentId}/publish_slot/{slotId}', [PlannerWrapperController::class, 'PublishSlot'])->name('publish-slot');
+    Route::get('/admin/plan/{tournamentId}/unpublish_slot/{slotId}', [PlannerWrapperController::class, 'UnpublishSlot'])->name('unpublish-slot');
+    Route::get('/admin/plan/{tournamentId}/publish_round/{roundId}', [PlannerWrapperController::class, 'PublishRound'])->name('publish-round');
+    Route::get('/admin/plan/{tournamentId}/unpublish_round/{roundId}', [PlannerWrapperController::class, 'UnpublishRound'])->name('unpublish-round');
 
-        Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'show'])->name('players');
-        Route::post('/admin/player/invite', [PlayerController::class, 'invite'])->name('invite-player');
-        Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
-        Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
-        Route::post('/admin/player/present', [PlayerController::class, 'markPresent'])->name('mark-player-present');
-        Route::post('/admin/player/absent', [PlayerController::class, 'markAbsent'])->name('mark-player-absent');
+    Route::get('/admin/tournament/{tournament_id}/players', [PlayerController::class, 'show'])->name('players');
+    Route::post('/admin/player/invite', [PlayerController::class, 'invite'])->name('invite-player');
+    Route::post('/admin/player/assign', [PlayerController::class, 'store'])->name('assign-player');
+    Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
+    Route::post('/admin/player/present', [PlayerController::class, 'markPresent'])->name('mark-player-present');
+    Route::post('/admin/player/absent', [PlayerController::class, 'markAbsent'])->name('mark-player-absent');
 
-        Route::get('/admin/tournament/{tournament_id}/courts_rounds', [CourtRoundController::class, 'show'])->name('courts-rounds');
+    Route::get('/admin/tournament/{tournament_id}/courts_rounds', [CourtRoundController::class, 'show'])->name('courts-rounds');
 
-        Route::view('/admin/tournament/{tournament_id}/court', 'admin.court-create')->name('create-court');
-        Route::get('/admin/court/{court_id}', [CourtController::class, 'show'])->name('court');
-        Route::post('/admin/court/update', [CourtController::class, 'update'])->name('update-court');
-        Route::post('/admin/court/store', [CourtController::class, 'store'])->name('store-court');
-        Route::post('/admin/court/delete', [CourtController::class, 'delete'])->name('delete-court');
+    Route::view('/admin/tournament/{tournament_id}/court', 'admin.court-create')->name('create-court');
+    Route::get('/admin/court/{court_id}', [CourtController::class, 'show'])->name('court');
+    Route::post('/admin/court/update', [CourtController::class, 'update'])->name('update-court');
+    Route::post('/admin/court/store', [CourtController::class, 'store'])->name('store-court');
+    Route::post('/admin/court/delete', [CourtController::class, 'delete'])->name('delete-court');
 
-        Route::view('/admin/tournament/{tournament_id}/round', 'admin.round-create')->name('create-round');
-        Route::get('/admin/round/{round_id}', [RoundController::class, 'show'])->name('round');
-        Route::post('/admin/round/update', [RoundController::class, 'update'])->name('update-round');
-        Route::post('/admin/round/store', [RoundController::class, 'store'])->name('store-round');
-        Route::post('/admin/round/delete', [RoundController::class, 'delete'])->name('delete-round');
+    Route::view('/admin/tournament/{tournament_id}/round', 'admin.round-create')->name('create-round');
+    Route::get('/admin/round/{round_id}', [RoundController::class, 'show'])->name('round');
+    Route::post('/admin/round/update', [RoundController::class, 'update'])->name('update-round');
+    Route::post('/admin/round/store', [RoundController::class, 'store'])->name('store-round');
+    Route::post('/admin/round/delete', [RoundController::class, 'delete'])->name('delete-round');
 
-        Route::get('/admin/users', [UserController::class, 'index'])->name('users');
-        Route::view('/admin/user/create', 'admin.user-create')->name('create-user');
-        Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
-    });
+    Route::get('/admin/users', [UserController::class, 'index'])->name('users');
+    Route::view('/admin/user/create', 'admin.user-create')->name('create-user');
+    Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
 
     Route::group(['middleware' => ['can:superuser']], function () {
         Route::view('/superuser/organization/create', 'superuser.organization-create')->name('create-organization');
