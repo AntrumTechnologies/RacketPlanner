@@ -31,57 +31,95 @@
                 
                 <input type="hidden" name="id" value="{{ $tournament->id }}" />
 
-                <div class="mb-3">
-                    <label for="organization" class="form-label">Organization <span class="text-danger">*</span></label>
-                    @if (count($organizations) > 1)
-                        <select class="form-select" id="organization" name="organization">
-                            @foreach ($organizations as $organization)
-                                <option value="{{ $organization->id }}" @if (old('organization') == "{{ $organization->id }}") selected @elseif($tournament->owner_organization_id == $organization->id) selected @endif>{{ $organization->name }}</option>
-                            @endforeach
-                        </select>
-                    @else
-                        <input readonly class="form-control-plaintext" id="organization" value="{{ $organizations[0]->name }} ">
-                    @endif
+                <div class="alert alert-light">
+                    <h5>Tournament details</h5>
+
+                    <div class="mb-3">
+                        <label for="organization" class="form-label">Organization <span class="text-danger">*</span></label>
+                        @if (count($organizations) > 1)
+                            <select class="form-select" id="organization" name="organization">
+                                @foreach ($organizations as $organization)
+                                    <option value="{{ $organization->id }}" @if (old('organization') == "{{ $organization->id }}") selected @elseif($tournament->owner_organization_id == $organization->id) selected @endif>{{ $organization->name }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input readonly class="form-control-plaintext" id="organization" value="{{ $organizations[0]->name }} ">
+                        @endif
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                        <input class="form-control @error('name') is-invalid @enderror" id="name" name="name" type="text" value="@if(old('name')){{ old('name') }}@else{{ $tournament->name }}@endif">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="datetime_start" class="form-label">Start <span class="text-danger">*</span></label>
+                        <input class="form-control @error('datetime_start') is-invalid @enderror" id="datetime_start" name="datetime_start" type="datetime-local" placeholder="Y-m-d H:i" value="@if(old('datetime_start')){{ old('datetime_start') }}@else{{ $tournament->datetime_start }}@endif">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="datetime_end" class="form-label">End <span class="text-danger">*</span></label>
+                        <input class="form-control @error('datetime_end') is-invalid @enderror" id="datetime_end" name="datetime_end" type="datetime-local" placeholder="Y-m-d H:i" value="@if(old('datetime_end')){{ old('datetime_end') }}@else{{ $tournament->datetime_end }}@endif">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" rows="3" name="description" placeholder="Short descriptive text what the tournament is about">@if(old('description')){{ old('description') }}@else{{ $tournament->description }}@endif</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input class="form-control @error('location') is-invalid @enderror" id="location" name="location" type="text" placeholder="Description of the location" value="@if(old('location')){{ old('location') }}@else{{ $tournament->location }}@endif">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location_link" class="form-label">Location link</label>
+                        <input class="form-control @error('location_link') is-invalid @enderror" id="location_link" name="location_link" type="url" placeholder="Link to Google Maps" value="@if(old('location_link')){{ old('location_link') }}@else{{ $tournament->location_link }}@endif">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="max_players" class="form-label">Maximum number of players</label>
+                        <input class="form-control @error('max_players') is-invalid @enderror" id="max_players" name="max_players" type="number" placeholder="0 for infinite" value="@if(old('max_players')){{ old('max_players') }}@else{{ $tournament->max_players }}@endif">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="enroll_until" class="form-label">Register until</label>
+                        <input class="form-control @error('enroll_until') is-invalid @enderror" id="enroll_until" name="enroll_until" type="datetime-local" placeholder="Y-m-d H:i" value="@if(old('enroll_until')){{ old('enroll_until') }}@else{{ $tournament->enroll_until }}@endif">
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
-                    <input class="form-control @error('name') is-invalid @enderror" id="name" name="name" type="text" value="@if(old('name')){{ old('name') }}@else{{ $tournament->name }}@endif">
-                </div>
+                <div class="alert alert-light">
+                    <h5>Match generation config</h5>
 
-                <div class="mb-3">
-                    <label for="datetime_start" class="form-label">Start <span class="text-danger">*</span></label>
-                    <input class="form-control @error('datetime_start') is-invalid @enderror" id="datetime_start" name="datetime_start" type="datetime-local" placeholder="Y-m-d H:i" value="@if(old('datetime_start')){{ old('datetime_start') }}@else{{ $tournament->datetime_start }}@endif">
-                </div>
+                    <div class="mb-3">
+                        <label for="iterations" class="form-label">Number of matches per player:</label> <output id="iterationsOutput">20</output>
+                        <div class="row">
+                            <div class="col-1 text-center">10</div>
+                            <div class="col-10"><input type="range" class="form-range" id="iterations" name="iterations" min="10" max="60" step="1" value="20" oninput="document.getElementById('iterationsOutput').value = this.value"></div>
+                            <div class="col-1 text-center">60</div>
+                        </div>
+                        <div id="iterationsHelp" class="form-text">Number of possible matches that will be generated for each and every player.</div>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="datetime_end" class="form-label">End <span class="text-danger">*</span></label>
-                    <input class="form-control @error('datetime_end') is-invalid @enderror" id="datetime_end" name="datetime_end" type="datetime-local" placeholder="Y-m-d H:i" value="@if(old('datetime_end')){{ old('datetime_end') }}@else{{ $tournament->datetime_end }}@endif">
-                </div>
+                    <div class="mb-3">
+                        <label for="partnerRatingTolerance" class="form-label">Partner rating tolerance:</label> <output id="partnerRatingToleranceOutput">10</output>
+                        <div class="row">
+                            <div class="col-1 text-center">0</div>
+                            <div class="col-10"><input type="range" class="form-range" id="partnerRatingTolerance" name="partner_rating_tolerance" min="0" max="10" step="0.1" value="10" oninput="document.getElementById('partnerRatingToleranceOutput').value = this.value"></div>
+                            <div class="col-1 text-center">10</div>
+                        </div>
+                        <div id="partnerRatingToleranceHelp" class="form-text">Maximum difference in rating accepted between members of the same team. Decrease to keep differences to a minimum.</div>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" rows="3" name="description" placeholder="Short descriptive text what the tournament is about">@if(old('description')){{ old('description') }}@else{{ $tournament->description }}@endif</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input class="form-control @error('location') is-invalid @enderror" id="location" name="location" type="text" placeholder="Description of the location" value="@if(old('location')){{ old('location') }}@else{{ $tournament->location }}@endif">
-                </div>
-
-                <div class="mb-3">
-                    <label for="location_link" class="form-label">Location link</label>
-                    <input class="form-control @error('location_link') is-invalid @enderror" id="location_link" name="location_link" type="url" placeholder="Link to Google Maps" value="@if(old('location_link')){{ old('location_link') }}@else{{ $tournament->location_link }}@endif">
-                </div>
-
-                <div class="mb-3">
-                    <label for="max_players" class="form-label">Maximum number of players</label>
-                    <input class="form-control @error('max_players') is-invalid @enderror" id="max_players" name="max_players" type="number" placeholder="0 for infinite" value="@if(old('max_players')){{ old('max_players') }}@else{{ $tournament->max_players }}@endif">
-                </div>
-
-                <div class="mb-3">
-                    <label for="enroll_until" class="form-label">Register until</label>
-                    <input class="form-control @error('enroll_until') is-invalid @enderror" id="enroll_until" name="enroll_until" type="datetime-local" placeholder="Y-m-d H:i" value="@if(old('enroll_until')){{ old('enroll_until') }}@else{{ $tournament->enroll_until }}@endif">
+                    <div class="mb-3">
+                        <label for="teamRatingTolerance" class="form-label">Team rating tolerance:</label> <output id="teamRatingToleranceOutput">4</output>
+                        <div class="row">
+                            <div class="col-1 text-center">0</div>
+                            <div class="col-10"><input type="range" class="form-range" id="teamRatingTolerance" name="team_rating_tolerance" min="0" max="10" step="0.1" value="4" oninput="document.getElementById('teamRatingToleranceOutput').value = this.value"></div>
+                            <div class="col-1 text-center">10</div>
+                        </div>
+                        <div id="teamRatingToleranceHelp" class="form-text">Maximum difference in rating accepted between two teams. Increase if everyone should be able to play with everyone. Decrease to keep teams equal.</div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary" name="submit">Update</button>

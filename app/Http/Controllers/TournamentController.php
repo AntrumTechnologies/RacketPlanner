@@ -411,8 +411,9 @@ class TournamentController extends Controller
             'enroll_until' => 'sometimes|nullable|date_format:Y-m-d\TH:i',
 		]);
 
-        if (AdminOrganizationalAssignment::where('user_id', Auth::id())
-                ->where('organization_id', $request->get('owner_organization_id'))->count() == 0) {
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $request->get('owner_organization_id'))->count() == 0 &&
+            !Auth::user()->can('superuser')) {
             // TODO(PATBRO): improve error handling
             return "User is not an administrator of this organization";
         }
@@ -445,6 +446,9 @@ class TournamentController extends Controller
             'location_link' => 'sometimes',
             'max_players' => 'required|min:0',
             'enroll_until' => 'sometimes|nullable|date_format:Y-m-d\TH:i',
+            'number_of_matches' => 'required|min:10|max:60',
+            'partner_rating_tolerance' => 'required|min:0|max:10',
+            'team_rating_tolerance' => 'required|min:0|max:10',
 		]);
 
         $tournament = Tournament::find($request->get('id'));
@@ -462,6 +466,10 @@ class TournamentController extends Controller
         } else {
             $tournament->enroll_until = null;
         }
+
+        $tournament->number_of_matches = $request->get('number_of_matches');
+        $tournament->partner_rating_tolerance = $request->get('partner_rating_tolerance');
+        $tournament->team_rating_tolerance = $request->get('team_rating_tolerance');
 
         $tournament->save();
         return Redirect::route('tournament', ['tournament_id' => $tournament->id])->with('status', 'Successfully updated the tournament details');
