@@ -41,7 +41,7 @@ class UserController extends Controller
         if (Player::where('user_id', $user->id)->where('clinic', 1)->count() > 0) {
             foreach ($user_tournaments as $player) {
                 $isUserAdmin = Tournament::where('tournaments.id', $player->tournament_id)
-                    ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignmentid', '=', 'tournaments.owner_organization_id')
+                    ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignment.id', '=', 'tournaments.owner_organization_id')
                     ->where('admins_organizational_assignment.user_id', Auth::id())
                     ->first();
                 
