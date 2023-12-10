@@ -74,7 +74,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="max_players" class="form-label">Maximum number of players</label>
+                    <label for="max_players" class="form-label">Maximum number of players <span class="text-danger">*</span></label>
                     <input class="form-control @error('max_players') is-invalid @enderror" id="max_players" name="max_players" type="number" placeholder="0 for infinite" value="@if(old('max_players')){{ old('max_players') }}@endif">
                 </div>
 
