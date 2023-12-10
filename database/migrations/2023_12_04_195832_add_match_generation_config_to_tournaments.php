@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tournaments', function (Blueprint $table) {
-            $table->double('number_of_matches')->nullable();
-            $table->double('partner_rating_tolerance')->nullable();
-            $table->double('team_rating_tolerance')->nullable();
+            $table->double('number_of_matches')->default(20);
+            $table->double('partner_rating_tolerance')->default(10);
+            $table->double('team_rating_tolerance')->default(4);
         });
     }
 

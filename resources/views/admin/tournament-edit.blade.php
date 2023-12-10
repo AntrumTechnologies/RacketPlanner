@@ -78,7 +78,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="max_players" class="form-label">Maximum number of players</label>
+                        <label for="max_players" class="form-label">Maximum number of players <span class="text-danger">*</span></label>
                         <input class="form-control @error('max_players') is-invalid @enderror" id="max_players" name="max_players" type="number" placeholder="0 for infinite" value="@if(old('max_players')){{ old('max_players') }}@else{{ $tournament->max_players }}@endif">
                     </div>
 
@@ -92,30 +92,30 @@
                     <h5>Match generation config</h5>
 
                     <div class="mb-3">
-                        <label for="iterations" class="form-label">Number of matches per player:</label> <output id="iterationsOutput">20</output>
+                        <label for="number_of_matches" class="form-label">Number of matches per player:</label> <output id="number_of_matches_output">@if(old('number_of_matches')){{ old('number_of_matches') }}@else{{ $tournament->number_of_matches }}@endif</output>
                         <div class="row">
                             <div class="col-1 text-center">10</div>
-                            <div class="col-10"><input type="range" class="form-range" id="iterations" name="iterations" min="10" max="60" step="1" value="20" oninput="document.getElementById('iterationsOutput').value = this.value"></div>
+                            <div class="col-10"><input type="range" class="form-range" id="number_of_matches" name="number_of_matches" min="10" max="60" step="1" value="@if(old('number_of_matches')){{ old('number_of_matches') }}@else{{ $tournament->number_of_matches }}@endif" oninput="document.getElementById('number_of_matches_output').value = this.value"></div>
                             <div class="col-1 text-center">60</div>
                         </div>
-                        <div id="iterationsHelp" class="form-text">Number of possible matches that will be generated for each and every player.</div>
+                        <div id="number_of_matches_help" class="form-text">Number of possible matches that will be generated for each and every player.</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="partnerRatingTolerance" class="form-label">Partner rating tolerance:</label> <output id="partnerRatingToleranceOutput">10</output>
+                        <label for="partnerRatingTolerance" class="form-label">Partner rating tolerance:</label> <output id="partnerRatingToleranceOutput">@if(old('partner_rating_tolerance')){{ old('partner_rating_tolerance') }}@else{{ $tournament->partner_rating_tolerance }}@endif</output>
                         <div class="row">
                             <div class="col-1 text-center">0</div>
-                            <div class="col-10"><input type="range" class="form-range" id="partnerRatingTolerance" name="partner_rating_tolerance" min="0" max="10" step="0.1" value="10" oninput="document.getElementById('partnerRatingToleranceOutput').value = this.value"></div>
+                            <div class="col-10"><input type="range" class="form-range" id="partnerRatingTolerance" name="partner_rating_tolerance" min="0" max="10" step="0.1" value="@if(old('partner_rating_tolerance')){{ old('partner_rating_tolerance') }}@else{{ $tournament->partner_rating_tolerance }}@endif" oninput="document.getElementById('partnerRatingToleranceOutput').value = this.value"></div>
                             <div class="col-1 text-center">10</div>
                         </div>
                         <div id="partnerRatingToleranceHelp" class="form-text">Maximum difference in rating accepted between members of the same team. Decrease to keep differences to a minimum.</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="teamRatingTolerance" class="form-label">Team rating tolerance:</label> <output id="teamRatingToleranceOutput">4</output>
+                        <label for="teamRatingTolerance" class="form-label">Team rating tolerance:</label> <output id="teamRatingToleranceOutput">@if(old('team_rating_tolerance')){{ old('team_rating_tolerance') }}@else{{ $tournament->team_rating_tolerance }}@endif</output>
                         <div class="row">
                             <div class="col-1 text-center">0</div>
-                            <div class="col-10"><input type="range" class="form-range" id="teamRatingTolerance" name="team_rating_tolerance" min="0" max="10" step="0.1" value="4" oninput="document.getElementById('teamRatingToleranceOutput').value = this.value"></div>
+                            <div class="col-10"><input type="range" class="form-range" id="teamRatingTolerance" name="team_rating_tolerance" min="0" max="10" step="0.1" value="@if(old('team_rating_tolerance')){{ old('team_rating_tolerance') }}@else{{ $tournament->team_rating_tolerance }}@endif" oninput="document.getElementById('teamRatingToleranceOutput').value = this.value"></div>
                             <div class="col-1 text-center">10</div>
                         </div>
                         <div id="teamRatingToleranceHelp" class="form-text">Maximum difference in rating accepted between two teams. Increase if everyone should be able to play with everyone. Decrease to keep teams equal.</div>
