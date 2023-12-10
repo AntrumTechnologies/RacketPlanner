@@ -118,9 +118,9 @@ class OrganizationController extends Controller
             'location' => $request->get("location"),
         ]);
 
-        $organization = $newOrganization->save();
+        $newOrganization->save();
 
-        return Redirect::route('organization', ['organization' => $organization]);
+        return Redirect::route('organization', ['id' => $newOrganization->id]);
     }
 
     public function edit($organization_id) {
