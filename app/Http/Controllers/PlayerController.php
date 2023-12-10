@@ -128,7 +128,8 @@ class PlayerController extends Controller
         ]);
 
         $tournament = Tournament::findOrFail($request->get('tournament_id'));
-        if (strtotime(now()) > strtotime($tournament->enroll_until) || strtotime(now()) > strtotime($tournament->datetime_start)) {
+        if ((strtotime(now()) > strtotime($tournament->enroll_until) && $tournament->enroll_until != null) || 
+            (strtotime(now()) > strtotime($tournament->datetime_start))) {
             return back()->with('error', 'You can not enroll anymore. The enrollment deadline has been reached or the tournament already started');
         }
 
