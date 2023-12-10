@@ -69,7 +69,12 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user');
     Route::post('/user', [UserController::class, 'update'])->name('update-user');
 
-    Route::post('/admin/organization/{id}', [OrganizationController::class, 'update'])->name('update-organization');
+    Route::get('/admin/organization/{id}', [OrganizationController::class, 'edit'])->name('edit-organization');
+    Route::post('/admin/organization/update', [OrganizationController::class, 'update'])->name('update-organization');
+    Route::post('/admin/organization/assign_admin', [OrganizationController::class, 'assign_admin_to_organization'])->name('assign-admin');
+    Route::post('/admin/organization/remove_admin', [OrganizationController::class, 'remove_admin_from_organization'])->name('remove-admin');
+    Route::post('/admin/organization/remove_user', [OrganizationController::class, 'remove_user_from_organization'])->name('remove-user');
+    Route::post('/admin/organization/delete', [OrganizationController::class, 'delete'])->name('delete-organization');
     
     Route::get('/admin/tournament/create', [TournamentController::class, 'create'])->name('create-tournament');
     Route::get('/admin/tournament/{tournament_id}', [TournamentController::class, 'edit'])->name('edit-tournament');

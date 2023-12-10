@@ -4,7 +4,17 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <h2>{{ $organization->name }}</h2>
+                <div class="d-flex">
+                    <div class="me-auto">
+                        <h2>{{ $organization->name }}</h2>
+                    </div>
+
+                    @if ($is_user_admin)
+                    <div class="ms-auto">
+                        <a class="btn btn-primary btn-sm" href="{{ route('edit-organization', $organization->id) }}">Edit details</a>
+                    </div>
+                    @endif
+                </div>
 
             <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
                 <ol class="breadcrumb">
@@ -23,7 +33,7 @@
             <h3>All tournaments</h3>
 
             @if ($is_user_admin)
-            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
+            <p><a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a></p>
             @endif
 
             @if (count($tournaments) == 0)
