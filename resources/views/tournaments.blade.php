@@ -13,6 +13,10 @@
                 </ol>
             </nav>
 
+            @if (session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
+            @endif
+
             @if (count($tournaments) == 1)
             <p>There is 1 tournament to show.</p>
             @else
@@ -20,11 +24,7 @@
             @endif
 
             @if ($is_user_admin)
-            <a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a>
-            @endif
-
-            @if (session('status'))
-                <div class="alert alert-success">{{ session('status') }}</div>
+            <p><a class="btn btn-primary" href="{{ route('create-tournament') }}">Create new tournament</a></p>
             @endif
         </div>
     </div>
