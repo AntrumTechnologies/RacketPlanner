@@ -83,6 +83,7 @@ class UserController extends Controller
         }
 
         $user_matches_per_tournament = array();
+        $matches = array();
         foreach ($user_tournaments as $player) {
             if (Auth::user()->can('admin')) {
                 $matches = DB::select("SELECT 
