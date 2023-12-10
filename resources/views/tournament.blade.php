@@ -8,9 +8,12 @@
                 <div class="me-auto">
                     <h2>{{ $tournament->name }}</h2>
                 </div>
+                
+                @if ($is_user_admin)
                 <div class="ms-auto">
                     <a class="btn btn-primary btn-sm" href="{{ route('edit-tournament', $tournament->id) }}">Edit details</a>
                 </div>
+                @endif
             </div>
 
             <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
@@ -21,18 +24,20 @@
                 </ol>
             </nav>
 
-            @if ($regenerate_schedule == true)
-            <div class="alert alert-warning" role="alert">
-                <p>A change was made to the courts or rounds. Please generate the schedule again. Note: this might take a while.</p>
-                <a class="btn btn-warning" href="{{ route('generate-schedule', $tournament->id) }}">Regenerate schedule</a>
-            </div>
-            @endif
+            @if ($is_user_admin)
+                @if ($regenerate_schedule == true)
+                <div class="alert alert-warning" role="alert">
+                    <p>A change was made to the courts or rounds. Please generate the schedule again. Note: this might take a while.</p>
+                    <a class="btn btn-warning" href="{{ route('generate-schedule', $tournament->id) }}">Regenerate schedule</a>
+                </div>
+                @endif
 
-            @if ($regenerate_matches == true)
-            <div class="alert alert-warning" role="alert">
-                <p>A change was made to the players. Please generate the matches again.</p>
-                <a class="btn btn-warning" href="{{ route('generate-matches', $tournament->id) }}">Regenerate matches</a>
-            </div>
+                @if ($regenerate_matches == true)
+                <div class="alert alert-warning" role="alert">
+                    <p>A change was made to the players. Please generate the matches again.</p>
+                    <a class="btn btn-warning" href="{{ route('generate-matches', $tournament->id) }}">Regenerate matches</a>
+                </div>
+                @endif
             @endif
 
             @if (session('status'))
