@@ -26,10 +26,16 @@ use MagicLink\MagicLink;
 class TournamentController extends Controller
 {
     public static function index() {
-        $tournaments = Tournament::leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
-            ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-            ->select('tournaments.*', 'organizations.name as organizer')
-            ->where('users_organizational_assignment.user_id', Auth::id())->get();
+        if (Auth::user()->can('superuser')) {
+            $tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+                ->select('tournaments.*', 'organizations.name as organizer')
+                ->get();
+        } else {
+            $tournaments = Tournament::leftJoin('users_organizational_assignment', 'organization_id', '=', 'tournaments.owner_organization_id')
+                ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+                ->select('tournaments.*', 'organizations.name as organizer')
+                ->where('users_organizational_assignment.user_id', Auth::id())->get();
+        }
 
         $is_user_admin = false;
 
@@ -46,8 +52,13 @@ class TournamentController extends Controller
             $no_players = Player::where('tournament_id', $tournament->id)->count();
 
             $tournament->can_enroll = true;
-            if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
-                (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players)) {
+            $tournament->can_withdraw = true;
+            if (!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) {
+                $tournament->can_enroll = false;
+                $tournament->can_withdraw = false;
+            }
+    
+            if (!empty($tournament->max_players) && $tournament->max_players != 0 && $no_players >= $tournament->max_players) {
                 $tournament->can_enroll = false;
             }
 
@@ -123,12 +134,19 @@ class TournamentController extends Controller
     }
 
     public function show($tournament_id) {
-        $tournament = Tournament::where('tournaments.id', $tournament_id)
-            ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-            ->leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
-            ->where('users_organizational_assignment.user_id', Auth::id())
-            ->select('tournaments.*', 'organizations.name as organizer')
-            ->first();
+        if (Auth::user()->can('superuser')) {
+            $tournament = Tournament::where('tournaments.id', $tournament_id)
+                ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+                ->select('tournaments.*', 'organizations.name as organizer')
+                ->first();
+        } else {
+            $tournament = Tournament::where('tournaments.id', $tournament_id)
+                ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+                ->leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
+                ->where('users_organizational_assignment.user_id', Auth::id())
+                ->select('tournaments.*', 'organizations.name as organizer')
+                ->first();
+        }
 
         if (!$tournament) {
             return "User is not enrolled to the organization this tournament belongs to";
@@ -407,7 +425,7 @@ class TournamentController extends Controller
             'description' => 'sometimes',
             'location' => 'sometimes',
             'location_link' => 'sometimes',
-            'max_players' => 'required|min:0',
+            'max_players' => 'required|integer|min:0',
             'enroll_until' => 'sometimes|nullable|date_format:Y-m-d\TH:i',
 		]);
 
@@ -444,11 +462,11 @@ class TournamentController extends Controller
             'description' => 'sometimes',
             'location' => 'sometimes',
             'location_link' => 'sometimes',
-            'max_players' => 'required|min:0',
+            'max_players' => 'required|integer|min:0',
             'enroll_until' => 'sometimes|nullable|date_format:Y-m-d\TH:i',
-            'number_of_matches' => 'required|min:10|max:60',
-            'partner_rating_tolerance' => 'required|min:0|max:10',
-            'team_rating_tolerance' => 'required|min:0|max:10',
+            'number_of_matches' => 'required|integer|min:10|max:60',
+            'partner_rating_tolerance' => 'required|integer|min:0|max:10',
+            'team_rating_tolerance' => 'required|integer|min:0|max:10',
 		]);
 
         $tournament = Tournament::find($request->get('id'));
