@@ -120,17 +120,32 @@ class OrganizationController extends Controller
 
         $organization = $newOrganization->save();
 
-        if (!$user->can('superuser')) {
-            // Assign current user as admin to organization
-            $newAdminOrganizationalAssignment = new AdminOrganizationalAssignment([
-                'organization_id' => $organization->id,
-                'user_id' => $user->id,
-            ]);
+        return Redirect::route('organization', ['organization' => $organization]);
+    }
 
-            $newAdminOrganizationalAssignment->save();
+    public function edit($organization_id) {
+        $organization = Organization::findOrFail($organization_id);
+
+        $isUserAdmin = AdminOrganizationalAssignment::where('user_id', Auth::id())
+            ->where('organization_id', $organization->id)
+            ->first();
+        if (!$isUserAdmin && !Auth::user()->can('superuser')) {
+            return "You are not authorized to edit this organization";
         }
 
-        return Redirect::route('organization', ['organization' => $organization]);
+        $admins = AdminOrganizationalAssignment::where('organization_id', $organization_id)
+            ->leftJoin('users', 'users.id', '=', 'user_id')
+            ->select('users.name', 'users.id')
+            ->orderBy('users.name', 'asc')
+            ->get();
+
+        $users = UserOrganizationalAssignment::where('organization_id', $organization_id)
+            ->leftJoin('users', 'users.id', '=', 'user_id')
+            ->select('users.name', 'users.id', 'users.rating')
+            ->orderBy('users.name', 'asc')
+            ->get();
+
+        return view('admin/organization-edit', ['organization' => $organization, 'admins' => $admins, 'users' => $users]);
     }
 
     public function update(Request $request)
@@ -143,8 +158,8 @@ class OrganizationController extends Controller
 
         $organization = Organization::findOrFail($request->get('id'));
 
-        if ($organization->owner_user_id != Auth::id()) {
-            return "User is not allowed to access this organization";
+        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('id'))) {
+            return "User is not allowed to perform this action";
         }
 
         if ($request->has('name')) {
@@ -156,7 +171,8 @@ class OrganizationController extends Controller
         }
 
         $organization->save();
-        return Redirect::route('organization', ['organization' => $organization]);
+        return Redirect::route('edit-organization', ['id' => $request->get('id')])
+                ->with('status', 'Successfully updated organization details');
     }
 
     /**
@@ -193,21 +209,83 @@ class OrganizationController extends Controller
     {
         $request->validate([
             'organization_id' => 'required|exists:organizations,id',
-            'user_id' => 'required|exists:users,id',
+            'email' => 'required|exists:users,email',
         ]);
 
         if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))) {
             return "User is not allowed to perform this action";
         }
 
+        $user = User::where('email', $request->get('email'))->first();
+
+        if (AdminOrganizationalAssignment::where('user_id', $user->id)->count() > 0) {
+            return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+                ->with('status', $user->name .' is already assigned to this organization as adminstrator');
+        }
+
         $newAdminOrganizationalAssignment = new AdminOrganizationalAssignment([
             'organization_id' => $request->get('organization_id'),
-            'user_id' => $request->get('user_id'),
+            'user_id' => $user->id,
         ]);
 
         $newAdminOrganizationalAssignment->save();
 
-        return Redirect::route('view-organization', ['id' => $request->get('organization_id')])
-                ->with('status', 'Successfully assigned assigned user to organization as adminstrator');
+        if (UserOrganizationalAssignment::where('organization_id', $request->get('organization_id'))->where('user_id', $user->id)->count() == 0) {
+            $newUserOrganizationalAssignment = new UserOrganizationalAssignment([
+                'organization_id' => $request->get('organization_id'),
+                'user_id' => $user->id,
+            ]);
+
+            $newUserOrganizationalAssignment->save();
+        }
+
+        return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+            ->with('status', 'Successfully assigned '. $user->name .' to organization as adminstrator');
+    }
+
+    public function remove_admin_from_organization(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+            'id' => 'required|exists:users,id',
+            'name' => 'required',
+        ]);
+
+        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))) {
+            return "User is not allowed to perform this action";
+        }
+
+        $admin = AdminOrganizationalAssignment::where('organization_id', $request->get('organization_id'))
+            ->where('user_id', $request->get('id'))
+            ->delete();
+
+        return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+            ->with('status', 'Successfully removed '. $request->get('name') .' as an administrator.');
+    }
+
+    public function remove_user_from_organization(Request $request)
+    {
+        $request->validate([
+            'organization_id' => 'required|exists:organizations,id',
+            'id' => 'required|exists:users,id',
+            'name' => 'required',
+        ]);
+
+        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))) {
+            return "User is not allowed to perform this action";
+        }
+
+        $user = UserOrganizationalAssignment::where('organization_id', $request->get('organization_id'))
+            ->where('user_id', $request->get('id'))
+            ->delete();
+
+        if (AdminOrganizationalAssignment::where('organization_id', $request->get('organization_id'))->where('user_id', $request->get('id'))->count() > 0) {
+            $admin = AdminOrganizationalAssignment::where('organization_id', $request->get('organization_id'))
+                ->where('user_id', $request->get('id'))
+                ->delete();
+        }
+
+        return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+            ->with('status', 'Successfully removed '. $request->get('name') .' as a user.');
     }
 }
