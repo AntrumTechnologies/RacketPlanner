@@ -19,12 +19,16 @@ class Planner
   private $desiredPartnerRatingTolerance = 10.0;
   private $desiredTeamRatingTolerance = 4.0;
 
-  function __construct($tournamentId)
+  function __construct($tournamentId, $desiredNumberOfIterations, $desiredPartnerRatingTolerance, $desiredTeamRatingTolerance)
   {
     Report::Trace(__METHOD__);
 
     $this->dbc = new DatabaseController;
     $this->dbc->UseTournament($tournamentId);
+    
+    $this->desiredNumberOfIterations = $desiredNumberOfIterations;
+    $this->desiredPartnerRatingTolerance = $desiredPartnerRatingTolerance;
+    $this->desiredTeamRatingTolerance = $desiredTeamRatingTolerance;
   }
 
   // **************************************************************************

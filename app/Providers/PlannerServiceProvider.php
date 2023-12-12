@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Tournament;
 use App\Libraries\Planner\Planner;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -16,11 +17,25 @@ class PlannerServiceProvider extends ServiceProvider
     {
         $this->app->bind(Planner::class, function ($app) {
             $tournamentId = 1;
+            $desiredNumberOfIterations = 20;
+            $desiredPartnerRatingTolerance = 10;
+            $desiredTeamRatingTolerance = 4;
+
             if (Route::current() !== null) {
             	$tournamentId = Route::current()->__get('tournamentId');
+
+                $tournament = Tournament::find($tournamentId);
+                if ($tournament) {
+                    $desiredNumberOfIterations = $tournament->number_of_matches;
+                    $desiredPartnerRatingTolerance = $tournament->partner_rating_tolerance;
+                    $desiredTeamRatingTolerance = $tournament->team_rating_tolerance;
+                }
             }
 
-            return new Planner($tournamentId);
+            return new Planner($tournamentId, 
+                $desiredNumberOfIterations, 
+                $desiredPartnerRatingTolerance, 
+                $desiredTeamRatingTolerance);
         });
     }
 
