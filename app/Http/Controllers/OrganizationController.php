@@ -103,19 +103,12 @@ class OrganizationController extends Controller
         $request->validate([
             'name' => 'required|max:70',
             'location' => 'required|max:70',
-            'email' => 'required|email|exists:users,email',
         ]);
-
-        // Find user
-        $user = User::where('email', $request->get('email'))->first();
-        if (!$user) {
-            return "User email address does not exist";
-        }
 
         // Create new organization
         $newOrganization = new Organization([
-            'name' => $request->get("name"),
-            'location' => $request->get("location"),
+            'name' => $request->get('name'),
+            'location' => $request->get('location'),
         ]);
 
         $newOrganization->save();
@@ -213,12 +206,13 @@ class OrganizationController extends Controller
         ]);
 
         if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))) {
-            return "User is not allowed to perform this action";
+            return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+                ->with('error', 'User is not allowed to perform this action');
         }
 
         $user = User::where('email', $request->get('email'))->first();
 
-        if (AdminOrganizationalAssignment::where('user_id', $user->id)->count() > 0) {
+        if (AdminOrganizationalAssignment::where('user_id', $user->id)->where('organization_id', $request->get('organization_id'))->count() > 0) {
             return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
                 ->with('status', $user->name .' is already assigned to this organization as adminstrator');
         }
