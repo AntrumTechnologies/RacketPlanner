@@ -25,6 +25,7 @@
 
             @if (count($your_tournaments) == 0)
             <p>It's a bit empty here. Why not join a new tournament?</p>
+            <a href="{{ route('tournaments') }}" class="btn btn-primary">See all tournaments</a>
             @endif
         </div>
         
