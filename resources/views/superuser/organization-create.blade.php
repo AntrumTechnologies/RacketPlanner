@@ -39,11 +39,6 @@
                             <input class="form-control @error('location') is-invalid @enderror" id="location" name="location" type="text" value="@if(old('location')){{ old('location') }}@endif">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Assign owner by email</label>
-                            <input class="form-control @error('email') is-invalid @enderror" id="email" name="email" type="email" value="@if(old('email')){{ old('email') }}@endif">
-                        </div>
-
                         <button type="submit" class="btn btn-primary" name="submit">Create</button>
                     </form>
                 </div>
