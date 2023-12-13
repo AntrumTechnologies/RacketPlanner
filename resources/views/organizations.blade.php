@@ -16,7 +16,11 @@
             @if (count($organizations) == 1)
             <p>You are part of 1 organization.</p>
             @else
-            <p>You are part of {{ count($organizations) }} organizations.</p>
+                @if (count($organizations) == 0)
+                <p>You are not part of any organization. Perhaps ask someone to join an organization? So you can join a tournament</p>
+                @else
+                <p>You are part of {{ count($organizations) }} organizations.</p>
+                @endif
             @endif
 
             @can('superuser')
