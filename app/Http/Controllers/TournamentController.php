@@ -82,10 +82,11 @@ class TournamentController extends Controller
                 ->first();
             if ($isUserAdmin || Auth::user()->can('superuser')) {
                 $tournament->is_user_admin = true;
-                if ($is_user_admin == false) {
-                    $is_user_admin = true;
-                }
             }
+        }
+
+        if(AdminOrganizationalAssignment::where('user_id', Auth::id())->count() > 0) {
+            $is_user_admin = true;
         }
 
         return view('tournaments', ['tournaments' => $tournaments, 'is_user_admin' => $is_user_admin]);
@@ -241,7 +242,7 @@ class TournamentController extends Controller
         }
 
         $isUserAdmin = Tournament::where('tournaments.id', $tournament_id)
-            ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignment.id', '=', 'tournaments.owner_organization_id')
+            ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignment.organization_id', '=', 'tournaments.owner_organization_id')
             ->where('admins_organizational_assignment.user_id', Auth::id())
             ->first();
         if ($isUserAdmin || Auth::user()->can('superuser')) {
@@ -430,7 +431,7 @@ class TournamentController extends Controller
 		]);
 
         if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
-                ->where('organization_id', $request->get('owner_organization_id'))->count() == 0 &&
+                ->where('organization_id', $request->get('owner_organization_id'))->count() > 0 &&
             !Auth::user()->can('superuser')) {
             // TODO(PATBRO): improve error handling
             return "User is not an administrator of this organization";
