@@ -30,7 +30,9 @@ class HomeController extends Controller
             foreach ($user_tournaments as $player) {
                 $clinics = Schedule::where('schedules.tournament_id', $player->tournament_id)
                     ->where('schedules.state', 'clinic')
-                    ->where('schedules.public', 1)
+		    ->where('schedules.public', 1)
+		    ->where('tournaments.datetime_end', '>', date('Y-m-d H:i:s'))
+		    ->join('tournaments', 'tournaments.id', '=', 'schedules.tournament_id')
                     ->join('rounds', 'rounds.id', '=', 'schedules.round_id')
                     ->join('courts', 'courts.id', '=', 'schedules.court_id')
                     ->select(
