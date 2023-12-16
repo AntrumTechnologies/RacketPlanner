@@ -77,8 +77,10 @@ class HomeController extends Controller
                     user2b.rating as `player2b_rating`,
                     matches.id,
                     matches.score1,
-                    matches.score2
-                FROM `schedules`
+		    matches.score2,
+			tournaments.datetime_end
+		FROM `schedules`
+			INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
                     INNER JOIN `rounds` ON schedules.round_id = rounds.id
                     INNER JOIN `courts` ON schedules.court_id = courts.id
                     INNER JOIN `matches` ON schedules.match_id = matches.id
@@ -90,7 +92,8 @@ class HomeController extends Controller
                     INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
                     INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
                     INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
-                WHERE schedules.tournament_id = ". $player->tournament_id ." AND 
+		WHERE schedules.tournament_id = ". $player->tournament_id ." AND 
+			tournaments.datetime_end > '". date('Y-m-d H:i:s') ."' AND
                     schedules.public = 1 AND
                     (player1a.id = ". $player->id ." 
                         OR player1b.id = ". $player->id ." 
@@ -107,7 +110,9 @@ class HomeController extends Controller
 
         $your_tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
             ->select('tournaments.*', 'organizations.name as organizer')
-            ->where('tournaments.datetime_end', '>', date('Y-m-d H:i:s'))
+	    ->where('tournaments.datetime_end', '>', date('Y-m-d H:i:s'))
+	    ->leftJoin('users_organizational_assignment', 'users_organizational_assignment.organization_id', '=', 'organizations.id')
+	    ->where('user_id', Auth::id())
             ->get();
 
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
