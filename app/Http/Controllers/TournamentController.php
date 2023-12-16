@@ -28,12 +28,12 @@ class TournamentController extends Controller
     public static function index() {
         if (Auth::user()->can('superuser')) {
             $tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-                ->select('tournaments.*', 'organizations.name as organizer')
+                ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
                 ->get();
         } else {
             $tournaments = Tournament::leftJoin('users_organizational_assignment', 'organization_id', '=', 'tournaments.owner_organization_id')
                 ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-                ->select('tournaments.*', 'organizations.name as organizer')
+                ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
                 ->where('users_organizational_assignment.user_id', Auth::id())->get();
         }
 
@@ -95,7 +95,7 @@ class TournamentController extends Controller
     public function invite($public_link) {
         $tournament = Tournament::where('tournaments.public_link', $public_link)
             ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-            ->select('tournaments.*', 'organizations.name as organizer')
+            ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
             ->first();
 
         return view('tournament-invite', ['tournament' => $tournament]);
@@ -138,14 +138,14 @@ class TournamentController extends Controller
         if (Auth::user()->can('superuser')) {
             $tournament = Tournament::where('tournaments.id', $tournament_id)
                 ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-                ->select('tournaments.*', 'organizations.name as organizer')
+                ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
                 ->first();
         } else {
             $tournament = Tournament::where('tournaments.id', $tournament_id)
                 ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
                 ->leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
                 ->where('users_organizational_assignment.user_id', Auth::id())
-                ->select('tournaments.*', 'organizations.name as organizer')
+                ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
                 ->first();
         }
 

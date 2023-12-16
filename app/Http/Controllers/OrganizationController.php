@@ -60,7 +60,7 @@ class OrganizationController extends Controller
 
         $tournaments = Tournament::where('owner_organization_id', $id)
             ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-            ->select('tournaments.*', 'organizations.name as organizer')
+            ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
             ->get();
 
         foreach ($tournaments as $tournament) {
@@ -134,7 +134,7 @@ class OrganizationController extends Controller
 
         $users = UserOrganizationalAssignment::where('organization_id', $organization_id)
             ->leftJoin('users', 'users.id', '=', 'user_id')
-            ->select('users.name', 'users.id', 'users.rating')
+            ->select('users_organizational_assignment.id as initid', 'users.name', 'users.id', 'users.rating')
             ->orderBy('users.name', 'asc')
             ->get();
 

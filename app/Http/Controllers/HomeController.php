@@ -111,7 +111,7 @@ class HomeController extends Controller
         }
 
         $your_tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-            ->select('tournaments.*', 'organizations.name as organizer')
+            ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
 	    ->where('tournaments.datetime_end', '>', date('Y-m-d H:i:s'))
 	    ->leftJoin('users_organizational_assignment', 'users_organizational_assignment.organization_id', '=', 'organizations.id')
 	    ->where('user_id', Auth::id())

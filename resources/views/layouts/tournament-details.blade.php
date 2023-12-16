@@ -40,7 +40,7 @@
                     <h5>Organizer</h5>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <span class="text-muted">{{ $tournament->organizer }}</span>
+                    <span class="text-muted"><a href="{{ route('organization', $tournament->organization_id) }}">{{ $tournament->organizer }}</a></span>
                 </div>
 
                 @if (!empty($tournament->enroll_until) && !empty($tournament->max_players) && $tournament->max_players != 0)
@@ -60,7 +60,7 @@
                     @if (empty($tournament->location_link))
                         <span class="text-muted">{{ $tournament->location }}</span>
                     @else
-                        <span class="text-muted"><a href="{{ $tournament->location_link }}" title="Link to location">{{ $tournament->location }}</a></span>
+                        <span class="text-muted"><a href="{{ $tournament->location_link }}" title="Link to location" target="_blank">{{ $tournament->location }}</a></span>
                     @endif
                 </div>
                 @endif
