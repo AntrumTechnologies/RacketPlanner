@@ -7,7 +7,7 @@
             <img src="/{{ $user->avatar }}" class="avatar mb-2" />
             <h2>{{ $user->name }}</h2>
 
-            @if ($user->id == Auth::id())
+            @if ($user->id == Auth::id() || Auth::user()->can('superuser'))
             <p><a class="btn btn-primary" href="{{ route('edit-user', $user->id) }}">Edit user details</a></p>
             @endif
 
