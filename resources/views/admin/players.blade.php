@@ -87,7 +87,7 @@
 
                 <div class="mb-3">
                     <label for="rating" class="form-label">Rating</label>
-                    <input class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating" type="number" value="@if(old('rating')){{ old('rating') }}@endif" placeholder="Leave empty to use user' rating">
+                    <input class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating" type="number" min="0" max="10" value="@if(old('rating')){{ old('rating') }}@endif" placeholder="Leave empty to use user' rating" @if($matches_scheduled > 0) disabled @endif>
                 </div>
 
                 <div class="mb-3">
@@ -102,6 +102,37 @@
                 <button type="submit" class="btn btn-primary" @if(count($users) == 0 || ($matches_scheduled > 0)) disabled @endif>Assign</button>
             </form>
         </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-4">
+            <h4>Manually add a player</h4>
+            
+            <form method="post" action="{{ route('manual-add-player') }}">
+                @csrf
+                
+                <input type="hidden" name="tournament_id" value="{{ $tournament->id }}" />
+
+                <div class="mb-3">
+                    <label for="user_id" class="form-label">Name <span class="text-danger">*</span></label>
+                    <input class="form-control" type="text" name="name" value="{{ old('name') }}" @if($matches_scheduled > 0) disabled @endif>
+                </div>
+
+                <div class="mb-3">
+                    <label for="user_id" class="form-label">Email</label>
+                    <input class="form-control" type="text" name="email" value="{{ old('email') }}" @if($matches_scheduled > 0) disabled @endif placeholder="Leave empty if user should not be able to login">
+                </div>
+
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Rating <span class="text-danger">*</span></label>
+                    <input class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating" type="number" min="0" max="10" value="@if(old('rating')){{ old('rating') }}@endif" @if($matches_scheduled > 0) disabled @endif>
+                </div>
+
+                <button type="submit" class="btn btn-primary" @if($matches_scheduled > 0) disabled @endif>Add</button>
+            </form>
+        </div>
+
+        <div class="col-md-4"></div>
     </div>
 
     <div class="row justify-content-center mt-4">

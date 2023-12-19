@@ -197,6 +197,43 @@ class PlayerController extends Controller
         return redirect()->route('tournament', ['tournament_id' => $request->get('tournament_id')]);
     }
 
+    public function manual_add(Request $request) {
+        $request->validate([
+            'tournament_id' => 'required|exists:tournaments,id',
+            'name' => 'required|min:2',
+            'email' => 'nullable|email',
+            'rating' => 'required|integer|min:0|max:10',
+        ]);
+
+        if (!empty($request->get('email')) && User::where('email', $request->get('email'))->first()) {
+            $user = User::where('email', $request->get('email'))->first();
+        } else {
+            $user = new User([
+                'name' => $request->get('name'),
+                'email' => $request->get('email'),
+                'rating' => $request->get('rating'),
+            ]);
+
+            $user->save();
+        }
+
+        $new_player = new Player([
+            'user_id' => $user->id,
+            'tournament_id' => $request->get('tournament_id'),
+            'rating' => $request->get('rating'),
+            'clinic' => $request->get('clinic'),
+        ]);
+
+        $new_player->save();
+
+        // Save change made to players
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $tournament->change_to_players = true;
+        $tournament->save();
+
+        return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully assigned '. $user->name .' to tournament');
+    }
+
     public function store(Request $request) {
         $request->validate([
             'user_id' => 'required|exists:users,id',
@@ -245,6 +282,12 @@ class PlayerController extends Controller
         $tournament = Tournament::find($tournament_id);
         $tournament->change_to_players = true;
         $tournament->save();
+
+        // Delete user if email address is empty (one-time user)
+        $user = User::find($player->user_id);
+        if (empty($user->email)) {
+            $user->delete();
+        }
 
         return Redirect::route('players', ['tournament_id' => $player->tournament_id])->with('status', 'Successfully deleted player '. $request->get('name'));
     }
