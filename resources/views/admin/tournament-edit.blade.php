@@ -120,6 +120,22 @@
                         </div>
                         <div id="teamRatingToleranceHelp" class="form-text">Maximum difference in rating accepted between two teams. Increase if everyone should be able to play with everyone. Decrease to keep teams equal.</div>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Type of matches</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="double_matches" id="single_matches" value="0" @if((old('double_matches') && old('double_matches') == false) || (!old('double_matches') && $tournament->double_matches == false)) checked @endif>
+                            <label class="form-check-label" for="single_matches">
+                                Single matches
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="double_matches" id="double_matches" value="1" @if((old('double_matches') && old('double_matches') == true) || (!old('double_matches') && $tournament->double_matches == true)) checked @endif>
+                            <label class="form-check-label" for="double_matches">
+                                Double matches
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary" name="submit">Update</button>
