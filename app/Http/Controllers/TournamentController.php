@@ -202,7 +202,7 @@ class TournamentController extends Controller
         $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());
 
         $players = Player::where('tournament_id', $tournament_id)
-            ->select('players.*', 'users.name as name', 'users.rating as rating')
+            ->select('players.*', 'users.name as name')
             ->join('users', 'users.id', '=', 'players.user_id')
             ->orderBy('users.name')
             ->get();

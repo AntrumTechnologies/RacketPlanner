@@ -145,6 +145,7 @@ class PlayerController extends Controller
         $new_player = new Player([
             'user_id' => Auth::id(),
             'tournament_id' => $request->get('tournament_id'),
+            'rating' => Auth::user()->rating,
             'clinic' => $request->get('clinic'),
         ]);
 
