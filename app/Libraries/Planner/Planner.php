@@ -18,8 +18,9 @@ class Planner
   private $desiredNumberOfIterations = 20;
   private $desiredPartnerRatingTolerance = 10.0;
   private $desiredTeamRatingTolerance = 4.0;
+  private $doubleMatches = true;
 
-  function __construct($tournamentId, $desiredNumberOfIterations, $desiredPartnerRatingTolerance, $desiredTeamRatingTolerance)
+  function __construct($tournamentId, $desiredNumberOfIterations, $desiredPartnerRatingTolerance, $desiredTeamRatingTolerance, $doubleMatches)
   {
     Report::Trace(__METHOD__);
 
@@ -29,6 +30,7 @@ class Planner
     $this->desiredNumberOfIterations = $desiredNumberOfIterations;
     $this->desiredPartnerRatingTolerance = $desiredPartnerRatingTolerance;
     $this->desiredTeamRatingTolerance = $desiredTeamRatingTolerance;
+    $this->doubleMatches = $doubleMatches;
   }
 
   // **************************************************************************
@@ -49,30 +51,46 @@ class Planner
     return $minMatchCount;
   }
 
-  protected function GenerateTeams(&$players, $ratingTolerance)
+  protected function GenerateTeams(&$players, $ratingTolerance, $doubles)
   {
     Report::Trace(__METHOD__);
 
     $size = count($players);
     $teams = array();
-    for ($i1 = 0; $i1 < $size; $i1++)
-    {
-      for ($i2 = $i1 + 1; $i2 < $size; $i2++)
+    if ($doubles == true) {
+      // Generate teams for double matches
+      for ($i1 = 0; $i1 < $size; $i1++)
       {
-        $player1 =& $players[$i1];
-        $player2 =& $players[$i2];
-        $diff = abs($player1['rating'] - $player2['rating']);
-        if ($diff <= abs($ratingTolerance))
+        for ($i2 = $i1 + 1; $i2 < $size; $i2++)
         {
-          $team = array();
-          $team['players'] = array();
-          $team['players'][] = $player1['id'];
-          $team['players'][] = $player2['id'];
-          $team['rating'] = $player1['rating'] + $player2['rating'];
-          $teams[] = $team;
+          $player1 =& $players[$i1];
+          $player2 =& $players[$i2];
+          $diff = abs($player1['rating'] - $player2['rating']);
+          if ($diff <= abs($ratingTolerance))
+          {
+            $team = array();
+            $team['players'] = array();
+            $team['players'][] = $player1['id'];
+            $team['players'][] = $player2['id'];
+            $team['rating'] = $player1['rating'] + $player2['rating'];
+            $teams[] = $team;
+          }
         }
       }
+    } else {
+      // Generate team for single matches
+      for ($i1 = 0; $i1 < $size; $i1++)
+      {
+        $player1 =& $players[$i1];
+        $team = array();
+        $team['players'] = array();
+        $team['players'][] = $player1['id'];
+        $team['players'][] = $player1['id'];
+        $team['rating'] = $player1['rating'] * 2;
+        $teams[] = $team;
+      }
     }
+
     return $teams;
   }
 
@@ -148,7 +166,7 @@ class Planner
     return true;
   }
 
-  protected function TryGenerateMatches($partnerRatingTolerance, $teamRatingTolerance, $maxPartnerCount, $maxOpponentCount)
+  protected function TryGenerateMatches($partnerRatingTolerance, $teamRatingTolerance, $maxPartnerCount, $maxOpponentCount, $doubleMatches)
   {
     Report::Trace(__METHOD__);
 
@@ -169,7 +187,7 @@ class Planner
       }
     }
 
-    $teams = $this->GenerateTeams($players, $partnerRatingTolerance);
+    $teams = $this->GenerateTeams($players, $partnerRatingTolerance, $doubleMatches);
 
     $count = 0;
     foreach ($teams as $team1)
@@ -211,7 +229,7 @@ class Planner
     $count = 0;
     for ($i = 1; $i < ($this->desiredNumberOfIterations * 5); $i += 5)
     {
-      $count = $this->TryGenerateMatches($this->desiredPartnerRatingTolerance, $this->desiredTeamRatingTolerance, $i, $i);
+      $count = $this->TryGenerateMatches($this->desiredPartnerRatingTolerance, $this->desiredTeamRatingTolerance, $i, $i, $this->doubleMatches);
       Report::Info("Number of matches generated: $count");
       if ($count >= $required)
         break;

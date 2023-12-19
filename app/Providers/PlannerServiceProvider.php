@@ -20,6 +20,7 @@ class PlannerServiceProvider extends ServiceProvider
             $desiredNumberOfIterations = 20;
             $desiredPartnerRatingTolerance = 10;
             $desiredTeamRatingTolerance = 4;
+            $doubleMatches = true;
 
             if (Route::current() !== null) {
             	$tournamentId = Route::current()->__get('tournamentId');
@@ -29,13 +30,15 @@ class PlannerServiceProvider extends ServiceProvider
                     $desiredNumberOfIterations = $tournament->number_of_matches;
                     $desiredPartnerRatingTolerance = $tournament->partner_rating_tolerance;
                     $desiredTeamRatingTolerance = $tournament->team_rating_tolerance;
+                    $doubleMatches = $tournament->double_matches;
                 }
             }
 
             return new Planner($tournamentId, 
                 $desiredNumberOfIterations, 
                 $desiredPartnerRatingTolerance, 
-                $desiredTeamRatingTolerance);
+                $desiredTeamRatingTolerance,
+                $doubleMatches);
         });
     }
 
