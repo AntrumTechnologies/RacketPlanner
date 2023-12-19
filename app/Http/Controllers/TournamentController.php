@@ -428,6 +428,7 @@ class TournamentController extends Controller
             'location_link' => 'sometimes',
             'max_players' => 'required|integer|min:0',
             'enroll_until' => 'sometimes|nullable|date_format:Y-m-d\TH:i',
+            'double_matches' => 'required|boolean',
 		]);
 
         if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
@@ -448,6 +449,7 @@ class TournamentController extends Controller
             'max_players' => $request->get('max_players'),
             'enroll_until' => $request->get('enroll_until'),
             'public_link' => Str::random(21),
+            'double_matches' => $request->get('double_matches'),
         ]);
 
         $newTournament->save();
@@ -468,9 +470,18 @@ class TournamentController extends Controller
             'number_of_matches' => 'required|integer|min:10|max:60',
             'partner_rating_tolerance' => 'required|integer|min:0|max:10',
             'team_rating_tolerance' => 'required|integer|min:0|max:10',
+            'double_matches' => 'required|boolean',
 		]);
 
         $tournament = Tournament::find($request->get('id'));
+
+        // Log change to players to generate matches again if any of the match generation config parameters change
+        if ($tournament->number_of_matches != $request->get('number_of_matches') ||
+                $tournament->partner_rating_tolerance != $request->get('partner_rating_tolerance') ||
+                $tournament->team_rating_tolerance != $request->get('team_rating_tolerance') ||
+                $tournament->double_matches != $request->get('double_matches')) {
+            $tournament->change_to_players = true;
+        }
 
         $tournament->name = $request->get('name');
         $tournament->datetime_start = $request->get('datetime_start');
@@ -489,6 +500,7 @@ class TournamentController extends Controller
         $tournament->number_of_matches = $request->get('number_of_matches');
         $tournament->partner_rating_tolerance = $request->get('partner_rating_tolerance');
         $tournament->team_rating_tolerance = $request->get('team_rating_tolerance');
+        $tournament->double_matches = $request->get('double_matches');
 
         $tournament->save();
         return Redirect::route('tournament', ['tournament_id' => $tournament->id])->with('status', 'Successfully updated the tournament details');
