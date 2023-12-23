@@ -45,7 +45,7 @@ class MagicEmail extends Notification
                     ->greeting('Hi '. $this->name .'!')
                     ->line('We need to confirm it\'s you. Click on the link below to login.')
                     ->action('Login', url($this->url))
-                    ->line('This link is valid for 72 hours. Never forward this email to anyone else.');
+                    ->line('This link is valid forever. Never forward this email to anyone else.');
     }
 
     /**

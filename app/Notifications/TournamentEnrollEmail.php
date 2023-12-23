@@ -49,7 +49,7 @@ class TournamentEnrollEmail extends Notification
                 ->line('You are invited to join a tournament!')
                 ->line('If you want to join '. $this->tournament_name .' then click the link below.')
                 ->action('Join', url($this->url))
-                ->line('This link is valid for 72 hours. Never forward this email to anyone else.');
+                ->line('This link is valid forever. Never forward this email to anyone else.');
         } else {
             return (new MailMessage)
                 ->subject('You are invited to '. $this->tournament_name .'!')
@@ -57,7 +57,7 @@ class TournamentEnrollEmail extends Notification
                 ->line('You are invited to join a tournament!')
                 ->line('If you want to join '. $this->tournament_name .' then click the link below.')
                 ->action('Join', url($this->url))
-                ->line('This link is valid for 72 hours. Never forward this email to anyone else.');
+                ->line('This link is valid forever. Never forward this email to anyone else.');
         }
     }
 
