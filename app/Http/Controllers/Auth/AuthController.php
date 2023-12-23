@@ -20,7 +20,11 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->get('email'))->first();
-        $urlToAutoLogin =  MagicLink::create(new LoginAction($user))->url;
+
+        $loginAction = new LoginAction($user);
+        $loginAction->remember();
+
+        $urlToAutoLogin =  MagicLink::create($loginAction, null)->url;
         
         $array = [
             'name' => $user->name,
@@ -28,9 +32,7 @@ class AuthController extends Controller
             'url' => $urlToAutoLogin,
         ];
 
-        //$user->notify(new MagicEmail($array));
-        Auth::login($user);
-        redirect('/');
+        $user->notify(new MagicEmail($array));
 
         return view("auth.verify", ['email' => $user->email]);
     }
@@ -55,31 +57,43 @@ class AuthController extends Controller
             'rating' => $request->get('rating'),
         ]);
 
-        if (!empty($request->get('tournament_id')) && !empty($request->get('magiclink_token'))) {
-            $token = explode(':', $request->get('magiclink_token'));
-            $magicLink = MagicLink::where('id', $token[0])->where('token', $token[1])->first();
+        if (!empty($request->get('tournament_id'))) {
+            // If the user clicked the invite link, check whether the magic link is valid to prevent logging in as someone else
+            if(!empty($request->get('magiclink_token'))) {
+                $token = explode(':', $request->get('magiclink_token'));
+                $magicLink = MagicLink::where('id', $token[0])->where('token', $token[1])->first();
 
-            if ((!$magicLink) ||
-                (!empty($magicLink->max_visits) && $magicLink->num_visits >= $magicLink->max_visits)) {
-                return "Link expired";
+                if ((!$magicLink) ||
+                    (!empty($magicLink->max_visits) && $magicLink->num_visits >= $magicLink->max_visits)) {
+                    return "Link expired";
+                }
+            }
+
+            $tournament = Tournament::findOrFail($request->get('tournament_id'));
+            if (empty($tournament->public_link)) {
+                return "Registration without invite not permitted";
             }
 
             // Now save the user, after validating magic link
             $user->save();
 
             // Set max visits in order to expire the used link
-            $magicLink->max_visits = 1;
-            $magicLink->save();
+            if(!empty($request->get('magiclink_token'))) {
+                $magicLink->max_visits = 1;
+                $magicLink->save();
+            }
             
             Auth::login($user);
             
-            $tournament = Tournament::findOrFail($request->get('tournament_id'));
             return redirect()->route('tournament-enroll', ['tournament_id' => $tournament->id]);
         } else {
             // Now save the user
             $user->save();
 
-            $magicUrl =  MagicLink::create(new LoginAction($user))->url;
+            $loginAction = new LoginAction($user);
+            $loginAction->rememeber();
+
+            $magicUrl =  MagicLink::create($loginAction, null)->url;
             $array = [
                 'name' => $user->name,
                 'email' => $user->email,
