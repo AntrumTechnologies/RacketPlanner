@@ -72,7 +72,7 @@ class PlayerController extends Controller
         ]);
 
         $enrollAction = new TournamentEnrollAction($request->get('name'), $request->get('email'), $request->get('tournament_id'));
-        $magicUrl = MagicLink::create($enrollAction)->url;
+        $magicUrl = MagicLink::create($enrollAction, null)->url;
 
         $array = [
             'name' => $request->get('name'),
