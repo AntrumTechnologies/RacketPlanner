@@ -95,7 +95,7 @@ class MatchDetailsController extends Controller
         }
 
         $isUserAdmin = Tournament::where('tournaments.id', $tournament->id)
-            ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignmentid', '=', 'tournaments.owner_organization_id')
+            ->leftJoin('admins_organizational_assignment', 'admins_organizational_assignment.id', '=', 'tournaments.owner_organization_id')
             ->where('admins_organizational_assignment.user_id', Auth::id())
             ->first();
         
