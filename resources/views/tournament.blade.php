@@ -99,7 +99,7 @@
                     <h5>Organizer</h5>
                 </div>
                 <div class="col-md-3">
-                    <span class="text-muted">{{ $tournament->organizer }}</span>
+                    <span class="text-muted"><a href="{{ route('organization', $tournament->organization_id) }}">{{ $tournament->organizer }}</a></span>
                 </div>
             </div>
             
@@ -124,7 +124,7 @@
                     <h5>Public invite link</h5>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" value="https://tep.antrum-technologies.nl/tournament/invite/{{ $tournament->public_link }}" class="form-control" readonly />
+                    <input type="text" value="https://racketplanner.antrum-technologies.nl/tournament/invite/{{ $tournament->public_link }}" class="form-control" readonly />
                 </div>
             </div>
             @endif
