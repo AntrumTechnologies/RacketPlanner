@@ -382,10 +382,10 @@
                                                 @endif
                                             @else
                                                 @if ($is_user_admin)
-                                                    <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
+                                                    <input class="form-control form-control-sm" type="number" name="score2" placeholder="Score">
                                                 @else
                                                     @if ($match->user_is_player)
-                                                        <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
+                                                        <input class="form-control form-control-sm" type="number" name="score2" placeholder="Score">
                                                     @endif
                                                 @endif
                                             @endif
