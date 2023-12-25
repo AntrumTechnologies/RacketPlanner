@@ -395,14 +395,9 @@ class TournamentController extends Controller
     public function edit($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
         $user = Auth::user();
-        if ($user->can('superuser')) {
-            $organizations = Organization::all();
-        } else {
-            $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
-                ->join('organizations', 'organizations.id', '=', 'admins_organizational_assignment.organization_id')->get();
-        }
+        $organization = Organization::findOrFail($tournament->owner_organization_id);
 
-        return view('admin.tournament-edit', ['tournament' => $tournament, 'organizations' => $organizations]);
+        return view('admin.tournament-edit', ['tournament' => $tournament, 'organization' => $organization]);
     }
 
     public function create() {

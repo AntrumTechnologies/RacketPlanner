@@ -36,7 +36,7 @@
 
                     <div class="mb-3">
                         <label for="organization" class="form-label">Organization <span class="text-danger">*</span></label>
-                        <input readonly class="form-control-plaintext" id="organization" value="{{ $organizations[0]->name }}">
+                        <input readonly class="form-control-plaintext" id="organization" value="{{ $organization->name }}">
                     </div>
 
                     <div class="mb-3">
