@@ -36,15 +36,7 @@
 
                     <div class="mb-3">
                         <label for="organization" class="form-label">Organization <span class="text-danger">*</span></label>
-                        @if (count($organizations) > 1)
-                            <select class="form-select" id="organization" name="organization">
-                                @foreach ($organizations as $organization)
-                                    <option value="{{ $organization->id }}" @if (old('organization') == "{{ $organization->id }}") selected @elseif($tournament->owner_organization_id == $organization->id) selected @endif>{{ $organization->name }}</option>
-                                @endforeach
-                            </select>
-                        @else
-                            <input readonly class="form-control-plaintext" id="organization" value="{{ $organizations[0]->name }} ">
-                        @endif
+                        <input readonly class="form-control-plaintext" id="organization" value="{{ $organizations[0]->name }}">
                     </div>
 
                     <div class="mb-3">
