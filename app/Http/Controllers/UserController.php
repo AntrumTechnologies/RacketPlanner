@@ -200,7 +200,7 @@ class UserController extends Controller
         $request->validate([
             'id' => 'required|exists:users',
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'nullable|email',
             'password' => 'sometimes',
             'rating' => 'sometimes|min:0',
             'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
@@ -212,7 +212,7 @@ class UserController extends Controller
             $user->name = $request->get('name');
         }
 
-        if ($request->has('email')) {
+        if ($request->has('email') && !empty($request->has('email'))) {
             $user->email = $request->get('email');
             // TODO: send email address verification email after updating
         }
