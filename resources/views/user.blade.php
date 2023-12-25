@@ -12,7 +12,7 @@
             @endif
 
             <p>Email<br />
-            <span class="text-muted">{{ $user->email }}</span></p>
+            <span class="text-muted">@if (empty($user->email)) (email is not set) @else {{ $user->email }} @endif</span></p>
 
             <p>Rating<br />
             <span class="text-muted">{{ $user->rating }}</span></p>
