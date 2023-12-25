@@ -83,6 +83,22 @@
                     <input class="form-control @error('enroll_until') is-invalid @enderror" id="enroll_until" name="enroll_until" type="datetime-local" placeholder="Y-m-d H:i" value="@if(old('enroll_until')){{ old('enroll_until') }}@endif">
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Type of matches</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="double_matches" id="single_matches" value="0" @if(old('double_matches') == false) checked @endif>
+                        <label class="form-check-label" for="single_matches">
+                            Single matches
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="double_matches" id="double_matches" value="1" @if(old('double_matches') == true) checked @endif>
+                        <label class="form-check-label" for="double_matches">
+                            Double matches
+                        </label>
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary" name="submit">Create</button>
                 <a href="{{ url()->previous() }}" class="btn btn-danger">Cancel</a>
             </form>
