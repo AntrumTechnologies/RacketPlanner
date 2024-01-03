@@ -81,7 +81,7 @@
                 </div>
 
                 <div class="alert alert-light">
-                    <h5>Match generation config</h5>
+                    <h5>Match generation config <span class="text-danger">*</span></h5>
 
                     <div class="mb-3">
                         <label for="number_of_matches" class="form-label">Number of matches per player:</label> <output id="number_of_matches_output">@if(old('number_of_matches')){{ old('number_of_matches') }}@else{{ $tournament->number_of_matches }}@endif</output>
@@ -111,6 +111,11 @@
                             <div class="col-1 text-center">10</div>
                         </div>
                         <div id="teamRatingToleranceHelp" class="form-text">Maximum difference in rating accepted between two teams. Increase if everyone should be able to play with everyone. Decrease to keep teams equal.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="max_match_count" class="form-label">Maximum number of matches per player</label>
+                        <input class="form-control @error('max_match_count') is-invalid @enderror" id="max_match_count" name="max_match_count" type="number" placeholder="Enter a number greater than 0" value="@if(old('max_match_count')){{ old('max_match_count') }}@else{{ $tournament->max_match_count }}@endif">
                     </div>
 
                     <div class="mb-3">

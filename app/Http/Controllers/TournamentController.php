@@ -466,6 +466,7 @@ class TournamentController extends Controller
             'partner_rating_tolerance' => 'required|integer|min:0|max:10',
             'team_rating_tolerance' => 'required|integer|min:0|max:10',
             'double_matches' => 'required|boolean',
+            'max_match_count' => 'required|integer|min:1',
 		]);
 
         $tournament = Tournament::find($request->get('id'));
@@ -474,7 +475,8 @@ class TournamentController extends Controller
         if ($tournament->number_of_matches != $request->get('number_of_matches') ||
                 $tournament->partner_rating_tolerance != $request->get('partner_rating_tolerance') ||
                 $tournament->team_rating_tolerance != $request->get('team_rating_tolerance') ||
-                $tournament->double_matches != $request->get('double_matches')) {
+                $tournament->double_matches != $request->get('double_matches') ||
+                $tournament->max_match_count != $request->get('max_match_count')) {
             $tournament->change_to_players = true;
         }
 
@@ -496,6 +498,7 @@ class TournamentController extends Controller
         $tournament->partner_rating_tolerance = $request->get('partner_rating_tolerance');
         $tournament->team_rating_tolerance = $request->get('team_rating_tolerance');
         $tournament->double_matches = $request->get('double_matches');
+        $tournament->max_match_count = $request->get('max_match_count');
 
         $tournament->save();
         return Redirect::route('tournament', ['tournament_id' => $tournament->id])->with('status', 'Successfully updated the tournament details');

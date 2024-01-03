@@ -20,7 +20,9 @@ class Planner
   private $desiredTeamRatingTolerance = 4.0;
   private $doubleMatches = true;
 
-  function __construct($tournamentId, $desiredNumberOfIterations, $desiredPartnerRatingTolerance, $desiredTeamRatingTolerance, $doubleMatches)
+  function __construct($tournamentId, $desiredNumberOfIterations, $desiredPartnerRatingTolerance, $desiredTeamRatingTolerance, 
+    $doubleMatches, 
+    $playerMaxMatchCount)
   {
     Report::Trace(__METHOD__);
 
@@ -31,6 +33,7 @@ class Planner
     $this->desiredPartnerRatingTolerance = $desiredPartnerRatingTolerance;
     $this->desiredTeamRatingTolerance = $desiredTeamRatingTolerance;
     $this->doubleMatches = $doubleMatches;
+    $this->playerMaxMatchCount = $playerMaxMatchCount;
   }
 
   // **************************************************************************

@@ -32,5 +32,7 @@ class Tournament extends Model
         'change_to_players',
         'public_link',
         'hidden',
+        'double_matches',
+        'max_match_count',
     ];
 }

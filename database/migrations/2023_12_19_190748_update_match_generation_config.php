@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('tournaments', function (Blueprint $table) {
             $table->boolean('double_matches')->default(true);
+            $table->integer('max_match_count')->default(5);
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('tournaments', function (Blueprint $table) {
             $table->dropColumn('double_matches');
+            $table->dropColumn('max_match_count');
         });
     }
 };
