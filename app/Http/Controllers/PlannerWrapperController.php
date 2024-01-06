@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Court;
 use App\Models\Schedule;
 use App\Models\Round;
+use App\Models\Player;
 use App\Models\Tournament;
 use App\Libraries\Planner\Planner;
 use Illuminate\Http\Request;
@@ -115,7 +116,9 @@ class PlannerWrapperController extends Controller
 
     // (Automatically) run when courts, rounds, or players change
     public function GenerateMatches($tournamentId) {
-        $this->planner->GenerateMatches();
+        if (Player::where('tournament_id', $tournamentId)->count() != 0) {
+            $this->planner->GenerateMatches();
+        }
 
         $tournament = Tournament::find($tournamentId);
         $tournament->change_to_players = false;
