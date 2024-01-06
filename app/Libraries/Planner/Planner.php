@@ -232,7 +232,12 @@ class Planner
     $count = 0;
     for ($i = 1; $i < ($this->desiredNumberOfIterations * 5); $i += 5)
     {
-      $count = $this->TryGenerateMatches($this->desiredPartnerRatingTolerance, $this->desiredTeamRatingTolerance, $i, $i, $this->doubleMatches);
+      if ($this->doubleMatches == true) {
+        $maxOpponentCount = $i;
+      } else {
+        $maxOpponentCount = 1;
+      }
+      $count = $this->TryGenerateMatches($this->desiredPartnerRatingTolerance, $this->desiredTeamRatingTolerance, $i, $maxOpponentCount, $this->doubleMatches);
       Report::Info("Number of matches generated: $count");
       if ($count >= $required)
         break;
