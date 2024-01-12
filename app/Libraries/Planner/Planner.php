@@ -193,10 +193,11 @@ class Planner
     $teams = $this->GenerateTeams($players, $partnerRatingTolerance, $doubleMatches);
 
     $count = 0;
-    foreach ($teams as $team1)
-    {
-      foreach ($teams as $team2)
-      {
+    for ($j = 0; $j < count($teams); $j++) {
+      for ($i = 0; $i < count($teams)/2; $i++) {
+        $team1 = $teams[$i];
+        $team2 = $teams[count($teams) - 1 - $i];
+
         $result = $this->VerifyTeamRating($team1, $team2, $teamRatingTolerance);
         $result &= $this->VerifyPartnerCount($partnerCounts, $team1, $maxPartnerCount);
         $result &= $this->VerifyPartnerCount($partnerCounts, $team2, $maxPartnerCount);
@@ -217,7 +218,11 @@ class Planner
           $count++;
         }
       }
+
+      // Rotate the array with players for the next round
+      $teams = array_merge(array($teams[0]), array_slice($teams, 2, count($teams) - 2), array($teams[1]));
     }
+    
     return $count;
   }
 
