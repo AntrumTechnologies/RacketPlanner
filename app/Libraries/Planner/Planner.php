@@ -311,9 +311,14 @@ class Planner
         {
           $match = $this->dbc->GetMatchById($match_id);
           $matchCounts[$match['player1a_id']]++;
-          $matchCounts[$match['player1b_id']]++;
+          if ($this->doubleMatches == true) {
+            $matchCounts[$match['player1b_id']]++;
+          }
+
           $matchCounts[$match['player2a_id']]++;
-          $matchCounts[$match['player2b_id']]++;
+          if ($this->doubleMatches == true) {
+            $matchCounts[$match['player2b_id']]++;
+          }
         }
       }
     }
@@ -363,17 +368,23 @@ class Planner
         $matesCounts[$id1][$id3]++;
         $matesCounts[$id1][$id4]++;
 
-        $matesCounts[$id2][$id1]++;
+        if ($this->doubleMatches == true) {
+          $matesCounts[$id2][$id1]++;
+        }
         $matesCounts[$id2][$id3]++;
         $matesCounts[$id2][$id4]++;
 
-        $matesCounts[$id3][$id1]++;
-        $matesCounts[$id3][$id2]++;
+        if ($this->doubleMatches == true) {
+          $matesCounts[$id3][$id1]++;
+          $matesCounts[$id3][$id2]++;
+        }
         $matesCounts[$id3][$id4]++;
 
-        $matesCounts[$id4][$id1]++;
-        $matesCounts[$id4][$id2]++;
-        $matesCounts[$id4][$id3]++;
+        if ($this->doubleMatches == true) {
+          $matesCounts[$id4][$id1]++;
+          $matesCounts[$id4][$id2]++;
+          $matesCounts[$id4][$id3]++;
+        }
       }
     }
     return $matesCounts;
