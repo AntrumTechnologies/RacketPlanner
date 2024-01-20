@@ -50,17 +50,12 @@ class CourtController extends Controller
         $request->validate([
             'id' => 'required|exists:courts',
             'name' => 'sometimes|required|max:30',
-            'tournament_id' => 'sometimes|required|exists:tournaments,id',
         ]);
 
         $court = Court::find($request->get('id'));
         
         if ($request->has('name')) {
             $court->name = $request->get('name');
-        }
-
-        if ($request->has('tournament_id')) {
-            $court->tournament_id = $request->get('tournament_id');
         }
 
         $court->save();
