@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tournaments', function (Blueprint $table) {
-            $table->renameColumn('created_by', 'owner_organization_id');
+            $table->bigInteger('owner_organization_id')->unsigned();
             $table->dateTime('enroll_until')->nullable();
             $table->bigInteger('max_players')->unsigned();
         });
