@@ -49,8 +49,8 @@ class RoundController extends Controller
     public function update(Request $request) {
         $request->validate([
             'id' => 'required|exists:rounds',
-            'name' => 'sometimes|required|max:30',
-            'starttime' => 'sometimes|required',
+            'name' => 'required|max:30',
+            'starttime' => 'required|date_format:H:i',
         ]);
 
         $round = Round::find($request->get('id'));
