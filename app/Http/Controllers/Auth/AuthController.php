@@ -32,7 +32,9 @@ class AuthController extends Controller
             'url' => $urlToAutoLogin,
         ];
 
-        $user->notify(new MagicEmail($array));
+        //$user->notify(new MagicEmail($array));
+        Auth::login($user);
+        return redirect('/');
 
         return view("auth.verify", ['email' => $user->email]);
     }
@@ -57,24 +59,25 @@ class AuthController extends Controller
             'rating' => $request->get('rating'),
         ]);
 
-        if (!empty($request->get('tournament_id'))) {
+        if (!empty($request->get('tournament_id')) && !empty($request->get('magiclink_token'))) {
             // If the user clicked the invite link, check whether the magic link is valid to prevent logging in as someone else
-            if(!empty($request->get('magiclink_token'))) {
-                $token = explode(':', $request->get('magiclink_token'));
-                $magicLink = MagicLink::where('id', $token[0])->where('token', $token[1])->first();
+            $token = explode(':', $request->get('magiclink_token'));
+            $magicLink = MagicLink::where('id', $token[0])->where('token', $token[1])->first();
 
-                if ((!$magicLink) ||
-                    (!empty($magicLink->max_visits) && $magicLink->num_visits >= $magicLink->max_visits)) {
-                    return "Link expired";
-                }
+            if ((!$magicLink) ||
+                (!empty($magicLink->max_visits) && $magicLink->num_visits >= $magicLink->max_visits)) {
+                return back()->withInput()->with('error', 'The invite link used is not valid anymore. Please contact the tournament organizer.');
             }
 
-            $tournament = Tournament::findOrFail($request->get('tournament_id'));
+            // Do not use user input email address, could be altered prior to sending request, use email saved in magic link action
+            $user->email = $magicLink->action->email;
+
+            $tournament = Tournament::findOrFail($magicLink->action->tournament_id);
             if (empty($tournament->public_link)) {
-                return "Registration without invite not permitted";
+                return back()->withInput()->with('error', 'Registration via public invite link is not permitted. Please contact the tournament organizer.');
             }
 
-            // Now save the user, after validating magic link
+            // Now save the user, after validating magic link and tournament
             $user->save();
 
             // Set max visits in order to expire the used link
