@@ -21,7 +21,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-dark shadow-sm" style="background-color: #0167b1;">
+        <nav class="navbar navbar-expand-md navbar-dark shadow-sm" style="background-color: #2F2E40;">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -36,6 +36,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('home') }}">{{ __('Home') }}</a>
                         </li>
+                        @auth
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('tournaments') }}">{{ __('Tournaments') }}</a>
                         </li>
@@ -47,6 +48,7 @@
                             <a class="nav-link" href="{{ route('users') }}">{{ __('Users') }}</a>
                         </li>
                         @endcan
+                        @endauth
                     </ul>
 
                     <!-- Right Side Of Navbar -->

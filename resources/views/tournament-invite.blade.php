@@ -13,7 +13,7 @@
             @if (Auth::check())
                 <div class="alert alert-light mb-4">
                     <p>You're invited to a tournament. Click the buton below to enroll.</p>
-                    <p><a class="btn btn-primary" href="{{ route('tournament-enroll', $tournament->id) }}" style="color: #fff">Enroll</a></p>
+                    <p><a class="btn btn-primary" href="{{ route('tournament-enroll', $tournament->id) }}">Enroll</a></p>
                 </div>
             @else
                 <div class="alert alert-light mb-4">
