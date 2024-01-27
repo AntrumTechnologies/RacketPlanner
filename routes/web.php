@@ -31,11 +31,11 @@ use App\Http\Controllers\OrganizationController;
 Route::view('/login', 'auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::view('/register', 'auth.register');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::view('/register', 'auth.register')->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/tournament/invite/{public_link}', [TournamentController::class, 'invite'])->name('tournament-invite');
-Route::post('/tournament/invite', [TournamentController::class, 'store_invite'])->name('tournament-store-invite');
+Route::get('/invite/{public_link}', [TournamentController::class, 'invite'])->name('tournament-invite');
+Route::post('/invite', [TournamentController::class, 'store_invite'])->name('tournament-store-invite');
 
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/', [HomeController::class, 'index'])->name('home');

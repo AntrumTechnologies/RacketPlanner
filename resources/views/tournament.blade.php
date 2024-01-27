@@ -123,8 +123,8 @@
                 <div class="col-md-3">
                     <h5>Public invite link</h5>
                 </div>
-                <div class="col-md-3">
-                    <input type="text" value="https://racketplanner.antrum-technologies.nl/tournament/invite/{{ $tournament->public_link }}" class="form-control" readonly />
+                <div class="col-md-9">
+                    <input type="text" value="https://racketplanner.nl/invite/{{ $tournament->public_link }}" class="form-control" readonly />
                 </div>
             </div>
             @endif
