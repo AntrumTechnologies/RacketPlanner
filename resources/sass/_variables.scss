@@ -7,11 +7,12 @@ $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 $theme-colors: (
-  "primary": #0167b1,
-  "secondary": #6c757d,
-  "success": #28a745,
-  "danger": #dc3545,
-  "warning": #ffc107,
+  "link": #0167b1,
+  "primary": #ccff00,
+  "secondary": #2F2E40,
+  "success": #93A603,
+  "danger": #BF491F,
+  "warning": #F2D649,
   "info": #17a2b8,
   "dark": #212529,
   "light": #343a40,
@@ -19,3 +20,8 @@ $theme-colors: (
 
 $bs-accordion-active-bg: #fff;
 $bs-primary-bg-subtle: #fff;
+
+a.list-group-item.link-primary {
+  color: #0d6efd !important;
+  text-decoration: underline !important;
+}
