@@ -7,18 +7,30 @@ use App\Models\Schedule;
 use App\Models\Round;
 use App\Models\Player;
 use App\Models\Tournament;
+use App\Models\AdminOrganizationalAssignment;
 use App\Libraries\Planner\Planner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
 class PlannerWrapperController extends Controller
 {
     private Planner $planner;
 
-    public function __construct(Planner $planner)
+    public function __construct(Request $request, Planner $planner)
     {
         $this->middleware('auth');
         $this->planner = $planner;
+
+        $this->middleware(function ($request, $next) {
+            $tournament = Tournament::findOrFail($request->route()->parameter('tournamentId'));
+            $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+            if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+                return redirect('home')->with('error', 'You are not allowed to perform this action');
+            }
+
+            return $next($request);
+        });
     }
 
     public function SetSlotStateToAvailable($tournamentId, $slotId)

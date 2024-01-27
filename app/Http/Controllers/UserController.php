@@ -29,7 +29,7 @@ class UserController extends Controller
             return view('admin.users', ['users' => $users]);
         }
 
-        return redirect('/');
+        return redirect('home')->with('error', 'You are not allowed to access this page');
     }
 
     public function show($id) {
@@ -208,6 +208,10 @@ class UserController extends Controller
 
         $user = User::find($request->get('id'));
 
+        if (Auth::id() != $user->id && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         if ($request->has('name')) {
             $user->name = $request->get('name');
         }
@@ -246,6 +250,10 @@ class UserController extends Controller
             'email' => 'required|unique:users,email',
             'rating' => 'min:0',
         ]);
+
+        if (!Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
 
         $newUser = new User([
             "name" => $request->get('name'),

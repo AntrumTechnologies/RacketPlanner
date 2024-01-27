@@ -22,8 +22,7 @@ class OrganizationController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
-        if ($user->can('superuser')) {
+        if (Auth::user()->can('superuser')) {
             $organizations = Organization::all();
         } else {
             $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
@@ -48,14 +47,6 @@ class OrganizationController extends Controller
             ->first();
         if ($isUserAdmin || Auth::user()->can('superuser')) {
             $is_user_admin = true;
-        } else {
-            $is_user = UserOrganizationalAssignment::where('user_id', Auth::id())
-                ->where('organization_id', $organization->id)
-                ->first();
-
-            if (!$is_user) {
-                return "You are not allowed to access this organization";
-            }
         }
 
         $tournaments = Tournament::where('owner_organization_id', $id)
@@ -105,6 +96,10 @@ class OrganizationController extends Controller
             'location' => 'required|max:70',
         ]);
 
+        if (!Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         // Create new organization
         $newOrganization = new Organization([
             'name' => $request->get('name'),
@@ -123,7 +118,7 @@ class OrganizationController extends Controller
             ->where('organization_id', $organization->id)
             ->first();
         if (!$isUserAdmin && !Auth::user()->can('superuser')) {
-            return "You are not authorized to edit this organization";
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
         }
 
         $admins = AdminOrganizationalAssignment::where('organization_id', $organization_id)
@@ -149,12 +144,13 @@ class OrganizationController extends Controller
             'location' => 'sometimes|required|max:70',
         ]);
 
-        $organization = Organization::findOrFail($request->get('id'));
-
-        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('id'))) {
-            return "User is not allowed to perform this action";
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('id'))->count() > 0 &&
+            !Auth::user()->can('superuser')) {
+            return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+                ->with('error', 'User is not allowed to perform this action');
         }
 
+        $organization = Organization::findOrFail($request->get('id'));
         if ($request->has('name')) {
             $organization->name = $request->get('name');
         }
@@ -177,6 +173,12 @@ class OrganizationController extends Controller
             'organization_id' => 'required|exists:organizations,id',
             'user_id' => 'required|exists:users,id',
         ]);
+
+        if (!Auth::user()->can('superuser') && 
+            !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id')->count() > 0)) {
+            return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+                ->with('error', 'User is not allowed to perform this action');
+        }
 
         $alreadyPresent = UserOrganizationalAssignment::where('organization_id', $request->get('organization_id'))
             ->where('user_id', $request->get('user_id'))->firstOrFail();
@@ -205,7 +207,8 @@ class OrganizationController extends Controller
             'email' => 'required|exists:users,email',
         ]);
 
-        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))) {
+        if (!Auth::user()->can('superuser') && 
+            !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id')->count() > 0)) {
             return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
                 ->with('error', 'User is not allowed to perform this action');
         }
@@ -245,8 +248,10 @@ class OrganizationController extends Controller
             'name' => 'required',
         ]);
 
-        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))) {
-            return "User is not allowed to perform this action";
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))->count() > 0 &&
+            !Auth::user()->can('superuser')) {
+            return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+                ->with('error', 'User is not allowed to perform this action');
         }
 
         $admin = AdminOrganizationalAssignment::where('organization_id', $request->get('organization_id'))
@@ -265,8 +270,11 @@ class OrganizationController extends Controller
             'name' => 'required',
         ]);
 
-        if (!Auth::user()->can('superuser') && !AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $request->get('organization_id'))) {
-            return "User is not allowed to perform this action";
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $request->get('organization_id'))->count() > 0 &&
+            !Auth::user()->can('superuser')) {
+            return Redirect::route('edit-organization', ['id' => $request->get('organization_id')])
+                ->with('error', 'User is not allowed to perform this action');
         }
 
         $user = UserOrganizationalAssignment::where('organization_id', $request->get('organization_id'))

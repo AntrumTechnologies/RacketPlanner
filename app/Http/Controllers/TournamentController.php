@@ -25,6 +25,9 @@ use MagicLink\MagicLink;
 
 class TournamentController extends Controller
 {
+    /**
+     * USER ACTIONS
+     */
     public static function index() {
         if (Auth::user()->can('superuser')) {
             $tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
@@ -99,39 +102,6 @@ class TournamentController extends Controller
             ->first();
 
         return view('tournament-invite', ['tournament' => $tournament]);
-    }
-
-    public function store_invite(Request $request) {
-        $request->validate([
-            'tournament_id' => 'required|exists:tournaments,id',
-            'email' => 'required|email',
-        ]);
-
-        $name = '';
-        if (User::where('email', $request->get('email'))->exists()) {
-            $user = User::where('email', $request->get('email'))->first();
-            $name = $user->name;
-        }
-
-        $enrollAction = new TournamentEnrollAction($name, $request->get('email'), $request->get('tournament_id'));
-        $magicUrl = MagicLink::create($enrollAction, null)->url;
-
-        $array = [
-            'name' => $name,
-            'email' => $request->get('email'),
-            'url' => $magicUrl,
-            'tournament_id' => $request->get('tournament_id'),
-            'tournament_name' => Tournament::findOrFail($request->get('tournament_id'))->name,
-        ];
-
-        if (User::where('email', $request->get('email'))->exists()) {
-            $user->notify(new TournamentEnrollEmail($array));
-        } else {
-            Notification::route('mail', $request->get('email'))
-                ->notify(new TournamentEnrollEmail($array));
-        }
-
-        return view("auth.verify", ['email' => $request->get('email')]);
     }
 
     public function show($tournament_id) {
@@ -392,9 +362,58 @@ class TournamentController extends Controller
         return view('tournament-withdraw', ['tournament' => $tournament]);
     }
 
+    /**
+     * ADMIN ACTIONS
+     */
+    public function store_invite(Request $request) {
+        $request->validate([
+            'tournament_id' => 'required|exists:tournaments,id',
+            'email' => 'required|email',
+        ]);
+
+        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $tournament->owner_organization_id)->count() > 0 &&
+            !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
+        $name = '';
+        if (User::where('email', $request->get('email'))->exists()) {
+            $user = User::where('email', $request->get('email'))->first();
+            $name = $user->name;
+        }
+
+        $enrollAction = new TournamentEnrollAction($name, $request->get('email'), $request->get('tournament_id'));
+        $magicUrl = MagicLink::create($enrollAction, null)->url;
+
+        $array = [
+            'name' => $name,
+            'email' => $request->get('email'),
+            'url' => $magicUrl,
+            'tournament_id' => $request->get('tournament_id'),
+            'tournament_name' => Tournament::findOrFail($request->get('tournament_id'))->name,
+        ];
+
+        if (User::where('email', $request->get('email'))->exists()) {
+            $user->notify(new TournamentEnrollEmail($array));
+        } else {
+            Notification::route('mail', $request->get('email'))
+                ->notify(new TournamentEnrollEmail($array));
+        }
+
+        return view("auth.verify", ['email' => $request->get('email')]);
+    }
+
     public function edit($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
-        $user = Auth::user();
+
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $tournament->owner_organization_id)->count() > 0 &&
+            !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         $organization = Organization::findOrFail($tournament->owner_organization_id);
 
         return view('admin.tournament-edit', ['tournament' => $tournament, 'organization' => $organization]);
@@ -407,6 +426,10 @@ class TournamentController extends Controller
         } else {
             $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())
                 ->join('organizations', 'organizations.id', '=', 'admins_organizational_assignment.organization_id')->get();
+        }
+
+        if (count($organizations) == 0) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
         }
 
         return view('admin.tournament-create', ['organizations' => $organizations]);
@@ -429,8 +452,7 @@ class TournamentController extends Controller
         if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
                 ->where('organization_id', $request->get('owner_organization_id'))->count() > 0 &&
             !Auth::user()->can('superuser')) {
-            // TODO(PATBRO): improve error handling
-            return "User is not an administrator of this organization";
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
         }
 
         $newTournament = new Tournament([
@@ -471,6 +493,12 @@ class TournamentController extends Controller
 
         $tournament = Tournament::find($request->get('id'));
 
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $tournament->owner_organization_id)->count() > 0 &&
+            !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         // Log change to players to generate matches again if any of the match generation config parameters change
         if ($tournament->number_of_matches != $request->get('number_of_matches') ||
                 $tournament->partner_rating_tolerance != $request->get('partner_rating_tolerance') ||
@@ -510,6 +538,13 @@ class TournamentController extends Controller
         ]);
 
         $tournament = Tournament::find($request->id);
+
+        if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
+                ->where('organization_id', $tournament->owner_organization_id)->count() > 0 &&
+            !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         $tournament->delete();
 
         // TODO: delete all corresponding matches as well, and assigned users and courts.

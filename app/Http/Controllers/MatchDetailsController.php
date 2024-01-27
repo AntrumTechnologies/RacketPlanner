@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminOrganizationalAssignment;
 use App\Models\Court;
 use App\Models\MatchDetails;
 use App\Models\Player;
@@ -67,7 +68,13 @@ class MatchDetailsController extends Controller
                 INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
                 INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
                 INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
-            WHERE schedules.match_id = ". $id);
+            WHERE schedules.match_id = ?", [$id]);
+
+        $tournament = Tournament::find($match[0]->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
 
         $match[0]->time = date('H:i', strtotime($match[0]->time));
         
@@ -102,11 +109,11 @@ class MatchDetailsController extends Controller
         if (!$isUserAdmin && !Auth::user()->can('superuser')) {
             if ($player1a->user_id != Auth::id() && $player1b->user_id != Auth::id() && 
                 $player2a->user_id != Auth::id() && $player2b->user_id != Auth::id()) {
-                return Response::json("You are not allowed to save the score for this match", 400);
+                return back()->withInput()->with('error', 'You are not allowed to save the score for this match');
             }
             
             if ($match->score1 != null || $match->score2 != null) {
-                return Response::json("Score has been set already for this match", 400);
+                return back()->withInput()->with('error', 'Score has been set already for this match');
             }
         }
 
@@ -156,6 +163,11 @@ class MatchDetailsController extends Controller
 
         $tournament = Tournament::findOrFail($schedule->tournament_id);
 
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
+
         $round = Round::findOrFail($schedule->round_id);
         $time = date('H:i', strtotime($round->starttime));
 
@@ -185,6 +197,12 @@ class MatchDetailsController extends Controller
             'player2a_id' => 'required|exists:players,id',
             'player2b_id' => 'required|exists:players,id',
         ]);
+
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
 
         $match = new MatchDetails([
             'tournament_id' => $request->get('tournament_id'),
@@ -235,7 +253,13 @@ class MatchDetailsController extends Controller
                 LEFT JOIN `users` as user1b ON player1b.user_id = user1b.id
                 LEFT JOIN `users` as user2a ON player2a.user_id = user2a.id
                 LEFT JOIN `users` as user2b ON player2b.user_id = user2b.id
-            WHERE schedules.match_id = ". $id);
+            WHERE schedules.match_id = ?", [$id]);
+
+        $tournament = Tournament::find($match[0]->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
 
         $match[0]->time = date('H:i', strtotime($match[0]->time));
 
@@ -257,6 +281,14 @@ class MatchDetailsController extends Controller
             'player2b_id' => 'required|exists:players,id',
         ]);
 
+        $schedule = Schedule::where('match_id', $request->get('id'))->first();
+
+        $tournament = Tournament::find($schedule->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         $match = MatchDetails::find($request->get('id'));
         $match->player1a_id = $request->get('player1a_id');
         $match->player1b_id = $request->get('player1b_id');
@@ -264,7 +296,6 @@ class MatchDetailsController extends Controller
         $match->player2b_id = $request->get('player2b_id');
         $match->save();
 
-        $schedule = Schedule::where('match_id', $request->get('id'))->first();
         return redirect()->to(route('tournament', ['tournament_id' => $schedule->tournament_id]) .'?showround=all#slot'. $schedule->id)->with('status', 'Manually updated slot');
     }
 }

@@ -31,6 +31,12 @@ class RoundController extends Controller
             'starttime' => 'required|date_format:H:i',
         ]);
 
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         $new_round = new Round([
             'name' => $request->get('name'),
             'tournament_id' => $request->get('tournament_id'),
@@ -54,6 +60,12 @@ class RoundController extends Controller
         ]);
 
         $round = Round::find($request->get('id'));
+
+        $tournament = Tournament::find($round->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
         
         if ($request->has('name')) {
             $round->name = $request->get('name');
@@ -79,12 +91,18 @@ class RoundController extends Controller
 			return Response::json($validator->errors()->first(), 400);	
 		}
 
+        $round = Round::find($request->get('id'));
+
+        $tournament = Tournament::find($round->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
+        $round->delete();
         $schedule = Schedule::where('tournament_id', $request->get('tournament_id'))
             ->where('round_id', $request->get('id'))
             ->delete();
-
-        $round = Round::find($request->get('id'));
-        $round->delete();
 
         $tournament = Tournament::find($request->get('tournament_id'));
         $tournament->change_to_courts_rounds = true;

@@ -10,7 +10,12 @@ class ScoreController extends Controller
 {
     public function show($tournamentId) 
     {
-        $tournament = Tournament::where('id', $tournamentId)->first();
+        $tournament = Tournament::findOrFail($tournamentId);
+        
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
 
         $players = Player::where('tournament_id', $tournamentId)
             ->join('users', 'users.id', '=', 'players.user_id')
@@ -22,6 +27,6 @@ class ScoreController extends Controller
             ->orderBy('name', 'asc')
             ->get();
 
-            return view('admin.leaderboard', ['tournament' => $tournament, 'players' => $players]);
+        return view('admin.leaderboard', ['tournament' => $tournament, 'players' => $players]);
     }
 }

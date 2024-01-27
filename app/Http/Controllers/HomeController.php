@@ -117,6 +117,11 @@ class HomeController extends Controller
 	    ->where('user_id', Auth::id())
             ->get();
 
+            $tournaments = Tournament::leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
+            ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
+            ->select('tournaments.*', 'organizations.name as organizer')
+            ->where('users_organizational_assignment.user_id', Auth::id())->get();
+
         // Remove seconds from datetime fields, these are not relevant, but are added due to the PHPMyAdmin config
         foreach ($your_tournaments as $tournament) {
             $tournament->rounds = count(Round::where('tournament_id', $tournament->id)->get());

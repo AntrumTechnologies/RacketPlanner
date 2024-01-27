@@ -25,6 +25,12 @@ class PlayerController extends Controller
 
     public function show($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
+
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
+
         $tournament_players = Player::where('tournament_id', $tournament_id)
             ->select('players.*', 'users.name', 'users.email')
             ->leftJoin('users', 'users.id', '=', 'players.user_id')
@@ -70,6 +76,12 @@ class PlayerController extends Controller
             'email' => 'required|email',
             'name' => 'required|min:2',
         ]);
+
+        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
 
         $enrollAction = new TournamentEnrollAction($request->get('name'), $request->get('email'), $request->get('tournament_id'));
         $magicUrl = MagicLink::create($enrollAction, null)->url;
@@ -182,16 +194,21 @@ class PlayerController extends Controller
         ]);
 
         $tournament = Tournament::findOrFail($request->get('tournament_id'));
+        $player = Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->get();
+
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser') && Auth::id() != $player->user_id) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         if (($tournament->enroll_until != null && strtotime(now()) > strtotime($tournament->enroll_until)) || 
             (strtotime(now()) > strtotime($tournament->datetime_start))) {
             return back()->with('error', 'You can not withdraw anymore. The withdraw deadline has been reached or the tournament already started');
         }
 
-        $player = Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->get();
         $player->each->delete();
 
         // Save change made to players
-        $tournament = Tournament::find($request->get('tournament_id'));
         $tournament->change_to_players = true;
         $tournament->save();
 
@@ -205,6 +222,12 @@ class PlayerController extends Controller
             'email' => 'nullable|email',
             'rating' => 'required|integer|min:0|max:10',
         ]);
+
+        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
 
         if (!empty($request->get('email')) && User::where('email', $request->get('email'))->first()) {
             $user = User::where('email', $request->get('email'))->first();
@@ -243,6 +266,13 @@ class PlayerController extends Controller
             'clinic' => 'sometimes',
         ]);
 
+        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         if (!$request->has('rating') || empty($request->get('rating'))) {
             $user = User::find($request->get('user_id'));
             $rating = $user->rating;
@@ -276,11 +306,16 @@ class PlayerController extends Controller
         ]);
 
         $player = Player::find($request->get('id'));
-        $tournament_id = $player->tournament_id;
+        $tournament = Tournament::findOrFail($player->tournament_id);
+
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
+
         $player->delete();
 
         // Save change made to players
-        $tournament = Tournament::find($tournament_id);
         $tournament->change_to_players = true;
         $tournament->save();
 

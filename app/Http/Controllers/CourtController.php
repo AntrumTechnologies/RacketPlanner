@@ -22,6 +22,12 @@ class CourtController extends Controller
     public function show($court_id) {
         $court = Court::findOrFail($court_id);
 
+        $tournament = Tournament::find($court->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
+
         return view('admin.court', ['court' => $court]);
     }
 
@@ -30,6 +36,12 @@ class CourtController extends Controller
 			'name' => 'required|max:30',
             'tournament_id' => 'required|exists:tournaments,id',
 		]);
+
+        $tournament = Tournament::find($request->get('tournament_id'));
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
 
         $newCourt = new Court([
             'name' => $request->get('name'),
@@ -53,6 +65,12 @@ class CourtController extends Controller
         ]);
 
         $court = Court::find($request->get('id'));
+
+        $tournament = Tournament::find($court->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
         
         if ($request->has('name')) {
             $court->name = $request->get('name');
@@ -74,12 +92,18 @@ class CourtController extends Controller
 			return Response::json($validator->errors()->first(), 400);	
 		}
 
+        $court = Court::find($request->get('id'));
+        $tournament = Tournament::find($court->tournament_id);
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
+
+        $court->delete();
+        // Schedule becomes invalid if a court is removed
         $schedule = Schedule::where('tournament_id', $request->get('tournament_id'))
             ->where('court_id', $request->get('id'))
             ->delete();
-
-        $court = Court::find($request->get('id'));
-        $court->delete();
 
         $tournament = Tournament::find($request->get('tournament_id'));
         $tournament->change_to_courts_rounds = true;

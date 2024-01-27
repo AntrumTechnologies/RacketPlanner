@@ -22,6 +22,12 @@ class CourtRoundController extends Controller
 
     public function show($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
+
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0) {
+            return redirect('home')->with('error', 'You are not allowed to access this page');
+        }
+
         $matches_scheduled = Schedule::where('tournament_id', $tournament_id)->where('state', 'available')->where('match_id', '!=', NULL)->count();
         $courts = Court::where('tournament_id', $tournament_id)->get();
         $rounds = Round::where('tournament_id', $tournament_id)->get();
