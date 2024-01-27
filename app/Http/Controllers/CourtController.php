@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminOrganizationalAssignment;
 use App\Models\Court;
 use App\Models\Schedule;
 use App\Models\Tournament;

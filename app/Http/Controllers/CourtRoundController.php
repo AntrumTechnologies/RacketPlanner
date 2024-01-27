@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminOrganizationalAssignment;
 use App\Models\Court;
 use App\Models\Round;
 use App\Models\Tournament;
@@ -24,7 +25,7 @@ class CourtRoundController extends Controller
         $tournament = Tournament::findOrFail($tournament_id);
 
         $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
-        if (count($organizations) == 0) {
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
             return redirect('home')->with('error', 'You are not allowed to access this page');
         }
 

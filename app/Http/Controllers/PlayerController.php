@@ -7,6 +7,7 @@ use App\Models\Player;
 use App\Models\Tournament;
 use App\Models\Schedule;
 use App\Models\User;
+use App\Models\AdminOrganizationalAssignment;
 use App\Models\UserOrganizationalAssignment;
 use App\Notifications\TournamentEnrollEmail;
 use Illuminate\Http\Request;
