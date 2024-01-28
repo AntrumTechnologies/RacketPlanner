@@ -134,7 +134,8 @@ class TournamentController extends Controller
 
         $tournament->can_enroll = true;
         $tournament->can_withdraw = true;
-        if (!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) {
+        if ((!empty($tournament->enroll_until) && date('Y-m-d H:i') > $tournament->enroll_until) ||
+            (date('Y-m-d H:i') > $tournament->start_datetime)) {
             $tournament->can_enroll = false;
             $tournament->can_withdraw = false;
         }
