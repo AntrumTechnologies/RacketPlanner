@@ -41,7 +41,25 @@
 
                 <div class="mb-3">
                     <label for="rating" class="form-label">Rating <span class="text-danger">*</span></label>
-                    <input class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating" type="number" value="@if(old('rating')){{ old('rating') }}@else{{ $user->rating }}@endif">
+
+                    <select id="rating" class="form-control @error('rating') is-invalid @enderror" name="rating" required>
+                        <option value="" @if(empty($user->rating)) selected @endif>Please select...</option>
+                        <option value="10" @if($user->rating == 10) selected @endif>10 (beginner)</option>
+                        <option value="9" @if($user->rating == 9) selected @endif>9</option>
+                        <option value="8" @if($user->rating == 8) selected @endif>8</option>
+                        <option value="7" @if($user->rating == 7) selected @endif>7</option>
+                        <option value="6" @if($user->rating == 6) selected @endif>6</option>
+                        <option value="5" @if($user->rating == 5) selected @endif>5</option>
+                        <option value="4" @if($user->rating == 4) selected @endif>4</option>
+                        <option value="3" @if($user->rating == 3) selected @endif>3</option>
+                        <option value="2" @if($user->rating == 2) selected @endif>2 (expert)</option>
+                    </select>
+
+                    @error('rating')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
                 </div>
 
                 <button type="submit" class="btn btn-primary" name="submit">Update</button>
