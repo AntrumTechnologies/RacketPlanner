@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\GenericPushNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
@@ -38,8 +39,6 @@ class UserController extends Controller
             'rating' => 'sometimes|required|min:0',
             'avatar' => 'sometimes|required|mimes:jpeg,png|max:4096',
             'fcm_token' => 'sometimes',
-            'availability_start' => 'sometimes|required|date_format:Y-m-d H:i',
-            'availability_end' => 'sometimes|required|date_format:Y-m-d H:i',
         ]);
 
 		if ($validator->fails()) {
@@ -82,15 +81,14 @@ class UserController extends Controller
             $user->fcm_token = $request->input('fcm_token');
         }
 
-        if ($request->has('availability_start')) {
-            $user->availability_start = $request->get('availability_start');
-        }
-
-        if ($request->has('availability_end')) {
-            $user->availability_end = $request->get('availability_end');
-        }
-
         $user->save();
         return Response::json("Successfully updated user details", 200);
+    }
+
+    public function push_notification()
+    {
+        $user = Auth::user();
+        $user->notify(new GenericPushNotification);
+        return Response::json("Push notification sent!", 200);
     }
 }

@@ -36,11 +36,12 @@ Route::get('/tournament', [TournamentController::class, 'index']);
 Route::get('/tournament/{id}', [TournamentController::class, 'show']);
 Route::get('/tournament/{id}/matches', [TournamentController::class, 'showMatches']);
 Route::post('/tournament/create', [TournamentController::class, 'store']);
-Route::post('/tournament/court', [TournamentController::class, 'assignCourts']);
-Route::post('/tournament/user', [TournamentController::class, 'assignUsers']);
+Route::post('/tournament/court', [TournamentController::class, 'matchCourts']);
+Route::post('/tournament/user', [TournamentController::class, 'matchUsers']);
 Route::post('/tournament', [TournamentController::class, 'update']);
 Route::post('/tournament/delete', [TournamentController::class, 'delete']);
 
 Route::get('/user', [UserController::class, 'index']);
+Route::post('/user/notify', [UserController::class, 'push_notification']);
 Route::get('/user/{id}', [UserController::class, 'show']);
 Route::post('/user', [UserController::class, 'update']);

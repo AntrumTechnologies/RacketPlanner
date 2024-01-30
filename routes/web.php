@@ -129,6 +129,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/admin/users', [UserController::class, 'index'])->name('users');
     Route::view('/admin/user/create', 'admin.user-create')->name('create-user');
     Route::post('/admin/user/store', [UserController::class, 'store'])->name('store-user');
+    Route::post('/user/notify', [UserController::class, 'push_notification']);
 
     Route::group(['middleware' => ['can:superuser']], function () {
         Route::view('/superuser/organization/create', 'superuser.organization-create')->name('create-organization');

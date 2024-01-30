@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'rating',
         'avatar',
+        'fcm_token',
     ];
 
     /**
@@ -45,4 +46,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Specifies the user's FCM token
+     *
+     * @return string|array
+     */
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
+    }
 }

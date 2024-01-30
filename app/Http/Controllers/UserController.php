@@ -8,6 +8,7 @@ use App\Models\TournamentUser;
 use App\Models\MatchDetails;
 use App\Models\Player;
 use App\Models\Schedule;
+use App\Notifications\GenericPushNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -204,6 +205,7 @@ class UserController extends Controller
             'password' => 'sometimes',
             'rating' => 'sometimes|min:0',
             'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
+            'fcm_token' => 'sometimes',
         ]);
 
         $user = User::find($request->get('id'));
@@ -238,6 +240,10 @@ class UserController extends Controller
 
             $user->avatar = $path;
         }
+
+        if ($request->has('fcm_token')) {
+            $user->fcm_token = $request->input('fcm_token');
+        }
         
         $user->save();
 
@@ -263,5 +269,12 @@ class UserController extends Controller
 
         $newUser->save();
         return Redirect::route('users')->with('status', 'Successfully added user '. $newUser->name);
+    }
+
+    public function push_notification()
+    {
+        $user = Auth::user();
+        $user->notify(new GenericPushNotification);
+        return Response::json("Push notification sent!", 200);
     }
 }
