@@ -20,13 +20,13 @@ class TournamentFactory extends Factory
         return [
             'owner_organization_id' => 0,
             'name' => fake()->words(3, true),
-            'datetime_start' => fake()->date('Y-m-d\TH:i'),
-            'datetime_end' => fake()->date('Y-m-d\TH:i'),
+            'datetime_start' => fake()->dateTimeBetween('+2 months', '+3 months'),
+            'datetime_end' => fake()->dateTimeBetween('+3 months', '+4 months'),
             'description' => fake()->text(),
             'location' => fake()->streetAddress() .', '. fake()->city(),
             'location_link' => fake()->url(),
-            'max_players' => fake()->randomDigit(),
-            'enroll_until' => fake()->date('Y-m-d\TH:i'),
+            'max_players' => fake()->numberBetween(2, 42),
+            'enroll_until' => fake()->dateTimeBetween('+1 day', '+1 month'),
             'double_matches' => fake()->boolean(),
         ];
     }
