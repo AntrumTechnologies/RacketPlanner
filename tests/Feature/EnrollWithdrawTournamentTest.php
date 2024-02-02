@@ -168,11 +168,27 @@ class EnrollWithdrawTournamentTest extends TestCase
 
     public function test_withdraw_due_date(): void
     {
+        $this->tournament->enroll_until = '1970-01-01 09:08';
+        $this->tournament->save();
 
+        $response = $this->actingAs($this->user)->get('/tournament/withdraw', [
+            'tournament_id' => $this->tournament->id,
+        ]);
+
+        $response->assertStatus(302);
+        $this->followRedirects($response)->assertSee('You can not withdraw anymore. The withdraw deadline has been reached or the tournament already started');
     }
 
     public function test_withdraw_due_start(): void
     {
+        $this->tournament->datetime_start = '1970-01-02 09:08';
+        $this->tournament->save();
 
+        $response = $this->actingAs($this->user)->get('/tournament/withdraw', [
+            'tournament_id' => $this->tournament->id,
+        ]);
+
+        $response->assertStatus(302);
+        $this->followRedirects($response)->assertSee('You can not withdraw anymore. The withdraw deadline has been reached or the tournament already started');
     }
 }
