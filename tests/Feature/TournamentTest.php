@@ -48,7 +48,8 @@ class TournamentTest extends TestCase
     {
         // Attempt to access route as a normal user
         $response = $this->actingAs($this->user)->get('/admin/tournament/create');
-        $response->assertStatus(401);
+        $response->assertStatus(302);
+        $this->followRedirects($response)->assertSee('You are not allowed to perform this action');
     }
 
     public function test_view_create_tournament_admin_assignment(): void
