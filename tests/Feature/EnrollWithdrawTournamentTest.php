@@ -145,6 +145,7 @@ class EnrollWithdrawTournamentTest extends TestCase
         $response->assertStatus(200)->assertSee('If you want to withdraw from this tournament for whatever reason, then click the button below.');
     }
 
+
     public function test_withdraw_tournament(): void
     {
         // Enroll first
@@ -154,24 +155,42 @@ class EnrollWithdrawTournamentTest extends TestCase
 
         $response->assertStatus(302);
         $this->followRedirects($response)->assertSee($this->tournament->name)->assertSee('You are enrolled in this tournament');
-
-        // Then withdraw
-        $response = $this->actingAs($this->user)->get('/tournament/withdraw', [
+        
+        // Withdraw
+        $response = $this->actingAs($this->user)->post('/tournament/withdraw', [
             'tournament_id' => $this->tournament->id,
         ]);
 
-        $response->dump();
+        $response->assertStatus(302);
+        $this->followRedirects($response)->assertSee('You are <strong>not</strong> enrolled in this tournament', $escaped = false);
+    }
 
-        $response->assertStatus(200);
+
+    public function test_withdraw_tournament_without_enrolling(): void
+    {
+        $response = $this->actingAs($this->user)->post('/tournament/withdraw', [
+            'tournament_id' => $this->tournament->id,
+        ]);
+
+        $response->assertStatus(302);
         $this->followRedirects($response)->assertSee('You can not withdraw, because you are not enrolled');
     }
 
     public function test_withdraw_due_date(): void
     {
+        // Enroll first
+        $response = $this->actingAs($this->user)->post('/tournament/enroll', [
+            'tournament_id' => $this->tournament->id,
+        ]);
+
+        $response->assertStatus(302);
+        $this->followRedirects($response)->assertSee($this->tournament->name)->assertSee('You are enrolled in this tournament');
+
+        // Prepare test, and withdraw
         $this->tournament->enroll_until = '1970-01-01 09:08';
         $this->tournament->save();
 
-        $response = $this->actingAs($this->user)->get('/tournament/withdraw', [
+        $response = $this->actingAs($this->user)->post('/tournament/withdraw', [
             'tournament_id' => $this->tournament->id,
         ]);
 
@@ -181,10 +200,20 @@ class EnrollWithdrawTournamentTest extends TestCase
 
     public function test_withdraw_due_start(): void
     {
+        // Enroll first
+        $response = $this->actingAs($this->user)->post('/tournament/enroll', [
+            'tournament_id' => $this->tournament->id,
+        ]);
+
+        $response->assertStatus(302);
+        $this->followRedirects($response)->assertSee($this->tournament->name)->assertSee('You are enrolled in this tournament');
+
+        // Prepare test, and withdraw
+        $this->tournament->enroll_until = null;
         $this->tournament->datetime_start = '1970-01-02 09:08';
         $this->tournament->save();
 
-        $response = $this->actingAs($this->user)->get('/tournament/withdraw', [
+        $response = $this->actingAs($this->user)->post('/tournament/withdraw', [
             'tournament_id' => $this->tournament->id,
         ]);
 
