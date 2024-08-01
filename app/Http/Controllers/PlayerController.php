@@ -45,8 +45,8 @@ class PlayerController extends Controller
             ->leftJoin('users_organizational_assignment', 'users_organizational_assignment.user_id', '=', 'users.id')
             ->where('users_organizational_assignment.organization_id', $tournament->owner_organization_id)
             ->select('users.*')
+            ->orderBy('users.name')
             ->get();
-
 
         $count = array('present' => 0, 'absent' => 0, 'clinic' => 0); 
         foreach ($tournament_players as $player) {
@@ -226,6 +226,7 @@ class PlayerController extends Controller
             'name' => 'required|min:2',
             'email' => 'nullable|email',
             'rating' => 'required|integer|min:0|max:10',
+            'clinic' => 'sometimes',
         ]);
 
         $tournament = Tournament::findOrFail($request->get('tournament_id'));

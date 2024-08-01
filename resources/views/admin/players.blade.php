@@ -128,6 +128,15 @@
                     <input class="form-control @error('rating') is-invalid @enderror" id="rating" name="rating" type="number" min="0" max="10" value="@if(old('rating')){{ old('rating') }}@endif" @if($matches_scheduled > 0) disabled @endif>
                 </div>
 
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" value="1" name="clinic" id="clinic" @if($matches_scheduled > 0) disabled @endif>
+                        <label class="form-check-label" for="clinic">
+                            Join clinic
+                        </label>
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary" @if($matches_scheduled > 0) disabled @endif>Add</button>
             </form>
         </div>
