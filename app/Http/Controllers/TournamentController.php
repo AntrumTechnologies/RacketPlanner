@@ -32,11 +32,13 @@ class TournamentController extends Controller
         if (Auth::user()->can('superuser')) {
             $tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
                 ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
+                ->orderBy('tournaments.datetime_start', 'DESC')
                 ->get();
         } else {
             $tournaments = Tournament::leftJoin('users_organizational_assignment', 'organization_id', '=', 'tournaments.owner_organization_id')
                 ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
                 ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
+                ->orderBy('tournaments.datetime_start', 'DESC')
                 ->where('users_organizational_assignment.user_id', Auth::id())->get();
         }
 
@@ -113,8 +115,8 @@ class TournamentController extends Controller
         } else {
             $tournament = Tournament::where('tournaments.id', $tournament_id)
                 ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
-                ->leftJoin('users_organizational_assignment', 'organization_id', '=', 'owner_organization_id')
-                ->where('users_organizational_assignment.user_id', Auth::id())
+                // ->leftJoin('users_organizational_assignment', 'users_organizational_assignment.organization_id', '=', 'tournaments.owner_organization_id')
+                // ->where('users_organizational_assignment.user_id', Auth::id())
                 ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
                 ->first();
         }

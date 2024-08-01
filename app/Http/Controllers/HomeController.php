@@ -101,7 +101,7 @@ class HomeController extends Controller
                         OR player1b.id = ". $player->id ." 
                         OR player2a.id = ". $player->id ." 
                         OR player2b.id = ". $player->id .")
-                ORDER BY time ASC");
+                ORDER BY time DESC");
 
             foreach($matches as $match) {
                 $match->time = date('H:i', strtotime($match->time));
