@@ -197,10 +197,14 @@ class PlayerController extends Controller
         $tournament = Tournament::findOrFail($request->get('tournament_id'));
         $player = Player::where('user_id', Auth::id())->where('tournament_id', $request->get('tournament_id'))->get();
 
-        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
-        if (count($organizations) == 0 && !Auth::user()->can('superuser') && Auth::id() != $player->user_id) {
-            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        if (count($player) == 0) {
+            return back()->with('error', 'You can not withdraw, because you are not enrolled');
         }
+
+        // $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        // if (count($organizations) == 0 && !Auth::user()->can('superuser') && Auth::id() != $player->user_id) {
+        //     return redirect('home')->with('error', 'You are not allowed to perform this action');
+        // }
 
         if (($tournament->enroll_until != null && strtotime(now()) > strtotime($tournament->enroll_until)) || 
             (strtotime(now()) > strtotime($tournament->datetime_start))) {
@@ -250,6 +254,20 @@ class PlayerController extends Controller
         ]);
 
         $new_player->save();
+
+        // Determine whether to add user to this organization or not
+        $alreadyPresent = UserOrganizationalAssignment::where('organization_id', $tournament->owner_organization_id)
+            ->where('user_id', $user->id)
+            ->get();
+
+        if ($alreadyPresent->count() == 0) {
+            $newUserOrganizationalAssignment = new UserOrganizationalAssignment([
+                'organization_id' => $tournament->owner_organization_id,
+                'user_id' => $user->id,
+            ]);
+    
+            $newUserOrganizationalAssignment->save();
+        }
 
         // Save change made to players
         $tournament = Tournament::find($request->get('tournament_id'));
