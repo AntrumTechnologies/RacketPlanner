@@ -87,7 +87,6 @@ class HomeController extends Controller
                             INNER JOIN `rounds` ON schedules.round_id = rounds.id
                             INNER JOIN `courts` ON schedules.court_id = courts.id
                             INNER JOIN `matches` ON schedules.match_id = matches.id
-                            INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
                             INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
                             INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
                             INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
