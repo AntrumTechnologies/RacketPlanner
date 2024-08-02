@@ -226,28 +226,28 @@
                                 </div>
                             </button>
                             <span class="ms-auto me-3" style="position: absolute; top: 15px; right: 50px; z-index: 999;">
-                                    @if ($match->public == 0)
-                                        <a href="{{ route('publish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-primary">Publish round</a>
-                                    @else
-                                        <a href="{{ route('unpublish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-warning">Unpublish round</a>
-                                    @endif
-                                    </span>
+                                @if ($match->public == 0)
+                                    <a href="{{ route('publish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-primary">Publish round</a>
+                                @else
+                                    <a href="{{ route('unpublish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-warning">Unpublish round</a>
+                                @endif
+                            </span>
                         </div>
 
                         @php
                             if (!isset($previous_match_time) || request()->get('showround') == 'all') {
                         @endphp
-                        <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse show">
-                    @php
+                        <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                        @php
                             } else {
-                    @endphp
-                            <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse">
-                    @php   
+                        @endphp
+                        <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                        @php   
                             }
                         }
                         
                         $previous_match_time = $match->time;
-                    @endphp
+                        @endphp
                     
                     <div class="card mb-4 m-3">
                         <div class="card-header d-flex">
