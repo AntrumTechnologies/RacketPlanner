@@ -10,7 +10,7 @@
                 <li class="breadcrumb-item" aria-current="page"><a href="{{ route('home') }}">Home</a></li>
                     <li class="breadcrumb-item" aria-current="page"><a href="{{ route('tournaments') }}">Tournaments</a></li>
                     <li class="breadcrumb-item" aria-current="page"><a href="{{ route('tournament', $tournament->id) }}">{{ $tournament->name }}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Manage Players</li>
+                    <li class="breadcrumb-item active" aria-current="page">Leaderboard</li>
                 </ol>
             </nav>
 
