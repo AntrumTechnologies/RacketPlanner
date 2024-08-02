@@ -89,6 +89,7 @@ class UserController extends Controller
             if (Auth::user()->can('admin')) {
                 $matches = DB::select("SELECT 
                         rounds.starttime as 'time',
+                        tournaments.datetime_start as 'datetime',
                         courts.name as 'court',
                         user1a.name as `player1a`,
                         user1a.id as `player1a_id`,
@@ -113,6 +114,7 @@ class UserController extends Controller
                         INNER JOIN `rounds` ON schedules.round_id = rounds.id
                         INNER JOIN `courts` ON schedules.court_id = courts.id
                         INNER JOIN `matches` ON schedules.match_id = matches.id
+                        INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
                         INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
                         INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
                         INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
@@ -126,10 +128,11 @@ class UserController extends Controller
                             OR player1b.id = ". $player->id ." 
                             OR player2a.id = ". $player->id ." 
                             OR player2b.id = ". $player->id .")
-                    ORDER BY time DESC");
+                    ");
             } else {
                 $matches = DB::select("SELECT 
                         rounds.starttime as 'time',
+                        tournaments.datetime_start as 'datetime',
                         courts.name as 'court',
                         user1a.name as `player1a`,
                         user1a.id as `player1a_id`,
@@ -154,6 +157,7 @@ class UserController extends Controller
                         INNER JOIN `rounds` ON schedules.round_id = rounds.id
                         INNER JOIN `courts` ON schedules.court_id = courts.id
                         INNER JOIN `matches` ON schedules.match_id = matches.id
+                        INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
                         INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
                         INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
                         INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
@@ -168,15 +172,20 @@ class UserController extends Controller
                             OR player1b.id = ". $player->id ." 
                             OR player2a.id = ". $player->id ." 
                             OR player2b.id = ". $player->id .")
-                    ORDER BY time DESC");
+                    ");
             }
 
             foreach($matches as $match) {
+                $tournament_date = date('Y-m-d', strtotime($match->datetime));
+                $match->datetime = date('Y-m-d H:i', strtotime($tournament_date . ' '. $match->time));
                 $match->time = date('d M Y - H:i', strtotime($match->time));
             }
 
-            $user_matches_per_tournament[] = $matches;
+            $user_matches_per_tournament = array_merge($user_matches_per_tournament, $matches);
         }
+
+        $keys = array_column($user_matches_per_tournament, 'datetime');
+        array_multisort($keys, SORT_DESC, $user_matches_per_tournament);
 
         return view('user', [
             'user' => $user, 
