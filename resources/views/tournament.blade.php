@@ -222,7 +222,7 @@
                         <div class="accordion-header" style="position: relative">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $match->round_id }}" aria-expanded="true" aria-controls="collapse{{ $match->round_id }}" style="background-color: #f8fafc !important;">
                                 <div class="input-group gap-3 accordion-header">
-                                    <h5 style="padding-top: 0.3em" id="round{{ $match->round_id }}">{{ $match->round }}</h5>
+                                    <h5 style="padding-top: 0.3em" id="round{{ $match->round_id }}">{{ $match->round }} ({{$match->time}})</h5>
                                 </div>
                             </button>
                             <span class="ms-auto me-3" style="position: absolute; top: 15px; right: 50px; z-index: 999;">
