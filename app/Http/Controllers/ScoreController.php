@@ -6,6 +6,7 @@ use App\Models\AdminOrganizationalAssignment;
 use App\Models\Tournament;
 use App\Models\Player;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ScoreController extends Controller
 {
