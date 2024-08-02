@@ -172,7 +172,7 @@
                             @if ($matches_scheduled == 0)
                             <a class="btn btn-danger disabled">Empty all slots</a>
                             @else
-                            <a class="btn btn-danger" href="{{ route('empty-all-slots', [$tournament->id]) }}">Empty all slots</a>
+                            <a class="btn btn-danger" href="{{ route('empty-all-slots', [$tournament->id]) }}" onclick="return confirm('You are going to remove all planned matches. Are you sure?\n\nThis action cannot be undone.')">Empty all slots</a>
                             @endif
                         </div>
                     @endif
