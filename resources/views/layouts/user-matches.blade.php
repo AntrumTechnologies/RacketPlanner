@@ -1,18 +1,3 @@
-@foreach ($user_clinics as $clinic)
-    <div class="card mb-4">
-        <div class="card-header d-flex">
-            <div class="me-auto" style="font-size: 1.2em">
-                {{ $clinic->time }} @ {{ $clinic->court }}
-            </div>
-        </div>
-        <div class="card-body">
-            @foreach ($clinic->players as $player)
-                <a href="{{ route('user', $player->user_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $player->user_name }}</a><br />
-            @endforeach
-        </div>
-    </div>
-@endforeach
-
 @foreach ($user_matches_per_tournament as $match)
     <div class="card mb-4">
         <div class="card-header d-flex" style="font-size: 1.2em">
@@ -102,6 +87,21 @@
                 </div>
                 @endif
             </form>
+        </div>
+    </div>
+@endforeach
+
+@foreach ($user_clinics as $clinic)
+    <div class="card mb-4">
+        <div class="card-header d-flex">
+            <div class="me-auto" style="font-size: 1.2em">
+                {{ $clinic->time }} @ {{ $clinic->court }}
+            </div>
+        </div>
+        <div class="card-body">
+            @foreach ($clinic->players as $player)
+                <a href="{{ route('user', $player->user_id) }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">{{ $player->user_name }}</a><br />
+            @endforeach
         </div>
     </div>
 @endforeach
