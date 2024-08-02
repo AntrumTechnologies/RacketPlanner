@@ -68,7 +68,7 @@ class PlannerWrapperController extends Controller
 
     public function PublishRound($tournamentId, $roundId)
     {
-        Schedule::where('round_id', $roundId)->where('state', '!=', 'disabled')->update(['public' => 1]);
+        Schedule::where('round_id', $roundId)->update(['public' => 1]);
 
         return redirect()->to(route('tournament', ['tournament_id' => $tournamentId]) .'?showround=all#round'. $roundId)->with('status', 'Published round');
     }
