@@ -44,7 +44,7 @@
                         @endif
                     </div>
                     <div class="col-3 mt-2 justify-content-center align-self-center">
-                        @if ($match->score1 == "" && date('Y-m-d') == date('Y-m-d', strtotime($match->date)))
+                        @if ($match->score1 == "" && date('Y-m-d') == date('Y-m-d', strtotime($match->datetime)))
                             <input class="form-control form-control-sm" type="number" name="score1" placeholder="Score">
                         @else
                             {{ $match->score1 }}
@@ -75,7 +75,7 @@
                         @endif
                     </div>
                     <div class="col-3 mt-2 justify-content-center align-self-center">
-                        @if ($match->score2 == "" && date('Y-m-d') == date('Y-m-d', strtotime($match->date)))
+                        @if ($match->score2 == "" && date('Y-m-d') == date('Y-m-d', strtotime($match->datetime)))
                             <input class="form-control form-control-sm" type="number" name="score2" placeholder="Score">
                         @else
                             {{ $match->score2 }}
@@ -90,7 +90,7 @@
                     </div>
                 </div>
 
-                @if ($match->score1 == "" && date('Y-m-d') == date('Y-m-d', strtotime($match->date)))
+                @if ($match->score1 == "" && date('Y-m-d') == date('Y-m-d', strtotime($match->datetime)))
                 <div class="row mt-2">
                     <div class="col-sm-9">
                     </div>
