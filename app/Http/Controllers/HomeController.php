@@ -60,6 +60,7 @@ class HomeController extends Controller
         foreach ($user_tournaments as $player) {
             $matches = DB::select("SELECT 
                     rounds.starttime as 'time',
+                    tournaments.datetime_start as 'datetime',
                     courts.name as 'court',
                     user1a.name as `player1a`,
                     user1a.id as `player1a_id`,
@@ -79,36 +80,42 @@ class HomeController extends Controller
                     user2b.rating as `player2b_rating`,
                     matches.id,
                     matches.score1,
-		    matches.score2,
-			tournaments.datetime_end
-		FROM `schedules`
-			INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
-                    INNER JOIN `rounds` ON schedules.round_id = rounds.id
-                    INNER JOIN `courts` ON schedules.court_id = courts.id
-                    INNER JOIN `matches` ON schedules.match_id = matches.id
-                    INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
-                    INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
-                    INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
-                    INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
-                    INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
-                    INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
-                    INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
-                    INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
-		WHERE schedules.tournament_id = ". $player->tournament_id ." AND 
-			tournaments.datetime_end > '". date('Y-m-d H:i:s') ."' AND
-                    schedules.public = 1 AND
-                    (player1a.id = ". $player->id ." 
-                        OR player1b.id = ". $player->id ." 
-                        OR player2a.id = ". $player->id ." 
-                        OR player2b.id = ". $player->id .")
-                ORDER BY time DESC");
+                    matches.score2,
+                    tournaments.datetime_end
+                FROM `schedules`
+                    INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
+                            INNER JOIN `rounds` ON schedules.round_id = rounds.id
+                            INNER JOIN `courts` ON schedules.court_id = courts.id
+                            INNER JOIN `matches` ON schedules.match_id = matches.id
+                            INNER JOIN `tournaments` ON schedules.tournament_id = tournaments.id
+                            INNER JOIN `players` as player1a ON matches.player1a_id = player1a.id
+                            INNER JOIN `players` as player1b ON matches.player1b_id = player1b.id
+                            INNER JOIN `players` as player2a ON matches.player2a_id = player2a.id
+                            INNER JOIN `players` as player2b ON matches.player2b_id = player2b.id
+                            INNER JOIN `users` as user1a ON player1a.user_id = user1a.id
+                            INNER JOIN `users` as user1b ON player1b.user_id = user1b.id
+                            INNER JOIN `users` as user2a ON player2a.user_id = user2a.id
+                            INNER JOIN `users` as user2b ON player2b.user_id = user2b.id
+                WHERE schedules.tournament_id = ". $player->tournament_id ." AND 
+                    tournaments.datetime_end > '". date('Y-m-d H:i:s') ."' AND
+                            schedules.public = 1 AND
+                            (player1a.id = ". $player->id ." 
+                                OR player1b.id = ". $player->id ." 
+                                OR player2a.id = ". $player->id ." 
+                                OR player2b.id = ". $player->id .")
+                ");
 
             foreach($matches as $match) {
-                $match->time = date('H:i', strtotime($match->time));
+                $tournament_date = date('Y-m-d', strtotime($match->datetime));
+                $match->datetime = date('Y-m-d H:i', strtotime($tournament_date . ' '. $match->time));
+                $match->time = date('d M Y - H:i', strtotime($match->time));
             }
 
-            $user_matches_per_tournament[] = $matches;
+            $user_matches_per_tournament = array_merge($user_matches_per_tournament, $matches);
         }
+
+        $keys = array_column($user_matches_per_tournament, 'datetime');
+        array_multisort($keys, SORT_DESC, $user_matches_per_tournament);
 
         $your_tournaments = Tournament::leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
             ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
