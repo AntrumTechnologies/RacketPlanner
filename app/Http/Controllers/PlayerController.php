@@ -109,12 +109,12 @@ class PlayerController extends Controller
     public function markYourselfPresent($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
 
-        $player = Player::where('user_id', Auth::id())->where('tournament_id', $tournament->id)->where('present', false)->get();
+        $player = Player::where('user_id', Auth::id())->where('tournament_id', $tournament->id)->where('present', false)->first();
         if ($player) {
             $player->present = true;
             $player->save();
         } else {
-            return redirect('home')->with('error', 'Failed to mark you present. Are you sure you are enrolled in this tournament?');    
+            return redirect('home')->with('error', 'Failed to mark you present. Are you sure you are enrolled in this tournament? Or aren\'t you marked present already?');    
         }
 
         return redirect('home')->with('success', 'You are marked present!');
