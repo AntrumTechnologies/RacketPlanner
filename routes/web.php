@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/tournament/{tournament_id}/enroll', [TournamentController::class, 'enroll'])->name('tournament-enroll');
     Route::get('/tournament/{tournament_id}/withdraw', [TournamentController::class, 'withdraw'])->name('tournament-withdraw');
     Route::get('/tournament/{tournament_id}/leaderboard', [ScoreController::class, 'show'])->name('leaderboard');
+    Route::get('/tournament/{tournament_id}/mark_present', [PlayerController::class, 'markYourselfPresent'])->name('mark-yourself-present');
     Route::get('/tournament/{tournament_id}', [TournamentController::class, 'show'])->name('tournament');
     Route::get('/tournaments', [TournamentController::class, 'index'])->name('tournaments');
 

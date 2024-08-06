@@ -106,6 +106,20 @@ class PlayerController extends Controller
         return Redirect::route('players', ['tournament_id' => $request->get('tournament_id')])->with('status', 'Successfully invited '. $request->get('name') .' ('. $request->get('email') .')');
     }
 
+    public function markYourselfPresent($tournament_id) {
+        $tournament = Tournament::findOrFail($tournament_id);
+
+        $player = Player::where('user_id', Auth::id())->where('tournament_id', $tournament->id)->where('present', false)->get();
+        if ($player) {
+            $player->present = true;
+            $player->save();
+        } else {
+            return redirect('home')->with('error', 'Failed to mark you present. Are you sure you are enrolled in this tournament?');    
+        }
+
+        return redirect('home')->with('success', 'You are marked present!');
+    }
+
     public function markPresent(Request $request) {
         $request->validate([
             'id' => 'required|exists:players',

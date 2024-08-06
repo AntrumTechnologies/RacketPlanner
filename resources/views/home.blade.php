@@ -6,12 +6,20 @@
         <div class="col-md-8">
             <h2>Hi {{ $first_name }}!</h2>
 
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
             @if (!empty($tournament_today)) 
-                <div class="alert alert-warning">Mark yourself present!</div>
+                <div class="alert alert-danger">
+                    <h5>Are you present?</h5>
+                    <p>No matches will be scheduled until you are marked as present.</p>
+                    <a href="{{ route('mark-yourself-present', $tournament_today) }}" class="btn btn-success d-flex justify-content-center" style="color: #fff">Mark myself present</a>
+                </div>
             @endif
         </div>
     </div>
