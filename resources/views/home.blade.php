@@ -9,6 +9,10 @@
             @if (session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
+
+            @if (!empty($tournament_today)) 
+                <div class="alert alert-warning">Mark yourself present!</div>
+            @endif
         </div>
     </div>
 

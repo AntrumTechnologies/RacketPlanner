@@ -108,6 +108,11 @@ class HomeController extends Controller
                 $tournament_date = date('Y-m-d', strtotime($match->datetime));
                 $match->datetime = date('Y-m-d H:i', strtotime($tournament_date . ' '. $match->time));
                 $match->time = date('d M Y - H:i', strtotime($match->time));
+
+                // If match is for a tournament which is scheduled today, then allow user to mark themselves as present
+                if ($tournament_date == date('Y-m-d') && $player->present == false) {
+                    $tournament_today = $match->tournament_id;
+                }
             }
 
             $user_matches_per_tournament = array_merge($user_matches_per_tournament, $matches);
@@ -163,6 +168,7 @@ class HomeController extends Controller
 
         return view('home', [
             'first_name' => strtok($user->name, " "),
+            'tournament_today' => $tournament_today,
             'user_clinics' => $user_clinics,
             'user_matches_per_tournament' => $user_matches_per_tournament, 
             'your_tournaments' => $your_tournaments,
