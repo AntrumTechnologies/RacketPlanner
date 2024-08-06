@@ -109,7 +109,7 @@ class HomeController extends Controller
             foreach($matches as $match) {
                 $tournament_date = date('Y-m-d', strtotime($match->datetime));
                 $match->datetime = date('Y-m-d H:i', strtotime($tournament_date . ' '. $match->time));
-                $match->time = date('d M Y - H:i', strtotime($match->time));
+                $match->time = date('d M Y - H:i', strtotime($tournament_date . ' '. $match->time));
 
                 // If match is for a tournament which is scheduled today, then allow user to mark themselves as present
                 if ($tournament_date == date('Y-m-d') && $player->present == false) {
