@@ -20,6 +20,7 @@ class HomeController extends Controller
     }
 
     public function index() {
+        $tournament_today = null;
         $user = Auth::user();
         $user_tournaments = Player::where('user_id', Auth::id())->get();
         $user_organizations = UserOrganizationalAssignment::where('user_id', Auth::id())
@@ -61,6 +62,7 @@ class HomeController extends Controller
             $matches = DB::select("SELECT 
                     rounds.starttime as 'time',
                     tournaments.datetime_start as 'datetime',
+                    tournaments.id as `tournament_id`,
                     courts.name as 'court',
                     user1a.name as `player1a`,
                     user1a.id as `player1a_id`,
