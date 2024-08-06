@@ -88,8 +88,10 @@ class UserController extends Controller
         foreach ($user_tournaments as $player) {
             if (Auth::user()->can('admin')) {
                 $matches = DB::select("SELECT 
+                        schedules.id as `slot`,
                         rounds.starttime as 'time',
                         tournaments.datetime_start as 'datetime',
+                        tournaments.id as `tournament_id`,
                         courts.name as 'court',
                         user1a.name as `player1a`,
                         user1a.id as `player1a_id`,
@@ -131,8 +133,10 @@ class UserController extends Controller
                     ");
             } else {
                 $matches = DB::select("SELECT 
+                        schedules.id as `slot`,
                         rounds.starttime as 'time',
                         tournaments.datetime_start as 'datetime',
+                        tournaments.id as `tournament_id`,
                         courts.name as 'court',
                         user1a.name as `player1a`,
                         user1a.id as `player1a_id`,

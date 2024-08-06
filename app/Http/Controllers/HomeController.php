@@ -60,6 +60,7 @@ class HomeController extends Controller
         $user_matches_per_tournament = array();
         foreach ($user_tournaments as $player) {
             $matches = DB::select("SELECT 
+                    schedules.id as `slot`,
                     rounds.starttime as 'time',
                     tournaments.datetime_start as 'datetime',
                     tournaments.id as `tournament_id`,

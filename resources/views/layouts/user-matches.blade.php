@@ -87,6 +87,8 @@
                 </div>
                 @endif
             </form>
+
+            <a href="{{ route('tournament', $match->tournament_id }}?showround=all#slot{{ $match->slot }}" class="d-flex justify-content-center btn btn-sm btn-secondary mt-2">Go to match in tournament</a>
         </div>
     </div>
 @endforeach
