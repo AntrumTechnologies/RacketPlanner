@@ -97,7 +97,7 @@
     <div class="card mb-4">
         <div class="card-header d-flex">
             <div class="me-auto" style="font-size: 1.2em">
-                {{ $clinic->time }} @ {{ $clinic->court }}
+                {{ $clinic->time }} @ {{ $clinic->court }} (clinic)
             </div>
         </div>
         <div class="card-body">
