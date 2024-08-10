@@ -405,7 +405,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        @if ($match->user_is_player)
+                                        @if ($match->user_is_player && $match->score1 == "")
                                             <div class="row mt-2">
                                                 <div class="col-sm-9">
                                                 </div>
