@@ -195,18 +195,18 @@ class TournamentController extends Controller
                         OR player2b.id = ". $player->id .")");
             
             if ($player->clinic == true) {
-            if ($player->present == true) {
-                $count['present']++;
-                $count['clinic']++;
-            }
+                if ($player->present == true) {
+                    $count['present']++;
+                    $count['clinic']++;
+                }
 
-                    $player->no_matches = count($matches) + 1;
-                } else {
-            if ($player->present == true) {
-                $count['present']++;
-            }
+                $player->no_matches = count($matches) + 1;
+            } else {
+                if ($player->present == true) {
+                    $count['present']++;
+                }
 
-                    $player->no_matches = count($matches);
+                $player->no_matches = count($matches);
             }
 
             if ($player->present == false) {
