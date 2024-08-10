@@ -428,7 +428,7 @@
                                         <a href="{{ route('create-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary">Manual fill</a>
                                     </div>
                                 @else
-                                    <p>No match scheduled.</p>
+                                    No match scheduled.
                                 @endif
                             </div>
                             @endif
