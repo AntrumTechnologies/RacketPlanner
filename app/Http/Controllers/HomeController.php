@@ -59,6 +59,13 @@ class HomeController extends Controller
 
         $user_matches_per_tournament = array();
         foreach ($user_tournaments as $player) {
+            // If player is enrolled in a tournament which is scheduled for today, then allow user to mark themselves as present
+            $tournament = Tournament::findOrFail($player->tournament_id);
+            $tournament_date = date('Y-m-d', strtotime($tournament->datetime_start));
+            if ($tournament_date == date('Y-m-d') && $player->present == false) {
+                $tournament_today = $player->tournament_id;
+            }
+
             $matches = DB::select("SELECT 
                     schedules.id as `slot`,
                     rounds.starttime as 'time',
@@ -111,11 +118,6 @@ class HomeController extends Controller
                 $tournament_date = date('Y-m-d', strtotime($match->datetime));
                 $match->datetime = date('Y-m-d H:i', strtotime($tournament_date . ' '. $match->time));
                 $match->time = date('d M Y - H:i', strtotime($tournament_date . ' '. $match->time));
-
-                // If match is for a tournament which is scheduled today, then allow user to mark themselves as present
-                if ($tournament_date == date('Y-m-d') && $player->present == false) {
-                    $tournament_today = $match->tournament_id;
-                }
             }
 
             $user_matches_per_tournament = array_merge($user_matches_per_tournament, $matches);
