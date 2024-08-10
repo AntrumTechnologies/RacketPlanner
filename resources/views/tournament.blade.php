@@ -225,6 +225,7 @@
                                     <h5 style="padding-top: 0.3em" id="round{{ $match->round_id }}">{{ $match->round }} ({{$match->time}})</h5>
                                 </div>
                             </button>
+                            @if ($is_user_admin)
                             <span class="ms-auto me-3" style="position: absolute; top: 15px; right: 50px; z-index: 999;">
                                 @if ($match->public == 0)
                                     <a href="{{ route('publish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-primary">Publish round</a>
@@ -232,10 +233,11 @@
                                     <a href="{{ route('unpublish-round', [$tournament->id, $match->round_id]) }}" class="btn btn-warning">Unpublish round</a>
                                 @endif
                             </span>
+                            @endif
                         </div>
 
                         @php
-                            if (!isset($previous_match_time) || request()->get('showround') == 'all') {
+                            if ($schedule[count($schedule)-1]->time == $match->time || request()->get('showround') == 'all') {
                         @endphp
                         <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                         @php
@@ -420,10 +422,14 @@
                         @else
                             @if ($match->state == 'available')
                             <div class="card-body">
-                                <div class="btn-group">
-                                    <a href="{{ route('plan-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-dark">Schedule slot</a>
-                                    <a href="{{ route('create-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary">Manual fill</a>
-                                </div>
+                                @if ($is_user_admin)
+                                    <div class="btn-group">
+                                        <a href="{{ route('plan-slot', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-dark">Schedule slot</a>
+                                        <a href="{{ route('create-match', [$tournament->id, $match->schedule_id]) }}" class="btn btn-sm btn-secondary">Manual fill</a>
+                                    </div>
+                                @else
+                                    <p>No match scheduled.</p>
+                                @endif
                             </div>
                             @endif
                         @endif
