@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdminOrganizationalAssignment;
 use App\Models\Court;
 use App\Models\MatchDetails;
 use App\Models\Player;
 use App\Models\Round;
 use App\Models\Schedule;
 use App\Models\Tournament;
+use App\Models\UserOrganizationalAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +71,7 @@ class MatchDetailsController extends Controller
             WHERE schedules.match_id = ?", [$id]);
 
         $tournament = Tournament::find($match[0]->tournament_id);
-        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        $organizations = UserOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
         if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
             return redirect('home')->with('error', 'You are not allowed to access this page');
         }
