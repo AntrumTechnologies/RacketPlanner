@@ -52,6 +52,7 @@ class OrganizationController extends Controller
         $tournaments = Tournament::where('owner_organization_id', $id)
             ->leftJoin('organizations', 'organizations.id', '=', 'tournaments.owner_organization_id')
             ->select('tournaments.*', 'organizations.name as organizer', 'organizations.id as organization_id')
+            ->orderBy('datetime_start', 'desc')
             ->get();
 
         foreach ($tournaments as $tournament) {
