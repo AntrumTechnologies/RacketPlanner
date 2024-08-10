@@ -307,6 +307,7 @@ class TournamentController extends Controller
 		    'user2b.rating as player2b_rating',
             DB::raw('(CASE WHEN user1a.id = '. Auth::id() .' OR user1b.id = '. Auth::id() .' OR user2a.id = '. Auth::id() .' OR user2b.id = '. Auth::id() .' THEN 1 ELSE 0 END) AS user_is_player'))
                 ->orderBy('time', 'asc')
+                ->orderBy('courts.id', 'asc')
                 ->get();
         }
 
