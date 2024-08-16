@@ -91,7 +91,7 @@
         </main>
 
         <footer class="mt-4 mb-4 text-center">
-            <small class="text-muted">Made with <span style="color: #e25555;">&hearts;</span> in Eindhoven<br/>Powered by <a href="https://antrum-technologies.nl">Antrum</a></small>
+            <a href="https://antrum-technologies.nl?utm_source=racketplanner"><img src="/antrum-banner.png" style="max-width: 400px; border-radius: 5px;"></a>
         </footer>
     </div>
 </body>
