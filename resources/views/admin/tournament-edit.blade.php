@@ -84,13 +84,13 @@
                     <h5>Match generation config <span class="text-danger">*</span></h5>
 
                     <div class="mb-3">
-                        <label for="number_of_matches" class="form-label">Number of matches per player:</label> <output id="number_of_matches_output">@if(old('number_of_matches')){{ old('number_of_matches') }}@else{{ $tournament->number_of_matches }}@endif</output>
+                        <label for="number_of_matches" class="form-label">Number of matches per player to generate:</label> <output id="number_of_matches_output">@if(old('number_of_matches')){{ old('number_of_matches') }}@else{{ $tournament->number_of_matches }}@endif</output>
                         <div class="row">
                             <div class="col-1 text-center">10</div>
                             <div class="col-10"><input type="range" class="form-range" id="number_of_matches" name="number_of_matches" min="10" max="60" step="1" value="@if(old('number_of_matches')){{ old('number_of_matches') }}@else{{ $tournament->number_of_matches }}@endif" oninput="document.getElementById('number_of_matches_output').value = this.value"></div>
                             <div class="col-1 text-center">60</div>
                         </div>
-                        <div id="number_of_matches_help" class="form-text">Number of possible matches that will be generated for each and every player.</div>
+                        <div id="number_of_matches_help" class="form-text">Number of possible matches that will be generated for each and every player. Increase this value if you have lots of partcipants, and a high number of rounds.</div>
                     </div>
 
                     <div class="mb-3">
@@ -114,8 +114,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="max_match_count" class="form-label">Maximum number of matches per player</label>
+                        <label for="max_match_count" class="form-label">Maximum number of matches per player to schedule</label>
                         <input class="form-control @error('max_match_count') is-invalid @enderror" id="max_match_count" name="max_match_count" type="number" placeholder="Enter a number greater than 0" value="@if(old('max_match_count')){{ old('max_match_count') }}@else{{ $tournament->max_match_count }}@endif">
+                        <div id="number_of_matches_help" class="form-text">Maximum number of matches that will be actually scheduled per player.</div>
                     </div>
 
                     <div class="mb-3">
