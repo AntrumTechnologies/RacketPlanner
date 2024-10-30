@@ -31,7 +31,7 @@ class CourtRoundController extends Controller
 
         $matches_scheduled = Schedule::where('tournament_id', $tournament_id)->where('state', 'available')->where('match_id', '!=', NULL)->count();
         $courts = Court::where('tournament_id', $tournament_id)->get();
-        $rounds = Round::where('tournament_id', $tournament_id)->get();
+        $rounds = Round::where('tournament_id', $tournament_id)->orderBy('name', 'asc')->orderBy('starttime', 'asc')->get();
 
         foreach ($rounds as $round) {
             $round->starttime = date('H:i', strtotime($round->starttime));

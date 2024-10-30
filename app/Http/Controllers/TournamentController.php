@@ -259,6 +259,7 @@ class TournamentController extends Controller
                     'user2b.id as player2b_id',
                     'user2b.avatar as player2b_avatar',
                     'player2b.rating as player2b_rating')
+		->orderBy('round', 'asc')   
 		->orderBy('time', 'asc')
 		->orderBy('courts.id', 'asc')
                 ->get();
@@ -305,7 +306,8 @@ class TournamentController extends Controller
                     'user2b.id as player2b_id',
                     'user2b.avatar as player2b_avatar',
                     'player2b.rating as player2b_rating',
-            DB::raw('(CASE WHEN user1a.id = '. Auth::id() .' OR user1b.id = '. Auth::id() .' OR user2a.id = '. Auth::id() .' OR user2b.id = '. Auth::id() .' THEN 1 ELSE 0 END) AS user_is_player'))
+		    DB::raw('(CASE WHEN user1a.id = '. Auth::id() .' OR user1b.id = '. Auth::id() .' OR user2a.id = '. Auth::id() .' OR user2b.id = '. Auth::id() .' THEN 1 ELSE 0 END) AS user_is_player'))
+		->orderBy('round', 'asc')
                 ->orderBy('time', 'asc')
                 ->orderBy('courts.id', 'asc')
                 ->get();
@@ -334,7 +336,8 @@ class TournamentController extends Controller
         }
 
         $courts = Court::where('tournament_id', $tournament_id)->count();
-        $rounds = Round::where('tournament_id', $tournament_id)->count();
+	$rounds = Round::where('tournament_id', $tournament_id)->count();
+
         $matches_scheduled = Schedule::where('tournament_id', $tournament_id)->where('state', 'available')->where('match_id', '!=', NULL)->count();
 
         return view('tournament', [
@@ -375,12 +378,15 @@ class TournamentController extends Controller
             'email' => 'required|email',
         ]);
 
-        $tournament = Tournament::findOrFail($request->get('tournament_id'));
+	$tournament = Tournament::findOrFail($request->get('tournament_id'));
+	if (Auth::user()) {
+		// TODO: Check why the if statement below is necessary, because usually no one is logged in at this point, right?
         if (!AdminOrganizationalAssignment::where('user_id', Auth::id())
                 ->where('organization_id', $tournament->owner_organization_id)->count() > 0 &&
             !Auth::user()->can('superuser')) {
             return redirect('home')->with('error', 'You are not allowed to perform this action');
-        }
+	}
+	}
 
         $name = '';
         if (User::where('email', $request->get('email'))->exists()) {
