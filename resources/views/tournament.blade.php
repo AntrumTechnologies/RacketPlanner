@@ -215,11 +215,11 @@
                 <div class="accordion" id="accordionExample">
                 @foreach ($schedule as $match)
                     @php
-                        if (isset($previous_match_time) && $match->time != $previous_match_time) {
+                        if (isset($previous_round_id) && $match->round_id != $previous_round_id) {
                             echo '</div></div>';
                         }
                     
-                        if (!isset($previous_match_time) || $match->time != $previous_match_time) {
+                        if (!isset($previous_round_id) || $match->round_id != $previous_round_id) {
                     @endphp
                     <div class="accordion-item">
                     
@@ -241,7 +241,7 @@
                         </div>
 
                         @php
-                            if ($schedule[count($schedule)-1]->time == $match->time || request()->get('showround') == 'all') {
+                            if ($schedule[count($schedule)-1]->round_id == $match->round_id || request()->get('showround') == 'all') {
                         @endphp
                         <div id="collapse{{ $match->round_id }}" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                         @php
@@ -252,7 +252,7 @@
                             }
                         }
                         
-                        $previous_match_time = $match->time;
+                        $previous_round_id = $match->round_id;
                         @endphp
                     
                     <div class="card mb-4 m-3">
