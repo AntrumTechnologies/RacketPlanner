@@ -72,14 +72,10 @@
                 @if ($tournament->is_enrolled == true)
                     @if ($tournament->can_withdraw == true)
                         <a class="btn btn-warning" href="{{ route('tournament-withdraw', $tournament->id) }}">Withdraw</a>
-                    @else
-                        <a class="btn btn-warning disabled">Withdraw</a>
                     @endif
                 @else
                     @if ($tournament->can_enroll == true)
                         <a class="btn btn-success" href="{{ route('tournament-enroll', $tournament->id) }}" style="color: #fff">Enroll</a>
-                    @else
-                        <a class="btn btn-success disabled" style="color: #fff">Enroll</a>
                     @endif
                 @endif
             </div>
