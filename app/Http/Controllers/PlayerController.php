@@ -54,6 +54,8 @@ class PlayerController extends Controller
                 if ($player->present == true) {
                     $count['present']++;
                     $count['clinic']++;
+                } else {
+                    $count['absent']++;
                 }
             } else {
                 if ($player->present == true) {
