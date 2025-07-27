@@ -30,6 +30,16 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="y_offset" class="form-label">Avatar crop offset</label>
+                    <div class="row">
+                        <div class="col-1 text-center">0 px</div>
+                        <div class="col-10"><input type="range" class="form-range" id="y_offset" name="y_offset" min="0" max="90" step="5" value="45" oninput="document.getElementById('output').value = this.value"></div>
+                        <div class="col-1 text-center">90 px</div>
+                    </div>
+                    <output id="output">45</output> px
+                </div>
+
+                <div class="mb-3">
                     <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
                     <input class="form-control @error('name') is-invalid @enderror" id="name" name="name" type="text" value="@if(old('name')){{ old('name') }}@else{{ $user->name }}@endif">
                 </div>

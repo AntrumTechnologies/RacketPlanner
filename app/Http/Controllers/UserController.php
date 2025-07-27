@@ -218,6 +218,7 @@ class UserController extends Controller
             'password' => 'sometimes',
             'rating' => 'sometimes|min:0',
             'avatar' => 'sometimes|mimes:jpg,jpeg,png|max:4096',
+            'y_offset' => 'sometimes|min:0|max:90',
             'fcm_token' => 'sometimes',
         ]);
 
@@ -248,7 +249,7 @@ class UserController extends Controller
 
             $file = $request->file('avatar');
             $path = $file->hashName('avatars');
-            $avatar = Image::make($file)->fit(180)->encode('jpg', 100);
+            $avatar = Image::make($file)->crop(180, 180, 0, $request->get('y_offset'))->encode('jpg', 100);
             $store = Storage::disk('public')->put($path, (string) $avatar->encode());
 
             $user->avatar = $path;
