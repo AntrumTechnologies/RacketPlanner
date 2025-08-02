@@ -121,15 +121,15 @@ class MatchDetailsController extends Controller
         if ($request->get('score1') == "" || $request->get('score1') < 0) {
             $match->score1 = 0;
         } elseif ($match->score1 != null) {
-            // Update score
-            $player1a->points += ($request->get('score1') - $match->score1);
-            $player1b->points += ($request->get('score1') - $match->score1);
+            // Update score: add new score, substract previous score, and substract score of opponent
+            $player1a->points += ($request->get('score1') - $match->score1) - $request->get('score2');
+            $player1b->points += ($request->get('score1') - $match->score1) - $request->get('score2');
 
             $match->score1 = $request->get('score1');
         } else {
-            // Add score
-            $player1a->points += $request->get('score1');
-            $player1b->points += $request->get('score1');
+            // Add score and substract score of opponent
+            $player1a->points += $request->get('score1') - $request->get('score2');
+            $player1b->points += $request->get('score1') - $request->get('score2');
 
             $match->score1 = $request->get('score1');
         }
@@ -137,17 +137,34 @@ class MatchDetailsController extends Controller
         if ($request->get('score2') == "" || $request->get('score2') < 0) {
             $match->score2 = 0;
         } elseif ($match->score2 != null) {
-            // Update score
-            $player2a->points += ($request->get('score2') - $match->score2);
-            $player2b->points += ($request->get('score2') - $match->score2);
+            // Update score: add new score, substract previous score, and substract score of opponent
+            $player2a->points += ($request->get('score2') - $match->score2) - $request->get('score1');
+            $player2b->points += ($request->get('score2') - $match->score2) - $request->get('score1');
 
             $match->score2 = $request->get('score2');
         } else {
-            // Add score
-            $player2a->points += $request->get('score2');
-            $player2b->points += $request->get('score2');
+            // Add score and substract score of opponent
+            $player2a->points += $request->get('score2') - $request->get('score1');
+            $player2b->points += $request->get('score2') - $request->get('score1');
 
             $match->score2 = $request->get('score2');
+        }
+
+        // Player points cannot be negative
+        if ($player1a->points < 0) {
+            $player1a->points = 0;
+        }
+
+        if ($player1b->points < 0) {
+            $player1b->points = 0;
+        }
+
+        if ($player2a->points < 0) {
+            $player2a->points = 0;
+        }
+
+        if ($player2b->points < 0) {
+            $player2b->points = 0;
         }
 
         $match->save();
