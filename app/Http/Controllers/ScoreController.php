@@ -7,6 +7,7 @@ use App\Models\Tournament;
 use App\Models\Player;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ScoreController extends Controller
 {
@@ -24,7 +25,8 @@ class ScoreController extends Controller
             ->select(
                 'players.*',
                 'users.id as user_id',
-                'users.name as user_name')
+                'users.name as user_name',
+                DB::raw('CASE WHEN players.points < 0 THEN 0 ELSE players.points END as points'))
             ->orderBy('points', 'desc')
             ->orderBy('name', 'asc')
             ->get();

@@ -157,23 +157,6 @@ class MatchDetailsController extends Controller
             $match->score2 = $request->get('score2');
         }
 
-        // Player points cannot be negative
-        if ($player1a->points < 0) {
-            $player1a->points = 0;
-        }
-
-        if ($player1b->points < 0) {
-            $player1b->points = 0;
-        }
-
-        if ($player2a->points < 0) {
-            $player2a->points = 0;
-        }
-
-        if ($player2b->points < 0) {
-            $player2b->points = 0;
-        }
-
         $match->save();
         $player1a->save();
         $player1b->save();
