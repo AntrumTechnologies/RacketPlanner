@@ -152,6 +152,11 @@
                 <p>There are no players assigned yet.</p>
             @else
             <p>{{ $count['present'] }} players are present, of which {{ $count['clinic'] }} join the clinic. {{ $count['absent'] }} players are absent.</p>
+
+            <div class="btn-group">
+                <a class="btn btn-primary" href="{{ route('mark-all-present', $tournament->id) }}">Mark all as present</a>
+                <a class="btn btn-warning" href="{{ route('mark-all-absent', $tournament->id) }}">Mark all as absent</a>
+            </div>
             @endif
 
             <ul class="list-group">

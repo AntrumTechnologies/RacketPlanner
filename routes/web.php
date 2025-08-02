@@ -112,6 +112,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/admin/player/remove', [PlayerController::class, 'delete'])->name('remove-player');
     Route::post('/admin/player/present', [PlayerController::class, 'markPresent'])->name('mark-player-present');
     Route::post('/admin/player/absent', [PlayerController::class, 'markAbsent'])->name('mark-player-absent');
+    Route::post('/admin/player/all-present', [PlayerController::class, 'markAllPresent'])->name('mark-all-present');
+    Route::post('/admin/player/all-absent', [PlayerController::class, 'markAllAbsent'])->name('mark-all-absent');
 
     Route::get('/admin/tournament/{tournament_id}/courts_rounds', [CourtRoundController::class, 'show'])->name('courts-rounds');
 
