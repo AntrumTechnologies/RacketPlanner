@@ -119,7 +119,33 @@ class PlayerController extends Controller
             return redirect('home')->with('error', 'Failed to mark you present. Are you sure you are enrolled in this tournament? Or aren\'t you marked present already?');    
         }
 
-        return redirect('home')->with('success', 'You are marked present!');
+        return redirect('home')->with('success', 'You are marked present! Your matches will be visible once published by the organizer.');
+    }
+
+    public function markAllPresent($tournament_id) {
+        $tournament = Tournament::findOrFail($tournament_id);
+
+        // Return "present = true" for all instances
+        $player = Player::where('tournament_id', $tournament->id)->where('present', false)->map(function (?bool $present) {
+            return true;
+         });
+
+        $player->save();
+
+        return redirect()->to(route('players', ['tournament_id' => $tournament_id]))->with('status', 'Marked all as present');
+    }
+
+    public function markAllAbsent($tournament_id) {
+        $tournament = Tournament::findOrFail($tournament_id);
+
+        // Return "present = true" for all instances
+        $player = Player::where('tournament_id', $tournament->id)->where('present', true)->map(function (?bool $present) {
+            return false;
+         });
+
+        $player->save();
+
+        return redirect()->to(route('players', ['tournament_id' => $tournament_id]))->with('status', 'Marked all as absent');
     }
 
     public function markPresent(Request $request) {
