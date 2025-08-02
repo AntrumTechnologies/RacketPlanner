@@ -118,12 +118,19 @@ class MatchDetailsController extends Controller
             }
         }
 
+        // Calculate deltas to increase/decrease score with (only used if score is already filled)
+        $delta1_now = $request->get('score1') - $request->get('score2');
+        $delta2_now = $request->get('score2') - $request->get('score1');
+
+        $delta1_previously = $match->score1 - $match->score2;
+        $delta2_previously = $match->score2 - $match->score1;
+
         if ($request->get('score1') == "" || $request->get('score1') < 0) {
             $match->score1 = 0;
         } elseif ($match->score1 != null) {
             // Update score: add new score, substract previous score, and substract score of opponent
-            $player1a->points += ($request->get('score1') - $match->score1) - $request->get('score2');
-            $player1b->points += ($request->get('score1') - $match->score1) - $request->get('score2');
+            $player1a->points += $delta1_now - $delta1_previously;
+            $player1b->points += $delta1_now - $delta1_previously;
 
             $match->score1 = $request->get('score1');
         } else {
@@ -138,8 +145,8 @@ class MatchDetailsController extends Controller
             $match->score2 = 0;
         } elseif ($match->score2 != null) {
             // Update score: add new score, substract previous score, and substract score of opponent
-            $player2a->points += ($request->get('score2') - $match->score2) - $request->get('score1');
-            $player2b->points += ($request->get('score2') - $match->score2) - $request->get('score1');
+            $player2a->points += $delta2_now - $delta2_previously;
+            $player2b->points += $delta2_now - $delta2_previously;
 
             $match->score2 = $request->get('score2');
         } else {
