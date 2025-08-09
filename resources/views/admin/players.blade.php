@@ -153,9 +153,9 @@
             @else
             <p>{{ $count['present'] }} players are present, of which {{ $count['clinic'] }} join the clinic. {{ $count['absent'] }} players are absent.</p>
 
-            <div class="btn-group">
-                <a class="btn btn-primary" href="{{ route('mark-all-present', $tournament->id) }}">Mark all as present</a>
-                <a class="btn btn-warning" href="{{ route('mark-all-absent', $tournament->id) }}">Mark all as absent</a>
+            <div class="btn-group mb-3">
+                <a class="btn btn-primary" href="{{ route('mark-all-present', $tournament->id) }}" onclick="return confirm('You will mark everyone as PRESENT upon confirming.\n\nThis action cannot be undone.')">Mark all as present</a>
+                <a class="btn btn-warning" href="{{ route('mark-all-absent', $tournament->id) }}" onclick="return confirm('You will mark everyone as ABSENT upon confirming.\n\nThis action cannot be undone.')">Mark all as absent</a>
             </div>
             @endif
 
