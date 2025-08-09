@@ -131,11 +131,7 @@ class PlayerController extends Controller
         }
 
         // Return "present = true" for all instances
-        $player = Player::where('tournament_id', $tournament->id)->where('present', false)->map(function (?bool $present) {
-            return true;
-         });
-
-        $player->save();
+        $player = Player::where('tournament_id', $tournament->id)->where('present', false)->update(['present' => true]);
 
         return redirect()->to(route('players', ['tournament_id' => $tournament_id]))->with('status', 'Marked all as present');
     }
@@ -148,12 +144,8 @@ class PlayerController extends Controller
             return redirect('home')->with('error', 'You are not allowed to perform this action');
         }
 
-        // Return "present = false" for all instances
-        $player = Player::where('tournament_id', $tournament->id)->where('present', true)->map(function (?bool $present) {
-            return false;
-         });
-
-        $player->save();
+	// Return "present = false" for all instances
+        $player = Player::where('tournament_id', $tournament->id)->where('present', true)->update(['present' => false]);
 
         return redirect()->to(route('players', ['tournament_id' => $tournament_id]))->with('status', 'Marked all as absent');
     }
