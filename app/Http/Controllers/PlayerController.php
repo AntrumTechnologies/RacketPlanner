@@ -124,6 +124,11 @@ class PlayerController extends Controller
 
     public function markAllPresent($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
+        // Verify the user is allowed to perform this action
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
 
         // Return "present = true" for all instances
         $player = Player::where('tournament_id', $tournament->id)->where('present', false)->map(function (?bool $present) {
@@ -137,8 +142,13 @@ class PlayerController extends Controller
 
     public function markAllAbsent($tournament_id) {
         $tournament = Tournament::findOrFail($tournament_id);
+        // Verify the user is allowed to perform this action
+        $organizations = AdminOrganizationalAssignment::where('user_id', Auth::id())->where('organization_id', $tournament->owner_organization_id)->get();
+        if (count($organizations) == 0 && !Auth::user()->can('superuser')) {
+            return redirect('home')->with('error', 'You are not allowed to perform this action');
+        }
 
-        // Return "present = true" for all instances
+        // Return "present = false" for all instances
         $player = Player::where('tournament_id', $tournament->id)->where('present', true)->map(function (?bool $present) {
             return false;
          });
